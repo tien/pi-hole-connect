@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Pi Hole Connect</string>
+    <string name="title_activity_home">Home</string>
+    <string name="label_home">Home</string>
+    <string name="label_statistics">Statistics</string>
+    <string name="label_log">Log</string>
+    <string name="label_lists">Lists</string>
+    <string name="label_settings">Settings</string>
+</resources>
