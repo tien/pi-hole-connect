@@ -7,9 +7,23 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
 
-private val DarkColorPalette = darkColors()
+private val DarkColorPalette = darkColors(
+    primary = Red700,
+    primaryVariant = Red700Dark,
+    onPrimary = Color.White,
+    secondary = Green400,
+    secondaryVariant = Green400Dark,
+    onSecondary = Color.White
+)
 
-private val LightColorPalette = lightColors()
+private val LightColorPalette = lightColors(
+    primary = Red700,
+    primaryVariant = Red700Dark,
+    onPrimary = Color.White,
+    secondary = Green400,
+    secondaryVariant = Green400Dark,
+    onSecondary = Color.White
+)
 
 @get:Composable
 @get:ReadOnlyComposable

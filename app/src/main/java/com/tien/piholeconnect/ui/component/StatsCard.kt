@@ -25,12 +25,12 @@ fun StatsCard(
             Text(
                 name,
                 color = contentColorFor(backGroundColor),
-                style = MaterialTheme.typography.overline
+                style = MaterialTheme.typography.subtitle1
             )
             Text(
                 statistics,
                 color = contentColorFor(backGroundColor),
-                style = MaterialTheme.typography.subtitle1
+                style = MaterialTheme.typography.h4
             )
         }
     }

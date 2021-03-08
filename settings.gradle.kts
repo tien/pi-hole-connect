@@ -3,7 +3,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        jcenter() // TODO: migrate to mavenCentral
     }
 }
 rootProject.name = "Pi Hole Connect"
-include ":app"
+include(":app")

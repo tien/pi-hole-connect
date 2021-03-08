@@ -12,4 +12,13 @@ sealed class Screen(val route: String, @StringRes val labelResourceId: Int) {
     object Settings : Screen("settings", R.string.label_settings)
 }
 
+fun screenForRoute(route: String) = when (route) {
+    Screen.Home.route -> Screen.Home
+    Screen.Statistics.route -> Screen.Statistics
+    Screen.Log.route -> Screen.Log
+    Screen.FilterRules.route -> Screen.FilterRules
+    Screen.Settings.route -> Screen.Settings
+    else -> null
+}
+
 data class BottomTabItem(val screen: Screen, val icon: ImageVector)

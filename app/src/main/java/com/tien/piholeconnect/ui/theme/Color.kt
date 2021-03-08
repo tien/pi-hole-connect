@@ -1,6 +1,15 @@
 package com.tien.piholeconnect.ui.theme
 
+import android.content.res.Resources
 import androidx.compose.ui.graphics.Color
+import com.tien.piholeconnect.R
+
+val Red700 = Color(0xFFD32F2F)
+val Red700Light = Color(0xFFFF6659)
+val Red700Dark = Color(0xFF9A0007)
+val Green400 = Color(0xFF66BB6A)
+val Green400Light = Color(0xFF98EE99)
+val Green400Dark = Color(0xFF338A3E)
 
 val GreenAccent400 = Color(0xFF00E676)
 val GreenAccent400Dark = Color(0xFF00B248)

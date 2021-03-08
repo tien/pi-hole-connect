@@ -1,49 +1,28 @@
-package com.tien.piholeconnect.ui.screen
+package com.tien.piholeconnect.ui.screen.home
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
+import com.tien.piholeconnect.model.PiHoleSummary
+import com.tien.piholeconnect.repository.PiHoleRepository
+import com.tien.piholeconnect.ui.component.ScaffoldPreview
 import com.tien.piholeconnect.ui.component.StatsCard
 import com.tien.piholeconnect.ui.theme.info
 import com.tien.piholeconnect.ui.theme.success
 import com.tien.piholeconnect.ui.theme.warning
 
-class HomeViewModel : ViewModel {
-    var totalQueries by mutableStateOf(0)
-        private set
-    var totalBlockedQueries by mutableStateOf(0)
-        private set
-    var queryBlockingPercentage by mutableStateOf(0f)
-        private set
-    var blockedDomainListCount by mutableStateOf(0)
-        private set
-
-    constructor() : super()
-
-    constructor(
-        totalQueries: Int,
-        totalBlockedQueries: Int,
-        queryBlockingPercentage: Float,
-        blockedDomainListCount: Int
-    ) : super() {
-        this.totalQueries = totalQueries
-        this.totalBlockedQueries = totalBlockedQueries
-        this.queryBlockingPercentage = queryBlockingPercentage
-        this.blockedDomainListCount = blockedDomainListCount
-    }
-}
-
 @Composable
-fun Home(viewModel: HomeViewModel = HomeViewModel()) {
+fun HomeScreen(viewModel: HomeViewModel) {
+    LaunchedEffect(Unit) {
+        viewModel.refresh()
+    }
+
     Column(Modifier.padding(5.dp)) {
         Row {
             StatsCard(
@@ -86,13 +65,17 @@ fun Home(viewModel: HomeViewModel = HomeViewModel()) {
 
 @Preview(showBackground = true)
 @Composable
-fun HomePreview() {
-    Home(
-        HomeViewModel(
-            totalQueries = 4627,
-            totalBlockedQueries = 7893,
-            queryBlockingPercentage = 4627f / 7893f * 100f,
-            blockedDomainListCount = 85394
+fun HomeScreenPreview() {
+    ScaffoldPreview {
+        HomeScreen(
+            HomeViewModel(object : PiHoleRepository {
+                override suspend fun getStatusSummary(): PiHoleSummary = PiHoleSummary(
+                    dnsQueriesToday = 38972,
+                    adsBlockedToday = 15428,
+                    adsPercentageToday = (15428.0 / 38972.0) * 100.0,
+                    domainsBeingBlocked = 83754
+                )
+            })
         )
-    )
+    }
 }

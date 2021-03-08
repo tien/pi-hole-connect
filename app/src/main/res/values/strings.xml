@@ -6,4 +6,6 @@
     <string name="label_log">Log</string>
     <string name="label_lists">Lists</string>
     <string name="label_settings">Settings</string>
+    <string name="label_enable_blocking">Enable blocking</string>
+    <string name="label_disable_blocking">Disable blocking</string>
 </resources>

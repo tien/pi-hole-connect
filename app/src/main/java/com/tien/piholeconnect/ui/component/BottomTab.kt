@@ -19,7 +19,7 @@ import com.tien.piholeconnect.model.Screen
 fun BottomTab(
     items: Iterable<BottomTabItem>,
     currentRoute: String,
-    onNavigationItemClick: (BottomTabItem) -> Unit
+    onBottomTabItemClick: (BottomTabItem) -> Unit
 ) {
     BottomNavigation {
         items.forEach {
@@ -27,7 +27,7 @@ fun BottomTab(
 
             BottomNavigationItem(
                 selected = it.screen.route == currentRoute,
-                onClick = { onNavigationItemClick(it) },
+                onClick = { onBottomTabItemClick(it) },
                 icon = { Icon(it.icon, contentDescription = label) },
                 label = { Text(label) })
         }
@@ -49,5 +49,5 @@ fun BottomTabPreview() {
     BottomTab(
         items = tabItems,
         currentRoute = currentRoute,
-        onNavigationItemClick = { currentRoute = it.screen.route })
+        onBottomTabItemClick = { currentRoute = it.screen.route })
 }

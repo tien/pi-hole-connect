@@ -1,6 +1,5 @@
-package com.tien.piholeconnect
+package com.tien.piholeconnect.ui
 
-import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Analytics
 import androidx.compose.material.icons.twotone.Home
@@ -8,7 +7,7 @@ import androidx.compose.material.icons.twotone.Insights
 import androidx.compose.material.icons.twotone.Shield
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigate
@@ -16,14 +15,15 @@ import androidx.navigation.compose.rememberNavController
 import com.tien.piholeconnect.extension.currentRouteAsState
 import com.tien.piholeconnect.model.BottomTabItem
 import com.tien.piholeconnect.model.Screen
-import com.tien.piholeconnect.ui.component.BottomTab
-import com.tien.piholeconnect.ui.component.TopBar
-import com.tien.piholeconnect.ui.screen.Home
+import com.tien.piholeconnect.model.screenForRoute
+import com.tien.piholeconnect.ui.component.Scaffold
+import com.tien.piholeconnect.ui.screen.home.HomeScreen
+import com.tien.piholeconnect.ui.screen.home.HomeViewModel
 import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 
 
 @Composable
-fun App() {
+fun App(homeViewModel: HomeViewModel) {
     val navController = rememberNavController()
 
     val tabItems = listOf(
@@ -34,32 +34,25 @@ fun App() {
     )
 
     val currentRoute by navController.currentRouteAsState()
+    val title = currentRoute?.let { screenForRoute(it) }?.let { stringResource(it.labelResourceId) }
+        ?: "Pi Hole Connect"
 
     PiHoleConnectTheme {
         Scaffold(
-            topBar = { TopBar() },
-            bottomBar = {
-                BottomTab(
-                    items = tabItems,
-                    currentRoute = currentRoute ?: Screen.Home.route,
-                    onNavigationItemClick = {
-                        navController.navigate(it.screen.route) {
-                            popUpTo = navController.graph.startDestination
-                            launchSingleTop = true
-                        }
-                    }
-                )
-            }
+            bottomTabItems = tabItems,
+            title = title,
+            currentRoute = currentRoute ?: Screen.Home.route,
+            onBottomTabItemClick = {
+                navController.navigate(it.screen.route) {
+                    popUpTo = navController.graph.startDestination
+                    launchSingleTop = true
+                }
+            },
+            isAdsBlockingEnabled = true
         ) {
             NavHost(navController = navController, startDestination = Screen.Home.route) {
-                composable(route = Screen.Home.route) { Home() }
+                composable(Screen.Home.route) { HomeScreen(homeViewModel) }
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun AppPreview() {
-    App()
 }
