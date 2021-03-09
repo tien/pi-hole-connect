@@ -8,4 +8,9 @@
     <string name="label_settings">Settings</string>
     <string name="label_enable_blocking">Enable blocking</string>
     <string name="label_disable_blocking">Disable blocking</string>
+    <string name="home_queries_chart_title">Total queries over last 24 hour</string>
+    <string name="home_queries_chart_time_info_1">Queries from</string>
+    <string name="home_queries_chart_time_info_2">to</string>
+    <string name="home_queries_chart_permitted_queries_label">Permitted queries</string>
+    <string name="home_queries_chart_blocked_queries_label">Blocked queries</string>
 </resources>

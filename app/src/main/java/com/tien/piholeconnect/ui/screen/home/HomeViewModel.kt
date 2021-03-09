@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.repository.PiHoleRepository
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 
 class HomeViewModel constructor(private val piHoleRepository: PiHoleRepository) : ViewModel() {
@@ -28,19 +29,34 @@ class HomeViewModel constructor(private val piHoleRepository: PiHoleRepository) 
     var blockedDomainListCount by mutableStateOf(0)
         private set
 
+    var queriesOverTime by mutableStateOf(mapOf<Int, Int>())
+        private set
+    var adsOverTime by mutableStateOf(mapOf<Int, Int>())
+        private set
+
     suspend fun refresh() {
         refreshJob?.cancel()
         refreshJob = viewModelScope.launch {
             runCatching {
                 isRefreshing = true
 
-                val summary = piHoleRepository.getStatusSummary()
+                joinAll(
+                    viewModelScope.launch {
+                        val summary = piHoleRepository.getStatusSummary()
 
-                isAdsBlockingEnabled = summary.status == "enabled"
-                totalQueries = summary.dnsQueriesToday
-                totalBlockedQueries = summary.adsBlockedToday
-                queryBlockingPercentage = summary.adsPercentageToday
-                blockedDomainListCount = summary.domainsBeingBlocked
+                        isAdsBlockingEnabled = summary.status == "enabled"
+                        totalQueries = summary.dnsQueriesToday
+                        totalBlockedQueries = summary.adsBlockedToday
+                        queryBlockingPercentage = summary.adsPercentageToday
+                        blockedDomainListCount = summary.domainsBeingBlocked
+                    },
+                    viewModelScope.launch {
+                        val overTimeData = piHoleRepository.getOverTimeData10Minutes()
+
+                        queriesOverTime = overTimeData.domainsOverTime
+                        adsOverTime = overTimeData.adsOverTime
+                    }
+                )
             }.onFailure {
                 error = it
             }

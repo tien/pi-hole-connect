@@ -35,7 +35,7 @@ val Colors.info: Color
 @get:Composable
 @get:ReadOnlyComposable
 val Colors.success: Color
-    get() = if (isLight) GreenAccent400 else GreenAccent400Dark
+    get() = if (isLight) GreenAccent400 else Green400Dark
 
 @get:Composable
 @get:ReadOnlyComposable

@@ -1,5 +1,6 @@
 package com.tien.piholeconnect.ui
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Analytics
 import androidx.compose.material.icons.twotone.Home
@@ -7,6 +8,7 @@ import androidx.compose.material.icons.twotone.Insights
 import androidx.compose.material.icons.twotone.Shield
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -49,9 +51,14 @@ fun App(homeViewModel: HomeViewModel) {
                 }
             },
             isAdsBlockingEnabled = homeViewModel.isAdsBlockingEnabled
-        ) {
+        ) { padding ->
             NavHost(navController = navController, startDestination = Screen.Home.route) {
-                composable(Screen.Home.route) { HomeScreen(homeViewModel) }
+                composable(Screen.Home.route) {
+                    HomeScreen(
+                        homeViewModel,
+                        Modifier.padding(padding)
+                    )
+                }
                 composable(Screen.Statistics.route) {}
                 composable(Screen.Log.route) {}
                 composable(Screen.FilterRules.route) {}
