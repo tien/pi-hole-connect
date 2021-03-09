@@ -11,13 +11,13 @@ import com.tien.piholeconnect.repository.PiHoleRepository
 import com.tien.piholeconnect.ui.App
 import com.tien.piholeconnect.ui.screen.home.HomeViewModel
 import io.ktor.client.*
-import io.ktor.client.engine.cio.*
+import io.ktor.client.engine.android.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 
 @Suppress("UNCHECKED_CAST")
 class MainActivity : AppCompatActivity() {
-    private val httpClient = HttpClient(CIO) {
+    private val httpClient = HttpClient(Android) {
         install(JsonFeature) {
             serializer = KotlinxSerializer()
         }

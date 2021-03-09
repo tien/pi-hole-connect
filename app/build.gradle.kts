@@ -57,7 +57,7 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.3.0-alpha03")
     implementation("androidx.navigation:navigation-compose:1.0.0-alpha08")
     implementation("io.ktor:ktor-client-core:$ktorVersion")
-    implementation("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation("io.ktor:ktor-client-android:$ktorVersion")
     implementation("io.ktor:ktor-client-serialization:$ktorVersion")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.2")

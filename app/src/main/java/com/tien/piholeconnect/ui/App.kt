@@ -48,10 +48,13 @@ fun App(homeViewModel: HomeViewModel) {
                     launchSingleTop = true
                 }
             },
-            isAdsBlockingEnabled = true
+            isAdsBlockingEnabled = homeViewModel.isAdsBlockingEnabled
         ) {
             NavHost(navController = navController, startDestination = Screen.Home.route) {
                 composable(Screen.Home.route) { HomeScreen(homeViewModel) }
+                composable(Screen.Statistics.route) {}
+                composable(Screen.Log.route) {}
+                composable(Screen.FilterRules.route) {}
             }
         }
     }

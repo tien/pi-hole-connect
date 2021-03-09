@@ -13,7 +13,8 @@ private val DarkColorPalette = darkColors(
     onPrimary = Color.White,
     secondary = Green400,
     secondaryVariant = Green400Dark,
-    onSecondary = Color.White
+    onSecondary = Color.White,
+    onError = Color.White
 )
 
 private val LightColorPalette = lightColors(
@@ -22,7 +23,8 @@ private val LightColorPalette = lightColors(
     onPrimary = Color.White,
     secondary = Green400,
     secondaryVariant = Green400Dark,
-    onSecondary = Color.White
+    onSecondary = Color.White,
+    onError = Color.White
 )
 
 @get:Composable
