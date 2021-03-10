@@ -13,4 +13,6 @@
     <string name="home_queries_chart_time_info_2">to</string>
     <string name="home_queries_chart_permitted_queries_label">Permitted queries</string>
     <string name="home_queries_chart_blocked_queries_label">Blocked queries</string>
+    <string name="top_bar_more_options_label">More options</string>
+    <string name="back_button_label">Go back</string>
 </resources>

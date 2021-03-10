@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
+import com.github.mikephil.charting.animation.Easing.*
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
@@ -40,7 +41,7 @@ fun LineChart(
     onValueSelected: (Iterable<SelectedValue>) -> Unit = {},
     configure: com.github.mikephil.charting.charts.LineChart.() -> Unit = {}
 ) {
-    val contentColor = LocalContentColor.current
+    val contentColor = LocalContentColor.current.toColorInt()
 
     val parsedData = remember(lineData) {
         LineData(lineData.map {
@@ -49,7 +50,7 @@ fun LineChart(
                 it.label
             )
 
-            lineDataSet.configure()
+            lineDataSet.configure(contentColor)
             it.configure(lineDataSet)
 
             lineDataSet
@@ -73,17 +74,22 @@ fun LineChart(
     }
 
     AndroidView(
-        factory = { it ->
+        factory = {
             val chart = com.github.mikephil.charting.charts.LineChart(it)
-            val textColor = contentColor.toColorInt()
 
-            chart.axisLeft.textColor = textColor
-            chart.axisRight.textColor = textColor
-            chart.xAxis.textColor = textColor
+            chart.axisLeft.textColor = contentColor
+            chart.axisRight.setDrawLabels(false)
+            chart.xAxis.textColor = contentColor
             chart.description.isEnabled = false
             chart.legend.isEnabled = false
-            chart.isHighlightPerDragEnabled = true
-            chart.isHighlightPerTapEnabled = true
+
+            chart.setTouchEnabled(true)
+            chart.isDragEnabled = true
+            chart.setPinchZoom(false)
+            chart.isScaleXEnabled = true
+            chart.isScaleYEnabled = false
+            chart.animateXY(0, 1000, EaseOutBounce)
+
             chart.setOnChartValueSelectedListener(listener)
 
             configure(chart)
@@ -101,7 +107,8 @@ fun LineChart(
     )
 }
 
-private fun LineDataSet.configure() {
+private fun LineDataSet.configure(contentColor: Int? = null) {
+    contentColor?.let { this.valueTextColor = it }
     this.mode = CUBIC_BEZIER
     this.cubicIntensity = 0.2f
     this.setDrawFilled(true)

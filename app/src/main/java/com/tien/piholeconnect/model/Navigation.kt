@@ -22,3 +22,5 @@ fun screenForRoute(route: String) = when (route) {
 }
 
 data class BottomTabItem(val screen: Screen, val icon: ImageVector)
+
+data class TopBarOptionsMenuItem(val key: String, @StringRes val labelResourceId: Int)

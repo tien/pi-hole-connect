@@ -42,7 +42,7 @@ fun HomeScreen(viewModel: HomeViewModel, modifier: Modifier = Modifier) {
     val queriesOverTimeData = remember(viewModel.queriesOverTime) {
         LineChartData(
             label = "Queries over time",
-            viewModel.queriesOverTime.map { Pair(it.key.toFloat(), it.value.toFloat()) }) {
+            viewModel.queriesOverTime.map { Pair(it.key.toFloat() * 1000L, it.value.toFloat()) }) {
             color = successColorInt
             fillColor = successColorInt
         }
@@ -51,7 +51,7 @@ fun HomeScreen(viewModel: HomeViewModel, modifier: Modifier = Modifier) {
     val adsOverTimeData = remember(viewModel.adsOverTime) {
         LineChartData(
             label = "Ads over time",
-            viewModel.adsOverTime.map { Pair(it.key.toFloat(), it.value.toFloat()) }) {
+            viewModel.adsOverTime.map { Pair(it.key.toFloat() * 1000L, it.value.toFloat()) }) {
             color = errorColorInt
             fillColor = errorColorInt
         }
@@ -179,6 +179,8 @@ fun HomeScreen(viewModel: HomeViewModel, modifier: Modifier = Modifier) {
                         override fun getFormattedValue(value: Float): String =
                             dateFormat.format(value)
                     }
+                    axisLeft.axisMinimum = 0f
+                    axisRight.axisMinimum = 0f
                 }
             }
         }
