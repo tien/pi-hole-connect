@@ -16,16 +16,17 @@ import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 
 @Composable
 fun Scaffold(
+    modifier: Modifier = Modifier,
+    isBottomTabEnabled: Boolean = true,
+    isBackButtonEnabled: Boolean = false,
     title: String,
     optionsMenuItems: Iterable<TopBarOptionsMenuItem>,
     bottomTabItems: Iterable<BottomTabItem>,
     currentRoute: String,
-    isBackButtonEnabled: Boolean,
     onBackButtonClick: () -> Unit,
     onBottomTabItemClick: (BottomTabItem) -> Unit,
     onOptionsMenuItemClick: (TopBarOptionsMenuItem) -> Unit,
     isAdsBlockingEnabled: Boolean,
-    modifier: Modifier = Modifier,
     content: @Composable (PaddingValues) -> Unit
 ) {
     androidx.compose.material.Scaffold(
@@ -39,11 +40,13 @@ fun Scaffold(
             )
         },
         bottomBar = {
-            BottomTab(
-                items = bottomTabItems,
-                currentRoute = currentRoute,
-                onBottomTabItemClick = onBottomTabItemClick
-            )
+            if (isBottomTabEnabled) {
+                BottomTab(
+                    items = bottomTabItems,
+                    currentRoute = currentRoute,
+                    onBottomTabItemClick = onBottomTabItemClick
+                )
+            }
         },
         floatingActionButton = { PiHoleSwitchFloatingActionButton(isAdsBlockingEnabled = isAdsBlockingEnabled) },
         modifier = modifier,
@@ -59,8 +62,8 @@ fun ScaffoldPreview(content: @Composable (PaddingValues) -> Unit = {}) {
             title = "Pi Hole Connect",
             optionsMenuItems = listOf(
                 TopBarOptionsMenuItem(
-                    Screen.Settings.route,
-                    Screen.Settings.labelResourceId
+                    Screen.Preferences.route,
+                    Screen.Preferences.labelResourceId
                 )
             ),
             bottomTabItems = listOf(
@@ -74,7 +77,6 @@ fun ScaffoldPreview(content: @Composable (PaddingValues) -> Unit = {}) {
             onOptionsMenuItemClick = {},
             isAdsBlockingEnabled = true,
             content = content,
-            isBackButtonEnabled = false,
             onBackButtonClick = {}
         )
     }

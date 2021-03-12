@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+option java_package = "com.tien.piholeconnect.model";
+option java_multiple_files = true;
+
+enum Theme {
+  SYSTEM = 0;
+  LIGHT = 1;
+  DARK = 2;
+}
+
+enum TemperatureUnit {
+  CELSIUS = 0;
+  FAHRENHEIT = 1;
+  KELVIN = 2;
+}
+
+enum URLProtocol {
+  HTTP = 0;
+  HTTPS = 1;
+}
+
+message PiHoleConnection {
+  string name = 1;
+  optional string description = 2;
+  URLProtocol protocol = 3;
+  string host = 4;
+  string apiPath = 5;
+  uint32 port = 6;
+  optional string apiToken = 7;
+}
+
+message UserPreferences {
+  Theme theme = 1;
+  TemperatureUnit temperatureUnit = 2;
+  uint32 selectedPiHoleConnectionIndex = 3;
+  repeated PiHoleConnection piHoleConnections = 4;
+}

@@ -9,17 +9,11 @@ sealed class Screen(val route: String, @StringRes val labelResourceId: Int) {
     object Statistics : Screen("statistics", R.string.label_statistics)
     object Log : Screen("log", R.string.label_log)
     object FilterRules : Screen("filterRules", R.string.label_lists)
-    object Settings : Screen("settings", R.string.label_settings)
+    object Preferences : Screen("preferences", R.string.label_preferences)
 }
 
-fun screenForRoute(route: String) = when (route) {
-    Screen.Home.route -> Screen.Home
-    Screen.Statistics.route -> Screen.Statistics
-    Screen.Log.route -> Screen.Log
-    Screen.FilterRules.route -> Screen.FilterRules
-    Screen.Settings.route -> Screen.Settings
-    else -> null
-}
+fun screenForRoute(route: String) =
+    Screen::class.sealedSubclasses.first { it.objectInstance!!.route == route }.objectInstance!!
 
 data class BottomTabItem(val screen: Screen, val icon: ImageVector)
 

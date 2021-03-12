@@ -1,0 +1,15 @@
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:$ext.protoBufJavaLiteVersion"
+    }
+
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java {
+                    option 'lite'
+                }
+            }
+        }
+    }
+}

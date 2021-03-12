@@ -43,7 +43,7 @@ fun BottomTabPreview() {
         BottomTabItem(Screen.Statistics, Icons.TwoTone.Insights),
         BottomTabItem(Screen.Log, Icons.TwoTone.Analytics),
         BottomTabItem(Screen.FilterRules, Icons.TwoTone.Shield),
-        BottomTabItem(Screen.Settings, Icons.TwoTone.Settings)
+        BottomTabItem(Screen.Preferences, Icons.TwoTone.Settings)
     )
 
     BottomTab(

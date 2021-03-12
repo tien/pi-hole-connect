@@ -1,5 +1,7 @@
 package com.tien.piholeconnect
 
 import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
 
-class PiHoleConnectApplication: Application()
+@HiltAndroidApp
+class PiHoleConnectApplication : Application()

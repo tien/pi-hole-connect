@@ -20,16 +20,14 @@ fun TopBar(
     optionsMenuItems: Iterable<TopBarOptionsMenuItem>,
     onOptionsMenuItemClick: (TopBarOptionsMenuItem) -> Unit
 ) {
-    TopAppBar(title = { Text(title) }, navigationIcon = {
-        if (isBackButtonEnabled) {
-            IconButton(onClick = onBackButtonClick) {
-                Icon(
-                    Icons.Default.ArrowBack,
-                    contentDescription = stringResource(R.string.back_button_label)
-                )
-            }
+    TopAppBar(title = { Text(title) }, navigationIcon = if (!isBackButtonEnabled) null else ({
+        IconButton(onClick = onBackButtonClick) {
+            Icon(
+                Icons.Default.ArrowBack,
+                contentDescription = stringResource(R.string.back_button_label)
+            )
         }
-    }, actions = {
+    }), actions = {
         Box {
             var isOptionsMenuExpanded by remember { mutableStateOf(false) }
 
@@ -65,8 +63,8 @@ fun TopBarPreview() {
         title = "Pi-Hole Connect",
         optionsMenuItems = listOf(
             TopBarOptionsMenuItem(
-                Screen.Settings.route,
-                Screen.Settings.labelResourceId
+                Screen.Preferences.route,
+                Screen.Preferences.labelResourceId
             )
         ),
         onOptionsMenuItemClick = {},

@@ -1,10 +1,17 @@
-val composeVersion: String by extra
-val ktorVersion: String by extra
+val composeVersion: String by rootProject.extra
+val ktorVersion: String by rootProject.extra
+val protoBufVersion: String by rootProject.extra
+val protoBufJavaLiteVersion: String by rootProject.extra
+val hiltVersion: String by rootProject.extra
+val lifecycleVersion: String by rootProject.extra
 
 plugins {
     id("com.android.application")
+    id("com.google.protobuf") version "0.8.15"
+    id("dagger.hilt.android.plugin")
     kotlin("android")
     kotlin("plugin.serialization") version "1.4.30"
+    kotlin("kapt")
 }
 
 android {
@@ -45,7 +52,10 @@ android {
     }
 }
 
+apply(from = "protobuf.gradle")
+
 dependencies {
+    implementation(kotlin("reflect"))
     implementation("androidx.core:core-ktx:1.3.2")
     implementation("androidx.appcompat:appcompat:1.2.0")
     implementation("com.google.android.material:material:1.3.0")
@@ -53,13 +63,18 @@ dependencies {
     implementation("androidx.compose.material:material:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
     implementation("androidx.compose.ui:ui-tooling:$composeVersion")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
     implementation("androidx.activity:activity-compose:1.3.0-alpha03")
     implementation("androidx.navigation:navigation-compose:1.0.0-alpha08")
+    implementation("androidx.datastore:datastore:1.0.0-alpha08")
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-android:$ktorVersion")
     implementation("io.ktor:ktor-client-serialization:$ktorVersion")
+    implementation("com.google.protobuf:protobuf-javalite:$protoBufJavaLiteVersion")
+    implementation("com.google.dagger:hilt-android:$hiltVersion")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+    kapt("com.google.dagger:hilt-compiler:$hiltVersion")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.2")

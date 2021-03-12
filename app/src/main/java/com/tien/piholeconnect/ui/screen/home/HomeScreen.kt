@@ -13,11 +13,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.tien.piholeconnect.R
-import com.tien.piholeconnect.model.PiHoleOverTimeData
-import com.tien.piholeconnect.model.PiHoleSummary
-import com.tien.piholeconnect.repository.PiHoleRepository
 import com.tien.piholeconnect.ui.component.*
 import com.tien.piholeconnect.ui.theme.info
 import com.tien.piholeconnect.ui.theme.success
@@ -28,7 +26,10 @@ import kotlinx.coroutines.launch
 import java.text.DateFormat.getTimeInstance
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel, modifier: Modifier = Modifier) {
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = viewModel()
+) {
     var isRefreshing by remember { mutableStateOf(false) }
 
     val totalQueries: Int by animateIntAsState(viewModel.totalQueries)
@@ -192,16 +193,6 @@ fun HomeScreen(viewModel: HomeViewModel, modifier: Modifier = Modifier) {
 @Composable
 fun HomeScreenPreview() {
     ScaffoldPreview {
-        HomeScreen(
-            HomeViewModel(object : PiHoleRepository {
-                override suspend fun getStatusSummary(): PiHoleSummary = PiHoleSummary(
-                    TODO("Not yet implemented")
-                )
-
-                override suspend fun getOverTimeData10Minutes(): PiHoleOverTimeData {
-                    TODO("Not yet implemented")
-                }
-            })
-        )
+        HomeScreen()
     }
 }

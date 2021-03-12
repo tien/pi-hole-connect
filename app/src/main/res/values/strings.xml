@@ -5,7 +5,7 @@
     <string name="label_statistics">Statistics</string>
     <string name="label_log">Log</string>
     <string name="label_lists">Lists</string>
-    <string name="label_settings">Settings</string>
+    <string name="label_preferences">Preferences</string>
     <string name="label_enable_blocking">Enable blocking</string>
     <string name="label_disable_blocking">Disable blocking</string>
     <string name="home_queries_chart_title">Total queries over last 24 hour</string>

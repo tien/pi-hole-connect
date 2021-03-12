@@ -5,12 +5,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tien.piholeconnect.repository.PiHoleRepository
+import com.tien.piholeconnect.repository.IPiHoleRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeViewModel constructor(private val piHoleRepository: PiHoleRepository) : ViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor(private val piHoleRepository: IPiHoleRepository) :
+    ViewModel() {
     private var refreshJob: Job? = null
 
     var error: Throwable? = null
