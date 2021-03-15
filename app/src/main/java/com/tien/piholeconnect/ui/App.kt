@@ -12,16 +12,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltNavGraphViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigate
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.*
 import com.tien.piholeconnect.extension.currentRouteAsState
 import com.tien.piholeconnect.model.*
 import com.tien.piholeconnect.ui.component.Scaffold
 import com.tien.piholeconnect.ui.screen.home.HomeScreen
 import com.tien.piholeconnect.ui.screen.home.HomeViewModel
+import com.tien.piholeconnect.ui.screen.piHoleConnection.PiHoleConnectionScreen
+import com.tien.piholeconnect.ui.screen.piHoleConnection.PiHoleConnectionViewModel
 import com.tien.piholeconnect.ui.screen.preferences.PreferencesScreen
 import com.tien.piholeconnect.ui.screen.preferences.PreferencesViewModel
 import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
@@ -63,8 +63,8 @@ fun App(
             bottomTabItems = tabItems,
             title = title,
             currentRoute = currentRoute ?: Screen.Home.route,
-            isBottomTabEnabled = currentRoute != Screen.Preferences.route,
-            isBackButtonEnabled = currentRoute == Screen.Preferences.route,
+            isBottomTabEnabled = currentRoute != Screen.Preferences.route && currentRoute != Screen.PiHoleConnection.route,
+            isBackButtonEnabled = currentRoute == Screen.Preferences.route || currentRoute == Screen.PiHoleConnection.route,
             onBackButtonClick = { navController.navigateUp() },
             onBottomTabItemClick = {
                 navController.navigate(it.screen.route) {
@@ -88,8 +88,19 @@ fun App(
                 composable(Screen.FilterRules.route) {}
                 composable(Screen.Preferences.route) {
                     PreferencesScreen(
-                        viewModel = preferencesViewModel
+                        viewModel = preferencesViewModel,
+                        navController = navController
                     )
+                }
+                composable(
+                    "${Screen.PiHoleConnection.route}?id={id}", arguments = listOf(
+                        navArgument("id") { nullable = true })
+                ) {
+                    val piHoleConnectionViewModel =
+                        hiltNavGraphViewModel<PiHoleConnectionViewModel>()
+                    val id = it.arguments?.getString("id")
+
+                    PiHoleConnectionScreen(piHoleConnectionViewModel, id)
                 }
             }
         }

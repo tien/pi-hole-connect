@@ -1,11 +1,12 @@
 package com.tien.piholeconnect.ui.screen.preferences
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.RadioButton
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Router
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -14,33 +15,37 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.toLowerCase
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.tien.piholeconnect.model.TemperatureUnit
-import com.tien.piholeconnect.model.Theme
-import com.tien.piholeconnect.ui.component.ScaffoldPreview
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.navigate
+import com.tien.piholeconnect.model.*
 import kotlinx.coroutines.launch
 import androidx.compose.ui.text.intl.Locale.Companion as Locale
 
-@Composable
-fun PreferencesScreen(viewModel: PreferencesViewModel = viewModel()) {
-    val userPreferences by viewModel.userPreferencesFlow.collectAsState(initial = null)
+private val PreferenceItemModifier = Modifier
+    .fillMaxWidth()
+    .height(56.dp)
 
-    if (userPreferences == null) return
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun PreferencesScreen(
+    viewModel: PreferencesViewModel = viewModel(),
+    navController: NavHostController
+) {
+    val userPreferences by viewModel.userPreferencesFlow.collectAsState(initial = UserPreferences.getDefaultInstance())
+
+    if (userPreferences === UserPreferences.getDefaultInstance()) return
 
     Column(Modifier.padding(horizontal = 20.dp, vertical = 15.dp)) {
         Text("My Pi-holes", style = MaterialTheme.typography.caption)
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
-            userPreferences!!.piHoleConnectionsList.forEach {
-                Text(it.name)
-            }
+        userPreferences.piHoleConnectionsList.forEach {
+            ListItem(
+                Modifier.clickable { navController.navigate("${Screen.PiHoleConnection.route}?id=${it.id}") },
+                icon = { Icon(Icons.Default.Router, contentDescription = "Pi-hole ${it.name}") },
+                text = { Text(it.name) },
+                secondaryText = { Text(it.host) })
         }
         Column(Modifier.selectableGroup()) {
             Text("Theme", style = MaterialTheme.typography.caption)
@@ -48,11 +53,9 @@ fun PreferencesScreen(viewModel: PreferencesViewModel = viewModel()) {
                 .filter { it != Theme.UNRECOGNIZED }
                 .forEach { theme ->
                     Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
+                        PreferenceItemModifier
                             .selectable(
-                                selected = theme == userPreferences!!.theme,
+                                selected = theme == userPreferences.theme,
                                 onClick = {
                                     viewModel.viewModelScope.launch {
                                         viewModel.updateUserPreferences {
@@ -69,7 +72,7 @@ fun PreferencesScreen(viewModel: PreferencesViewModel = viewModel()) {
                     ) {
                         RadioButton(
                             modifier = Modifier.padding(end = 40.dp),
-                            selected = theme == userPreferences!!.theme,
+                            selected = theme == userPreferences.theme,
                             onClick = null
                         )
                         Text(
@@ -85,11 +88,9 @@ fun PreferencesScreen(viewModel: PreferencesViewModel = viewModel()) {
                 .filter { it != TemperatureUnit.UNRECOGNIZED }
                 .forEach { temperatureUnit ->
                     Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
+                        PreferenceItemModifier
                             .selectable(
-                                selected = temperatureUnit == userPreferences!!.temperatureUnit,
+                                selected = temperatureUnit == userPreferences.temperatureUnit,
                                 onClick = {
                                     viewModel.viewModelScope.launch {
                                         viewModel.updateUserPreferences {
@@ -106,7 +107,7 @@ fun PreferencesScreen(viewModel: PreferencesViewModel = viewModel()) {
                     ) {
                         RadioButton(
                             modifier = Modifier.padding(end = 40.dp),
-                            selected = temperatureUnit == userPreferences!!.temperatureUnit,
+                            selected = temperatureUnit == userPreferences.temperatureUnit,
                             onClick = null
                         )
                         Text(
@@ -116,13 +117,5 @@ fun PreferencesScreen(viewModel: PreferencesViewModel = viewModel()) {
                     }
                 }
         }
-    }
-}
-
-@Preview
-@Composable
-fun PreferencesScreenPreview() {
-    ScaffoldPreview {
-        PreferencesScreen()
     }
 }

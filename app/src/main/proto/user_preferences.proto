@@ -21,13 +21,14 @@ enum URLProtocol {
 }
 
 message PiHoleConnection {
-  string name = 1;
-  optional string description = 2;
-  URLProtocol protocol = 3;
-  string host = 4;
-  string apiPath = 5;
-  uint32 port = 6;
-  optional string apiToken = 7;
+  string id = 1;
+  string name = 2;
+  optional string description = 3;
+  URLProtocol protocol = 4;
+  string host = 5;
+  string apiPath = 6;
+  uint32 port = 7;
+  optional string apiToken = 8;
 }
 
 message UserPreferences {

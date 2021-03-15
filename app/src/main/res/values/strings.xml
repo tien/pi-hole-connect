@@ -15,4 +15,5 @@
     <string name="home_queries_chart_blocked_queries_label">Blocked queries</string>
     <string name="top_bar_more_options_label">More options</string>
     <string name="back_button_label">Go back</string>
+    <string name="label_pi_hole_connection">Edit instance</string>
 </resources>

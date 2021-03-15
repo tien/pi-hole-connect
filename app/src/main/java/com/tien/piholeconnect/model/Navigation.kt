@@ -10,10 +10,13 @@ sealed class Screen(val route: String, @StringRes val labelResourceId: Int) {
     object Log : Screen("log", R.string.label_log)
     object FilterRules : Screen("filterRules", R.string.label_lists)
     object Preferences : Screen("preferences", R.string.label_preferences)
+    object PiHoleConnection : Screen("piHoleConnection", R.string.label_pi_hole_connection)
 }
 
 fun screenForRoute(route: String) =
-    Screen::class.sealedSubclasses.first { it.objectInstance!!.route == route }.objectInstance!!
+    Screen::class.sealedSubclasses.first {
+        it.objectInstance!!.route == route.split('?')[0]
+    }.objectInstance!!
 
 data class BottomTabItem(val screen: Screen, val icon: ImageVector)
 

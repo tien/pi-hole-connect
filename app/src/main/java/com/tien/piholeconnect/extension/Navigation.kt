@@ -10,7 +10,7 @@ import com.tien.piholeconnect.model.screenForRoute
 @Composable
 fun NavHostController.currentRouteAsState(): State<String?> {
     val navBackStackEntry by this.currentBackStackEntryAsState()
-    return mutableStateOf(navBackStackEntry?.arguments?.getString(KEY_ROUTE))
+    return mutableStateOf(navBackStackEntry?.arguments?.getString(KEY_ROUTE)?.split("?")?.get(0))
 }
 
 @Composable
