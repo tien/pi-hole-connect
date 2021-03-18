@@ -2,6 +2,10 @@ package com.tien.piholeconnect.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore
+import com.google.mlkit.vision.barcode.Barcode
+import com.google.mlkit.vision.barcode.BarcodeScanner
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions
+import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.tien.piholeconnect.model.UserPreferences
 import com.tien.piholeconnect.repository.IPiHoleRepository
 import com.tien.piholeconnect.repository.IUserPreferencesRepository
@@ -47,5 +51,12 @@ abstract class PiHoleConnectModule {
         @Provides
         fun provideUserPreferencesRepository(dataStore: DataStore<UserPreferences>): IUserPreferencesRepository =
             UserPreferencesRepository(dataStore)
+
+        @Provides
+        fun providesBarcodeScanner(): BarcodeScanner {
+            val options =
+                BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_QR_CODE).build()
+            return BarcodeScanning.getClient(options)
+        }
     }
 }

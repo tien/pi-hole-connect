@@ -1,10 +1,8 @@
 package com.tien.piholeconnect.ui.theme
 
-import android.content.res.Resources
 import android.graphics.Color.rgb
 import android.os.Build
 import androidx.compose.ui.graphics.Color
-import com.tien.piholeconnect.R
 
 val Red700 = Color(0xFFD32F2F)
 val Red700Light = Color(0xFFFF6659)

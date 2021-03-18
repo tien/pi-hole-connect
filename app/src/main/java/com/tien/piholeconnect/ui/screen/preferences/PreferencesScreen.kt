@@ -6,6 +6,8 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.Router
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -20,7 +22,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.navigate
-import com.tien.piholeconnect.model.*
+import com.tien.piholeconnect.model.Screen
+import com.tien.piholeconnect.model.TemperatureUnit
+import com.tien.piholeconnect.model.Theme
+import com.tien.piholeconnect.model.UserPreferences
 import kotlinx.coroutines.launch
 import androidx.compose.ui.text.intl.Locale.Companion as Locale
 
@@ -47,6 +52,10 @@ fun PreferencesScreen(
                 text = { Text(it.name) },
                 secondaryText = { Text(it.host) })
         }
+        ListItem(
+            Modifier.clickable { navController.navigate(Screen.PiHoleConnection.route) },
+            icon = { Icon(Icons.Default.AddCircleOutline, contentDescription = "Add Pi-hole") },
+            text = { Text("Add Pi-hole") })
         Column(Modifier.selectableGroup()) {
             Text("Theme", style = MaterialTheme.typography.caption)
             Theme.values()

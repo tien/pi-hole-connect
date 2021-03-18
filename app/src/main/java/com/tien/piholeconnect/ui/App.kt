@@ -100,7 +100,11 @@ fun App(
                         hiltNavGraphViewModel<PiHoleConnectionViewModel>()
                     val id = it.arguments?.getString("id")
 
-                    PiHoleConnectionScreen(piHoleConnectionViewModel, id)
+                    PiHoleConnectionScreen(
+                        viewModel = piHoleConnectionViewModel,
+                        connectionId = id,
+                        navController = navController
+                    )
                 }
             }
         }

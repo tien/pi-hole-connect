@@ -4,6 +4,7 @@ val protoBufVersion: String by rootProject.extra
 val protoBufJavaLiteVersion: String by rootProject.extra
 val hiltVersion: String by rootProject.extra
 val lifecycleVersion: String by rootProject.extra
+val cameraxVersion: String by rootProject.extra
 
 plugins {
     id("com.android.application")
@@ -68,11 +69,15 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:1.0.0-alpha09")
     implementation("androidx.datastore:datastore:1.0.0-alpha08")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0-alpha01")
+    implementation("androidx.camera:camera-camera2:$cameraxVersion")
+    implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
+    implementation("androidx.camera:camera-view:1.0.0-alpha22")
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-android:$ktorVersion")
     implementation("io.ktor:ktor-client-serialization:$ktorVersion")
     implementation("com.google.protobuf:protobuf-javalite:$protoBufJavaLiteVersion")
     implementation("com.google.dagger:hilt-android:$hiltVersion")
+    implementation("com.google.mlkit:barcode-scanning:16.1.1")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
     kapt("com.google.dagger:hilt-compiler:$hiltVersion")

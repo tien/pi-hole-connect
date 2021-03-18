@@ -57,9 +57,17 @@
         <entry key="../../../../layout/compose-model-1615589541923.xml" value="0.39814814814814814" />
         <entry key="../../../../layout/compose-model-1615620208028.xml" value="0.3112331081081081" />
         <entry key="../../../../layout/compose-model-1615620700239.xml" value="0.1962025316455696" />
+        <entry key="../../../../layout/compose-model-1615961885763.xml" value="0.2352195945945946" />
+        <entry key="../../../../layout/compose-model-1616038343227.xml" value="0.39351851851851855" />
+        <entry key="../../../../layout/compose-model-1616038345816.xml" value="0.16919831223628692" />
+        <entry key="../../../../layout/compose-model-1616038349918.xml" value="0.7380073800738007" />
+        <entry key="../../../../layout/compose-model-1616038351385.xml" value="0.16934121621621623" />
+        <entry key="../../../../layout/compose-model-1616038360113.xml" value="1.2536873156342183" />
         <entry key="../../../../layout/custom_preview.xml" value="0.31197916666666664" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2546875" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.2546875" />
+        <entry key="app/src/main/res/layout/fragment_scanner.xml" value="0.15579710144927536" />
+        <entry key="app/src/main/res/layout/viewfinder.xml" value="0.305352798053528" />
       </map>
     </option>
   </component>
