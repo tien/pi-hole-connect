@@ -20,10 +20,14 @@ import com.tien.piholeconnect.model.*
 import com.tien.piholeconnect.ui.component.Scaffold
 import com.tien.piholeconnect.ui.screen.home.HomeScreen
 import com.tien.piholeconnect.ui.screen.home.HomeViewModel
+import com.tien.piholeconnect.ui.screen.log.LogScreen
+import com.tien.piholeconnect.ui.screen.log.LogViewModel
 import com.tien.piholeconnect.ui.screen.piHoleConnection.PiHoleConnectionScreen
 import com.tien.piholeconnect.ui.screen.piHoleConnection.PiHoleConnectionViewModel
 import com.tien.piholeconnect.ui.screen.preferences.PreferencesScreen
 import com.tien.piholeconnect.ui.screen.preferences.PreferencesViewModel
+import com.tien.piholeconnect.ui.screen.statistics.StatisticsScreen
+import com.tien.piholeconnect.ui.screen.statistics.StatisticsViewModel
 import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 
 
@@ -31,6 +35,8 @@ import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 fun App(
     homeViewModel: HomeViewModel = viewModel(),
     preferencesViewModel: PreferencesViewModel = viewModel(),
+    statisticsViewModel: StatisticsViewModel = viewModel(),
+    logViewModel: LogViewModel = viewModel()
 ) {
     val preferences by preferencesViewModel.userPreferencesFlow.collectAsState(initial = null)
     if (preferences == null) return
@@ -82,9 +88,12 @@ fun App(
                         viewModel = homeViewModel
                     )
                 }
-                composable(Screen.Statistics.route) {}
-                composable(Screen.Log.route) {}
-                composable(Screen.FilterRules.route) {}
+                composable(Screen.Statistics.route) {
+                    StatisticsScreen(Modifier.padding(padding), viewModel = statisticsViewModel)
+                }
+                composable(Screen.Log.route) {
+                    LogScreen(Modifier.padding(padding), viewModel = logViewModel)
+                }
                 composable(Screen.FilterRules.route) {}
                 composable(Screen.Preferences.route) {
                     PreferencesScreen(

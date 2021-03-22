@@ -17,7 +17,7 @@ class HomeViewModel @Inject constructor(private val piHoleRepository: IPiHoleRep
     ViewModel() {
     private var refreshJob: Job? = null
 
-    var error: Throwable? = null
+    var error: Throwable? by mutableStateOf(null)
         private set
     var isRefreshing by mutableStateOf(false)
         private set

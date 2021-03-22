@@ -73,7 +73,7 @@ fun HomeScreen(
 
     Column(
         modifier
-            .padding(5.dp)
+            .padding(15.dp)
             .fillMaxHeight()
     ) {
         SwipeToRefreshLayout(

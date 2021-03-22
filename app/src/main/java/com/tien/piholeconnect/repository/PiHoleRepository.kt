@@ -2,12 +2,9 @@ package com.tien.piholeconnect.repository
 
 import androidx.datastore.core.DataStore
 import com.tien.piholeconnect.extension.toKtorURLProtocol
-import com.tien.piholeconnect.model.PiHoleOverTimeData
-import com.tien.piholeconnect.model.PiHoleSummary
-import com.tien.piholeconnect.model.UserPreferences
+import com.tien.piholeconnect.model.*
 import io.ktor.client.*
 import io.ktor.client.request.*
-import io.ktor.http.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -20,31 +17,57 @@ class PiHoleRepository constructor(
         it.getPiHoleConnections(it.selectedPiHoleConnectionIndex)
     }
 
-    private val baseUrlFlow: Flow<URLBuilder.(URLBuilder) -> Unit> =
+    private val baseRequestFlow: Flow<HttpRequestBuilder.() -> Unit> =
         currentSelectedPiHoleFlow.map { piHoleConnection ->
             {
-                protocol = piHoleConnection.protocol.toKtorURLProtocol()
-                host = piHoleConnection.host
-                encodedPath = piHoleConnection.apiPath
-                port = piHoleConnection.port
+                url {
+                    protocol = piHoleConnection.protocol.toKtorURLProtocol()
+                    host = piHoleConnection.host
+                    encodedPath = piHoleConnection.apiPath
+                    port = piHoleConnection.port
+                    parameters["auth"] = piHoleConnection.apiToken
+                }
             }
         }
 
     override suspend fun getStatusSummary(): PiHoleSummary =
-        baseUrlFlow.first().let { urlBuilder ->
+        baseRequestFlow.first().let { requestBuilder ->
             httpClient.get {
+                requestBuilder(this)
                 url {
-                    urlBuilder(this)
+                    parameters.append("summaryRaw", true.toString())
                 }
             }
         }
 
     override suspend fun getOverTimeData10Minutes(): PiHoleOverTimeData =
-        baseUrlFlow.first().let { urlBuilder ->
+        baseRequestFlow.first().let { requestBuilder ->
             httpClient.get {
+                requestBuilder(this)
                 url {
-                    urlBuilder(this)
                     parameters.append("overTimeData10mins", true.toString())
+                }
+            }
+        }
+
+    override suspend fun getStatistics(): PiHoleStatistics =
+        baseRequestFlow.first().let { requestBuilder ->
+            httpClient.get {
+                requestBuilder(this)
+                url {
+                    parameters.append("getQueryTypes", true.toString())
+                    parameters.append("topItems", true.toString())
+                    parameters.append("topClients", true.toString())
+                }
+            }
+        }
+
+    override suspend fun getLogs(limit: Int): PiHoleLogs =
+        baseRequestFlow.first().let { requestBuilder ->
+            httpClient.get {
+                requestBuilder(this)
+                url {
+                    parameters.append("getAllQueries", limit.toString())
                 }
             }
         }
