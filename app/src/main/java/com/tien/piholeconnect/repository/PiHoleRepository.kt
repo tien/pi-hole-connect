@@ -91,6 +91,7 @@ class PiHoleRepository constructor(
             httpClient.get {
                 requestBuilder(this)
                 url {
+                    parameters.append("list", ruleType.toString().toLowerCase(Locale.ENGLISH))
                     parameters.append("add", rule)
                 }
             }
@@ -104,6 +105,7 @@ class PiHoleRepository constructor(
             httpClient.get {
                 requestBuilder(this)
                 url {
+                    parameters.append("list", ruleType.toString().toLowerCase(Locale.ENGLISH))
                     parameters.append("sub", rule)
                 }
             }

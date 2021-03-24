@@ -48,7 +48,6 @@ fun Scaffold(
                 )
             }
         },
-        floatingActionButton = { PiHoleSwitchFloatingActionButton(isAdsBlockingEnabled = isAdsBlockingEnabled) },
         modifier = modifier,
         content = content
     )

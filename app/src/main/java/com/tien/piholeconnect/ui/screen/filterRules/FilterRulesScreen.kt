@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.runtime.*
@@ -14,6 +15,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.RuleType
+import com.tien.piholeconnect.ui.component.AddFilterRuleDialog
 import com.tien.piholeconnect.ui.component.SwipeToRefreshLayout
 import kotlinx.coroutines.launch
 import java.text.DateFormat
@@ -28,6 +30,7 @@ fun FilterRulesScreen(
     val whiteListTabRules = rememberSaveable { listOf(RuleType.WHITE, RuleType.REGEX_WHITE) }
     val blackListTabRules = rememberSaveable { listOf(RuleType.BLACK, RuleType.REGEX_BLACK) }
     var isRefreshing by rememberSaveable { mutableStateOf(false) }
+    var isAddDialogVisible by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.viewModelScope.launch {
@@ -35,46 +38,74 @@ fun FilterRulesScreen(
         }
     }
 
-    SwipeToRefreshLayout(
-        refreshingState = isRefreshing,
-        onRefresh = {
-            viewModel.viewModelScope.launch {
-                isRefreshing = true
-                viewModel.refresh()
-                isRefreshing = false
-            }
-        }) {
-        Column(modifier) {
-            TabRow(selectedTabIndex = viewModel.selectedTab.ordinal) {
-                Tab(selected = viewModel.selectedTab == FilterRulesViewModel.Tab.WHITE,
-                    onClick = { viewModel.selectedTab = FilterRulesViewModel.Tab.WHITE },
-                    icon = { Icon(Icons.Default.Block, contentDescription = null) },
-                    text = { Text(stringResource(R.string.filter_rules_black_list)) })
-                Tab(selected = viewModel.selectedTab == FilterRulesViewModel.Tab.BLACK,
-                    onClick = { viewModel.selectedTab = FilterRulesViewModel.Tab.BLACK },
-                    icon = { Icon(Icons.Default.CheckCircleOutline, contentDescription = null) },
-                    text = { Text(stringResource(R.string.filter_rules_white_list)) })
-            }
-            LazyColumn {
-                viewModel.rules.filter {
-                    when (viewModel.selectedTab) {
-                        FilterRulesViewModel.Tab.BLACK -> blackListTabRules.contains(it.type)
-                        FilterRulesViewModel.Tab.WHITE -> whiteListTabRules.contains(it.type)
-                    }
-                }.forEach { rule ->
-                    item(rule.id) {
-                        ListItem(
-                            overlineText = when (rule.type) {
-                                RuleType.REGEX_BLACK, RuleType.REGEX_WHITE -> ({ Text("RegExr") })
-                                else -> null
-                            },
-                            text = { Text(rule.domain) },
-                            secondaryText = rule.comment?.let { { Text(it) } },
-                            trailing = {
-                                Text(
-                                    text = dateTimeInstance.format(rule.dateAdded * 1000L)
-                                )
-                            })
+    if (isAddDialogVisible) {
+        AddFilterRuleDialog(
+            value = viewModel.addRuleInputValue,
+            onValueChange = { viewModel.addRuleInputValue = it },
+            isWildcardChecked = viewModel.addRuleIsWildcardChecked,
+            onIsWildcardCheckedChanged = { viewModel.addRuleIsWildcardChecked = it },
+            onDismissRequest = { isAddDialogVisible = false },
+            onConfirmClick = {
+                isAddDialogVisible = false
+                viewModel.viewModelScope.launch { viewModel.addRule() }
+            },
+            onCancelClick = {
+                isAddDialogVisible = false
+                viewModel.resetAddRuleDialogInputs()
+            })
+    }
+
+    Scaffold(modifier, floatingActionButton = {
+        FloatingActionButton(onClick = { isAddDialogVisible = true }) {
+            Icon(Icons.Default.Add, contentDescription = "Add filter rule")
+        }
+    }) {
+        SwipeToRefreshLayout(
+            refreshingState = isRefreshing,
+            onRefresh = {
+                viewModel.viewModelScope.launch {
+                    isRefreshing = true
+                    viewModel.refresh()
+                    isRefreshing = false
+                }
+            }) {
+            Column {
+                TabRow(selectedTabIndex = viewModel.selectedTab.ordinal) {
+                    Tab(selected = viewModel.selectedTab == FilterRulesViewModel.Tab.WHITE,
+                        onClick = { viewModel.selectedTab = FilterRulesViewModel.Tab.WHITE },
+                        icon = { Icon(Icons.Default.Block, contentDescription = null) },
+                        text = { Text(stringResource(R.string.filter_rules_black_list)) })
+                    Tab(selected = viewModel.selectedTab == FilterRulesViewModel.Tab.BLACK,
+                        onClick = { viewModel.selectedTab = FilterRulesViewModel.Tab.BLACK },
+                        icon = {
+                            Icon(
+                                Icons.Default.CheckCircleOutline,
+                                contentDescription = null
+                            )
+                        },
+                        text = { Text(stringResource(R.string.filter_rules_white_list)) })
+                }
+                LazyColumn {
+                    viewModel.rules.filter {
+                        when (viewModel.selectedTab) {
+                            FilterRulesViewModel.Tab.BLACK -> blackListTabRules.contains(it.type)
+                            FilterRulesViewModel.Tab.WHITE -> whiteListTabRules.contains(it.type)
+                        }
+                    }.forEach { rule ->
+                        item(rule.id) {
+                            ListItem(
+                                overlineText = when (rule.type) {
+                                    RuleType.REGEX_BLACK, RuleType.REGEX_WHITE -> ({ Text("RegExr") })
+                                    else -> null
+                                },
+                                text = { Text(rule.domain) },
+                                secondaryText = rule.comment?.let { { Text(it) } },
+                                trailing = {
+                                    Text(
+                                        text = dateTimeInstance.format(rule.dateAdded * 1000L)
+                                    )
+                                })
+                        }
                     }
                 }
             }

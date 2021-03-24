@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PiHoleStatistics(
     @SerialName("querytypes")
-    val querytypes: Querytypes = Querytypes(),
+    val queryTypes: QueryTypes = QueryTypes(),
     @SerialName("top_queries")
     val topQueries: Map<String, Int> = mapOf(),
     @SerialName("top_ads")
@@ -16,7 +16,7 @@ data class PiHoleStatistics(
     val topSources: Map<String, Int> = mapOf()
 ) {
     @Serializable
-    data class Querytypes(
+    data class QueryTypes(
         @SerialName("A (IPv4)")
         val AIPv4: Double = 0.0,
         @SerialName("AAAA (IPv6)")
