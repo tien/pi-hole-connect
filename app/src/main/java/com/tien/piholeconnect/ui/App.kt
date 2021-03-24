@@ -18,6 +18,8 @@ import androidx.navigation.compose.*
 import com.tien.piholeconnect.extension.currentRouteAsState
 import com.tien.piholeconnect.model.*
 import com.tien.piholeconnect.ui.component.Scaffold
+import com.tien.piholeconnect.ui.screen.filterRules.FilterRulesScreen
+import com.tien.piholeconnect.ui.screen.filterRules.FilterRulesViewModel
 import com.tien.piholeconnect.ui.screen.home.HomeScreen
 import com.tien.piholeconnect.ui.screen.home.HomeViewModel
 import com.tien.piholeconnect.ui.screen.log.LogScreen
@@ -36,7 +38,8 @@ fun App(
     homeViewModel: HomeViewModel = viewModel(),
     preferencesViewModel: PreferencesViewModel = viewModel(),
     statisticsViewModel: StatisticsViewModel = viewModel(),
-    logViewModel: LogViewModel = viewModel()
+    logViewModel: LogViewModel = viewModel(),
+    filterRulesViewModel: FilterRulesViewModel = viewModel()
 ) {
     val preferences by preferencesViewModel.userPreferencesFlow.collectAsState(initial = null)
     if (preferences == null) return
@@ -94,7 +97,9 @@ fun App(
                 composable(Screen.Log.route) {
                     LogScreen(Modifier.padding(padding), viewModel = logViewModel)
                 }
-                composable(Screen.FilterRules.route) {}
+                composable(Screen.FilterRules.route) {
+                    FilterRulesScreen(Modifier.padding(padding), viewModel = filterRulesViewModel)
+                }
                 composable(Screen.Preferences.route) {
                     PreferencesScreen(
                         viewModel = preferencesViewModel,

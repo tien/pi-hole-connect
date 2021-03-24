@@ -8,6 +8,7 @@ import io.ktor.client.request.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import java.util.*
 
 class PiHoleRepository constructor(
     private val httpClient: HttpClient,
@@ -68,6 +69,42 @@ class PiHoleRepository constructor(
                 requestBuilder(this)
                 url {
                     parameters.append("getAllQueries", limit.toString())
+                }
+            }
+        }
+
+    override suspend fun getFilterRules(ruleType: RuleType): PiHoleFilterRules =
+        baseRequestFlow.first().let { requestBuilder ->
+            httpClient.get {
+                requestBuilder(this)
+                url {
+                    parameters.append("list", ruleType.toString().toLowerCase(Locale.ENGLISH))
+                }
+            }
+        }
+
+    override suspend fun addFilterRules(
+        rule: String,
+        ruleType: RuleType
+    ): ModifyFilterRuleResponse =
+        baseRequestFlow.first().let { requestBuilder ->
+            httpClient.get {
+                requestBuilder(this)
+                url {
+                    parameters.append("add", rule)
+                }
+            }
+        }
+
+    override suspend fun removeFilterRules(
+        rule: String,
+        ruleType: RuleType
+    ): ModifyFilterRuleResponse =
+        baseRequestFlow.first().let { requestBuilder ->
+            httpClient.get {
+                requestBuilder(this)
+                url {
+                    parameters.append("sub", rule)
                 }
             }
         }

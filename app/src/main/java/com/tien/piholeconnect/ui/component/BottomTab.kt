@@ -26,8 +26,7 @@ fun BottomTab(
                 selected = it.screen.route == currentRoute,
                 onClick = { onBottomTabItemClick(it) },
                 icon = { Icon(it.icon, contentDescription = label) },
-                label = { Text(label) },
-                alwaysShowLabel = false
+                label = { Text(label) }
             )
         }
     }
@@ -42,8 +41,7 @@ fun BottomTabPreview() {
         BottomTabItem(Screen.Home, Icons.TwoTone.Home),
         BottomTabItem(Screen.Statistics, Icons.TwoTone.Insights),
         BottomTabItem(Screen.Log, Icons.TwoTone.Analytics),
-        BottomTabItem(Screen.FilterRules, Icons.TwoTone.Shield),
-        BottomTabItem(Screen.Preferences, Icons.TwoTone.Settings)
+        BottomTabItem(Screen.FilterRules, Icons.TwoTone.Shield)
     )
 
     BottomTab(

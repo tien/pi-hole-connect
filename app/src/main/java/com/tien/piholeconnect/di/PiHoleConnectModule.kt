@@ -6,12 +6,12 @@ import com.google.mlkit.vision.barcode.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.tien.piholeconnect.data.userPreferencesDataStore
 import com.tien.piholeconnect.model.UserPreferences
 import com.tien.piholeconnect.repository.IPiHoleRepository
 import com.tien.piholeconnect.repository.IUserPreferencesRepository
 import com.tien.piholeconnect.repository.PiHoleRepository
 import com.tien.piholeconnect.repository.UserPreferencesRepository
-import com.tien.piholeconnect.data.userPreferencesDataStore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
