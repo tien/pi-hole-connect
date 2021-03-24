@@ -3,25 +3,17 @@ package com.tien.piholeconnect.ui.screen.home
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tien.piholeconnect.model.RefreshableViewModel
 import com.tien.piholeconnect.repository.IPiHoleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val piHoleRepository: IPiHoleRepository) :
-    ViewModel() {
-    private var refreshJob: Job? = null
-
-    var error: Throwable? by mutableStateOf(null)
-        private set
-    var isRefreshing by mutableStateOf(false)
-        private set
-
+    RefreshableViewModel() {
     var isAdsBlockingEnabled by mutableStateOf(true)
         private set
     var totalQueries by mutableStateOf(0)
@@ -38,34 +30,23 @@ class HomeViewModel @Inject constructor(private val piHoleRepository: IPiHoleRep
     var adsOverTime by mutableStateOf(mapOf<Int, Int>())
         private set
 
-    suspend fun refresh() {
-        refreshJob?.cancel()
-        refreshJob = viewModelScope.launch {
-            runCatching {
-                isRefreshing = true
+    override suspend fun queueRefresh() {
+        joinAll(
+            viewModelScope.launch {
+                val summary = piHoleRepository.getStatusSummary()
 
-                joinAll(
-                    viewModelScope.launch {
-                        val summary = piHoleRepository.getStatusSummary()
+                isAdsBlockingEnabled = summary.status == "enabled"
+                totalQueries = summary.dnsQueriesToday
+                totalBlockedQueries = summary.adsBlockedToday
+                queryBlockingPercentage = summary.adsPercentageToday
+                blockedDomainListCount = summary.domainsBeingBlocked
+            },
+            viewModelScope.launch {
+                val overTimeData = piHoleRepository.getOverTimeData10Minutes()
 
-                        isAdsBlockingEnabled = summary.status == "enabled"
-                        totalQueries = summary.dnsQueriesToday
-                        totalBlockedQueries = summary.adsBlockedToday
-                        queryBlockingPercentage = summary.adsPercentageToday
-                        blockedDomainListCount = summary.domainsBeingBlocked
-                    },
-                    viewModelScope.launch {
-                        val overTimeData = piHoleRepository.getOverTimeData10Minutes()
-
-                        queriesOverTime = overTimeData.domainsOverTime
-                        adsOverTime = overTimeData.adsOverTime
-                    }
-                )
-            }.onFailure {
-                error = it
+                queriesOverTime = overTimeData.domainsOverTime
+                adsOverTime = overTimeData.adsOverTime
             }
-            isRefreshing = false
-        }
-        refreshJob?.join()
+        )
     }
 }

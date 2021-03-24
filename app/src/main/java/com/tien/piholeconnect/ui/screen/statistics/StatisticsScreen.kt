@@ -12,8 +12,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Devices
 import androidx.compose.material.icons.filled.GppBad
 import androidx.compose.material.icons.filled.GppGood
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
@@ -26,13 +26,21 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun StatisticsScreen(modifier: Modifier = Modifier, viewModel: StatisticsViewModel = viewModel()) {
+    var isRefreshing by rememberSaveable { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         viewModel.viewModelScope.launch { viewModel.refresh() }
     }
 
     SwipeToRefreshLayout(
-        refreshingState = viewModel.isRefreshing,
-        onRefresh = { viewModel.viewModelScope.launch { viewModel.refresh() } }) {
+        refreshingState = isRefreshing,
+        onRefresh = {
+            viewModel.viewModelScope.launch {
+                isRefreshing = true
+                viewModel.refresh()
+                isRefreshing = false
+            }
+        }) {
         Column(
             modifier
                 .verticalScroll(rememberScrollState())

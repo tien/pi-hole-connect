@@ -9,8 +9,10 @@ import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.RuleType
 import com.tien.piholeconnect.ui.component.SwipeToRefreshLayout
 import kotlinx.coroutines.launch
@@ -47,11 +49,11 @@ fun FilterRulesScreen(
                 Tab(selected = viewModel.selectedTab == FilterRulesViewModel.Tab.WHITE,
                     onClick = { viewModel.selectedTab = FilterRulesViewModel.Tab.WHITE },
                     icon = { Icon(Icons.Default.Block, contentDescription = null) },
-                    text = { Text("Black list") })
+                    text = { Text(stringResource(R.string.filter_rules_black_list)) })
                 Tab(selected = viewModel.selectedTab == FilterRulesViewModel.Tab.BLACK,
                     onClick = { viewModel.selectedTab = FilterRulesViewModel.Tab.BLACK },
                     icon = { Icon(Icons.Default.CheckCircleOutline, contentDescription = null) },
-                    text = { Text("White list") })
+                    text = { Text(stringResource(R.string.filter_rules_white_list)) })
             }
             LazyColumn {
                 viewModel.rules.filter {
