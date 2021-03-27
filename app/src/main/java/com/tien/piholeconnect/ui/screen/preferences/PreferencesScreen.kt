@@ -42,8 +42,12 @@ fun PreferencesScreen(
 
     if (userPreferences === UserPreferences.getDefaultInstance()) return
 
-    Column(Modifier.padding(horizontal = 20.dp, vertical = 15.dp)) {
-        Text("My Pi-holes", style = MaterialTheme.typography.caption)
+    Column(Modifier.padding(vertical = 15.dp)) {
+        Text(
+            "My Pi-holes",
+            modifier = Modifier.padding(horizontal = 15.dp),
+            style = MaterialTheme.typography.caption
+        )
         userPreferences.piHoleConnectionsList.forEach {
             ListItem(
                 Modifier.clickable { navController.navigate("${Screen.PiHoleConnection.route}?id=${it.id}") },
@@ -55,7 +59,11 @@ fun PreferencesScreen(
             Modifier.clickable { navController.navigate(Screen.PiHoleConnection.route) },
             icon = { Icon(Icons.Default.AddCircleOutline, contentDescription = "Add Pi-hole") },
             text = { Text("Add Pi-hole") })
-        Column(Modifier.selectableGroup()) {
+        Column(
+            Modifier
+                .padding(horizontal = 15.dp)
+                .selectableGroup()
+        ) {
             Text("Theme", style = MaterialTheme.typography.caption)
             Theme.values()
                 .filter { it != Theme.UNRECOGNIZED }
@@ -79,7 +87,7 @@ fun PreferencesScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(
-                            modifier = Modifier.padding(end = 40.dp),
+                            modifier = Modifier.padding(end = 32.dp),
                             selected = theme == userPreferences.theme,
                             onClick = null
                         )
@@ -90,7 +98,10 @@ fun PreferencesScreen(
                     }
                 }
         }
-        Column(Modifier.selectableGroup()) {
+        Column(
+            Modifier
+                .padding(horizontal = 15.dp)
+                .selectableGroup()) {
             Text("Temperature display", style = MaterialTheme.typography.caption)
             TemperatureUnit.values()
                 .filter { it != TemperatureUnit.UNRECOGNIZED }
@@ -114,7 +125,7 @@ fun PreferencesScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(
-                            modifier = Modifier.padding(end = 40.dp),
+                            modifier = Modifier.padding(end = 32.dp),
                             selected = temperatureUnit == userPreferences.temperatureUnit,
                             onClick = null
                         )
