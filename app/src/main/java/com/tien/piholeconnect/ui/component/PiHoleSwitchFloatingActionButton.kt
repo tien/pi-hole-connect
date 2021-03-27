@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 import com.tien.piholeconnect.ui.theme.success
+import java.util.*
 import kotlin.time.Duration
 import kotlin.time.minutes
 import kotlin.time.seconds
@@ -61,13 +62,19 @@ fun DisableAdsBlockingAlertDialog(
             ) {
                 TextButton(onClick = { onDurationButtonClick(Duration.INFINITE) }) {
                     Text(
-                        stringResource(R.string.disable_dialog_button_permanent)
+                        stringResource(R.string.disable_dialog_button_permanent).toUpperCase(Locale.ROOT)
                     )
                 }
                 TextButton(onClick = { onDurationButtonClick(30.seconds) }) { Text("30 SECONDS") }
                 TextButton(onClick = { onDurationButtonClick(1.minutes) }) { Text("1 MINUTES") }
                 TextButton(onClick = { onDurationButtonClick(5.minutes) }) { Text("5 MINUTES") }
-                TextButton(onClick = onDismissRequest) { Text(stringResource(R.string.disable_dialog_button_cancel)) }
+                TextButton(onClick = onDismissRequest) {
+                    Text(
+                        stringResource(R.string.disable_dialog_button_cancel).toUpperCase(
+                            Locale.ROOT
+                        )
+                    )
+                }
             }
         })
 }
@@ -76,8 +83,24 @@ fun DisableAdsBlockingAlertDialog(
 fun EnableAdsBlockingAlertDialog(onConfirmRequest: () -> Unit, onDismissRequest: () -> Unit) {
     AlertDialog(
         text = { Text(stringResource(R.string.enable_dialog_title)) },
-        confirmButton = { TextButton(onClick = onConfirmRequest) { Text(stringResource(R.string.enable_dialog_button_confirm)) } },
-        dismissButton = { TextButton(onClick = onDismissRequest) { Text(stringResource(R.string.enable_dialog_button_dismiss)) } },
+        confirmButton = {
+            TextButton(onClick = onConfirmRequest) {
+                Text(
+                    stringResource(R.string.enable_dialog_button_confirm).toUpperCase(
+                        Locale.ROOT
+                    )
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(
+                    stringResource(R.string.enable_dialog_button_dismiss).toUpperCase(
+                        Locale.ROOT
+                    )
+                )
+            }
+        },
         onDismissRequest = onDismissRequest,
     )
 }
