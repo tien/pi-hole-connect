@@ -8,11 +8,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
 
 private val DarkColorPalette = darkColors(
-    primary = Red700,
+    primary = Red700Light,
     primaryVariant = Red700Dark,
     onPrimary = Color.White,
     secondary = Green400,
-    secondaryVariant = Green400Dark,
+    secondaryVariant = Green400,
     onSecondary = Color.White,
     onError = Color.White
 )
@@ -21,7 +21,7 @@ private val LightColorPalette = lightColors(
     primary = Red700,
     primaryVariant = Red700Dark,
     onPrimary = Color.White,
-    secondary = Green400,
+    secondary = Green400Dark,
     secondaryVariant = Green400Dark,
     onSecondary = Color.White,
     onError = Color.White
@@ -30,17 +30,17 @@ private val LightColorPalette = lightColors(
 @get:Composable
 @get:ReadOnlyComposable
 val Colors.info: Color
-    get() = if (isLight) Blue500 else Blue500Dark
+    get() = if (isLight) Blue500Dark else Blue500
 
 @get:Composable
 @get:ReadOnlyComposable
 val Colors.success: Color
-    get() = if (isLight) Green400 else Green400Dark
+    get() = if (isLight) Green400Dark else Green400
 
 @get:Composable
 @get:ReadOnlyComposable
 val Colors.warning: Color
-    get() = if (isLight) Amber500 else Amber500Dark
+    get() = if (isLight) Amber500Dark else Amber500
 
 @Composable
 @ReadOnlyComposable

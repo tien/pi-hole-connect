@@ -82,7 +82,6 @@ fun App(
                 }
             },
             onOptionsMenuItemClick = { navController.navigate(it.key) },
-            isAdsBlockingEnabled = homeViewModel.isAdsBlockingEnabled,
         ) { padding ->
             NavHost(navController = navController, startDestination = Screen.Home.route) {
                 composable(Screen.Home.route) {

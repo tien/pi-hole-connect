@@ -10,10 +10,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val piHoleRepository: IPiHoleRepository) :
     RefreshableViewModel() {
+    var isPiHoleSwitchLoading by mutableStateOf(false)
+        private set
     var isAdsBlockingEnabled by mutableStateOf(true)
         private set
     var totalQueries by mutableStateOf(0)
@@ -48,5 +51,23 @@ class HomeViewModel @Inject constructor(private val piHoleRepository: IPiHoleRep
                 adsOverTime = overTimeData.adsOverTime
             }
         )
+    }
+
+    suspend fun disable(duration: Duration) {
+        runCatching {
+            isPiHoleSwitchLoading = true
+            piHoleRepository.disable(duration)
+            refresh()
+        }.onFailure { error = it }
+        isPiHoleSwitchLoading = false
+    }
+
+    suspend fun enable() {
+        runCatching {
+            isPiHoleSwitchLoading = true
+            piHoleRepository.enable()
+            refresh()
+        }.onFailure { error = it }
+        isPiHoleSwitchLoading = false
     }
 }

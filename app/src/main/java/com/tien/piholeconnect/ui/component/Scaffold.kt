@@ -26,7 +26,6 @@ fun Scaffold(
     onBackButtonClick: () -> Unit,
     onBottomTabItemClick: (BottomTabItem) -> Unit,
     onOptionsMenuItemClick: (TopBarOptionsMenuItem) -> Unit,
-    isAdsBlockingEnabled: Boolean,
     content: @Composable (PaddingValues) -> Unit
 ) {
     androidx.compose.material.Scaffold(
@@ -74,7 +73,6 @@ fun ScaffoldPreview(content: @Composable (PaddingValues) -> Unit = {}) {
             currentRoute = Screen.Home.route,
             onBottomTabItemClick = {},
             onOptionsMenuItemClick = {},
-            isAdsBlockingEnabled = true,
             content = content,
             onBackButtonClick = {}
         )

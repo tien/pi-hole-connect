@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.util.*
+import kotlin.time.Duration
 
 class PiHoleRepository constructor(
     private val httpClient: HttpClient,
@@ -107,6 +108,27 @@ class PiHoleRepository constructor(
                 url {
                     parameters.append("list", ruleType.toString().toLowerCase(Locale.ENGLISH))
                     parameters.append("sub", rule)
+                }
+            }
+        }
+
+    override suspend fun disable(duration: Duration): Unit =
+        baseRequestFlow.first().let { requestBuilder ->
+            httpClient.get {
+                requestBuilder(this)
+                url {
+                    parameters["disable"] =
+                        if (duration == Duration.INFINITE) 0.toString() else duration.inSeconds.toString()
+                }
+            }
+        }
+
+    override suspend fun enable(): Unit =
+        baseRequestFlow.first().let { requestBuilder ->
+            httpClient.get {
+                requestBuilder(this)
+                url {
+                    parameters["enable"] = true.toString()
                 }
             }
         }

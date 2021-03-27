@@ -1,5 +1,6 @@
 package com.tien.piholeconnect.ui.component
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -7,71 +8,132 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.GppBad
 import androidx.compose.material.icons.filled.GppGood
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
+import com.tien.piholeconnect.ui.theme.success
+import kotlin.time.Duration
+import kotlin.time.minutes
+import kotlin.time.seconds
 
 @Composable
-fun PiHoleSwitchFloatingActionButton(isAdsBlockingEnabled: Boolean) {
-    var isDisableAlertVisible: Boolean by remember { mutableStateOf(false) }
-
-    if (isDisableAlertVisible) {
-        DisableAdsBlockingAlertDialog(onDismiss = { isDisableAlertVisible = false })
-    }
-
+fun PiHoleSwitchFloatingActionButton(
+    isAdsBlockingEnabled: Boolean,
+    isLoading: Boolean,
+    onClick: () -> Unit
+) {
     FloatingActionButton(
-        backgroundColor = if (isAdsBlockingEnabled) MaterialTheme.colors.secondaryVariant else MaterialTheme.colors.primaryVariant,
-        onClick = { isDisableAlertVisible = true }) {
-        Icon(
-            imageVector = if (isAdsBlockingEnabled) Icons.Default.GppGood else Icons.Default.GppBad,
-            contentDescription = stringResource(if (isAdsBlockingEnabled) R.string.label_disable_blocking else R.string.label_enable_blocking)
-        )
+        backgroundColor = if (isAdsBlockingEnabled) MaterialTheme.colors.success else MaterialTheme.colors.error,
+        onClick = onClick
+    ) {
+        if (isLoading) {
+            CircularProgressIndicator(color = LocalContentColor.current)
+        } else {
+            Icon(
+                imageVector = if (isAdsBlockingEnabled) Icons.Default.GppGood else Icons.Default.GppBad,
+                contentDescription = stringResource(if (isAdsBlockingEnabled) R.string.label_disable_blocking else R.string.label_enable_blocking)
+            )
+        }
     }
 }
 
 @Composable
-fun DisableAdsBlockingAlertDialog(onDismiss: () -> Unit) {
+fun DisableAdsBlockingAlertDialog(
+    onDismissRequest: () -> Unit,
+    onDurationButtonClick: (Duration) -> Unit
+) {
     AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Disable ads blocking") },
-        text = { Text("This will disable Pi-Hole ads blocking for the selected period") },
+        onDismissRequest = onDismissRequest,
+        title = { Text(stringResource(R.string.disable_dialog_title)) },
+        text = { Text(stringResource(R.string.disable_dialog_msg)) },
         buttons = {
-            Column(Modifier.padding(8.dp)) {
-                val buttonModifier = Modifier
+            Column(
+                Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 5.dp)
-
-                Button(onClick = { }, buttonModifier) { Text("Permanently") }
-                Button(onClick = { }, buttonModifier) { Text("30 seconds") }
-                Button(onClick = { }, buttonModifier) { Text("1 minutes") }
-                Button(onClick = { }, buttonModifier) { Text("5 minutes") }
-                Button(onClick = { }, buttonModifier) { Text("Custom time") }
+                    .padding(8.dp),
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                TextButton(onClick = { onDurationButtonClick(Duration.INFINITE) }) {
+                    Text(
+                        stringResource(R.string.disable_dialog_button_permanent)
+                    )
+                }
+                TextButton(onClick = { onDurationButtonClick(30.seconds) }) { Text("30 SECONDS") }
+                TextButton(onClick = { onDurationButtonClick(1.minutes) }) { Text("1 MINUTES") }
+                TextButton(onClick = { onDurationButtonClick(5.minutes) }) { Text("5 MINUTES") }
+                TextButton(onClick = onDismissRequest) { Text(stringResource(R.string.disable_dialog_button_cancel)) }
             }
         })
+}
+
+@Composable
+fun EnableAdsBlockingAlertDialog(onConfirmRequest: () -> Unit, onDismissRequest: () -> Unit) {
+    AlertDialog(
+        text = { Text(stringResource(R.string.enable_dialog_title)) },
+        confirmButton = { TextButton(onClick = onConfirmRequest) { Text(stringResource(R.string.enable_dialog_button_confirm)) } },
+        dismissButton = { TextButton(onClick = onDismissRequest) { Text(stringResource(R.string.enable_dialog_button_dismiss)) } },
+        onDismissRequest = onDismissRequest,
+    )
+}
+
+@Preview
+@Composable
+fun EnableAdsBlockingAlertDialogPreview() {
+    EnableAdsBlockingAlertDialog(onConfirmRequest = {}, onDismissRequest = {})
 }
 
 @Preview
 @Composable
 fun DisableAdsBlockingAlertDialogPreview() {
-    DisableAdsBlockingAlertDialog(onDismiss = {})
+    DisableAdsBlockingAlertDialog(onDismissRequest = {}, onDurationButtonClick = {})
 }
 
 @Preview
 @Composable
-fun PiHoleSwitchFloatingActionButtonDisabledPreview() {
+fun PiHoleSwitchFloatingActionButtonDisablePreview() {
     PiHoleConnectTheme {
-        PiHoleSwitchFloatingActionButton(isAdsBlockingEnabled = false)
+        PiHoleSwitchFloatingActionButton(
+            isAdsBlockingEnabled = false,
+            isLoading = false,
+            onClick = {})
     }
 }
 
 @Preview
 @Composable
-fun PiHoleSwitchFloatingActionButtonEnabledPreview() {
+fun PiHoleSwitchFloatingActionButtonEnablePreview() {
     PiHoleConnectTheme {
-        PiHoleSwitchFloatingActionButton(isAdsBlockingEnabled = true)
+        PiHoleSwitchFloatingActionButton(
+            isAdsBlockingEnabled = true,
+            isLoading = false,
+            onClick = {})
+    }
+}
+
+@Preview
+@Composable
+fun PiHoleSwitchFloatingActionButtonEnableLoadingPreview() {
+    PiHoleConnectTheme {
+        PiHoleSwitchFloatingActionButton(
+            isAdsBlockingEnabled = true,
+            isLoading = true,
+            onClick = {})
+    }
+}
+
+@Preview
+@Composable
+fun PiHoleSwitchFloatingActionButtonDisableLoadingPreview() {
+    PiHoleConnectTheme {
+        PiHoleSwitchFloatingActionButton(
+            isAdsBlockingEnabled = true,
+            isLoading = true,
+            onClick = {})
     }
 }

@@ -7,6 +7,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
@@ -30,7 +31,8 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel()
 ) {
-    var isRefreshing by remember { mutableStateOf(false) }
+    var isRefreshing by rememberSaveable { mutableStateOf(false) }
+    var isDisableDialogVisible by rememberSaveable { mutableStateOf(false) }
 
     val totalQueries: Int by animateIntAsState(viewModel.totalQueries)
     val totalBlockedQueries: Int by animateIntAsState(viewModel.totalBlockedQueries)
@@ -71,117 +73,145 @@ fun HomeScreen(
         }
     }
 
-    Column(
-        modifier
-            .padding(15.dp)
-            .fillMaxHeight()
-    ) {
-        SwipeToRefreshLayout(
-            refreshingState = isRefreshing,
-            onRefresh = {
-                viewModel.viewModelScope.launch {
-                    isRefreshing = true
-                    viewModel.refresh()
-                    isRefreshing = false
-                }
-            }) {
-            Column {
-                Row {
-                    StatsCard(
-                        name = "Total Queries",
-                        statistics = "%,d".format(totalQueries),
-                        backGroundColor = MaterialTheme.colors.success,
-                        modifier = Modifier
-                            .padding(end = 2.5.dp)
-                            .weight(1f)
-                    )
-                    StatsCard(
-                        name = "Queries Blocked",
-                        statistics = "%,d".format(totalBlockedQueries),
-                        backGroundColor = MaterialTheme.colors.info,
-                        modifier = Modifier
-                            .padding(start = 2.5.dp)
-                            .weight(1f)
-                    )
-                }
-                Row(Modifier.padding(top = 5.dp)) {
-                    StatsCard(
-                        name = "Percent Blocked",
-                        statistics = "%.2f%%".format(queryBlockingPercentage),
-                        backGroundColor = MaterialTheme.colors.warning,
-                        modifier = Modifier
-                            .padding(end = 2.5.dp)
-                            .weight(1f)
-                    )
-                    StatsCard(
-                        name = "Blocklist",
-                        statistics = "%,d".format(blockedDomainListCount),
-                        backGroundColor = MaterialTheme.colors.error,
-                        modifier = Modifier
-                            .padding(start = 2.5.dp)
-                            .weight(1f)
-                    )
+    if (isDisableDialogVisible) {
+        if (viewModel.isAdsBlockingEnabled) {
+            DisableAdsBlockingAlertDialog(
+                onDismissRequest = { isDisableDialogVisible = false },
+                onDurationButtonClick = {
+                    viewModel.viewModelScope.launch {
+                        isDisableDialogVisible = false
+                        viewModel.disable(it)
+                    }
+                })
+        } else {
+            EnableAdsBlockingAlertDialog(
+                onDismissRequest = { isDisableDialogVisible = false },
+                onConfirmRequest = {
+                    viewModel.viewModelScope.launch {
+                        isDisableDialogVisible = false
+                        viewModel.enable()
+                    }
+                })
+        }
+    }
+
+    androidx.compose.material.Scaffold(
+        modifier.fillMaxHeight(),
+        floatingActionButton = {
+            PiHoleSwitchFloatingActionButton(
+                isAdsBlockingEnabled = viewModel.isAdsBlockingEnabled,
+                isLoading = viewModel.isPiHoleSwitchLoading,
+                onClick = { isDisableDialogVisible = true }
+            )
+        }) {
+        Column(Modifier.padding(start = 15.dp, top = 15.dp, end = 15.dp)) {
+            SwipeToRefreshLayout(
+                refreshingState = isRefreshing,
+                onRefresh = {
+                    viewModel.viewModelScope.launch {
+                        isRefreshing = true
+                        viewModel.refresh()
+                        isRefreshing = false
+                    }
+                }) {
+                Column {
+                    Row {
+                        StatsCard(
+                            name = "Total Queries",
+                            statistics = "%,d".format(totalQueries),
+                            backGroundColor = MaterialTheme.colors.success,
+                            modifier = Modifier
+                                .padding(end = 2.5.dp)
+                                .weight(1f)
+                        )
+                        StatsCard(
+                            name = "Queries Blocked",
+                            statistics = "%,d".format(totalBlockedQueries),
+                            backGroundColor = MaterialTheme.colors.info,
+                            modifier = Modifier
+                                .padding(start = 2.5.dp)
+                                .weight(1f)
+                        )
+                    }
+                    Row(Modifier.padding(top = 5.dp)) {
+                        StatsCard(
+                            name = "Percent Blocked",
+                            statistics = "%.2f%%".format(queryBlockingPercentage),
+                            backGroundColor = MaterialTheme.colors.warning,
+                            modifier = Modifier
+                                .padding(end = 2.5.dp)
+                                .weight(1f)
+                        )
+                        StatsCard(
+                            name = "Blocklist",
+                            statistics = "%,d".format(blockedDomainListCount),
+                            backGroundColor = MaterialTheme.colors.error,
+                            modifier = Modifier
+                                .padding(start = 2.5.dp)
+                                .weight(1f)
+                        )
+                    }
                 }
             }
-        }
-        Card(
-            Modifier
-                .padding(vertical = 15.dp)
-                .weight(1f)
-                .fillMaxWidth()
-                .padding(bottom = 80.dp)
-        ) {
-            var value: Iterable<SelectedValue> by remember { mutableStateOf(listOf()) }
-            val permittedQueriesCount =
-                value.firstOrNull { it.label == queriesOverTimeData.label }?.value?.second?.toInt()
-            val blockedQueriesCount =
-                value.firstOrNull { it.label == adsOverTimeData.label }?.value?.second?.toInt()
-            val dateFormat = remember { getTimeInstance() }
-            val startTime = value.firstOrNull { it.value != null }?.value?.first
-            val endTime = startTime?.let { it + 600_000 }
-            val formattedStartTime = startTime?.let { dateFormat.format(it) }
-            val formattedEndTime = endTime?.let { dateFormat.format(endTime) }
+            Card(
+                Modifier
+                    .padding(vertical = 15.dp)
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(bottom = 80.dp)
+            ) {
+                var value: Iterable<SelectedValue> by remember { mutableStateOf(listOf()) }
+                val permittedQueriesCount =
+                    value.firstOrNull { it.label == queriesOverTimeData.label }?.value?.second?.toInt()
+                val blockedQueriesCount =
+                    value.firstOrNull { it.label == adsOverTimeData.label }?.value?.second?.toInt()
+                val dateFormat = remember { getTimeInstance() }
+                val startTime = value.firstOrNull { it.value != null }?.value?.first
+                val endTime = startTime?.let { it + 600_000 }
+                val formattedStartTime = startTime?.let { dateFormat.format(it) }
+                val formattedEndTime = endTime?.let { dateFormat.format(endTime) }
 
-            Column {
-                Column(Modifier.padding(15.dp)) {
-                    Text(
-                        stringResource(R.string.home_queries_chart_title),
-                        style = MaterialTheme.typography.h6
-                    )
-                    Column(Modifier.alpha(if (permittedQueriesCount != null && blockedQueriesCount != null) 1f else 0f)) {
+                Column {
+                    Column(Modifier.padding(15.dp)) {
                         Text(
-                            "${stringResource(R.string.home_queries_chart_time_info_1)} $formattedStartTime ${
-                                stringResource(
-                                    R.string.home_queries_chart_time_info_2
-                                )
-                            } $formattedEndTime", style = MaterialTheme.typography.caption
+                            stringResource(R.string.home_queries_chart_title),
+                            style = MaterialTheme.typography.h6
                         )
-                        Text(
-                            "%s: %d".format(
-                                stringResource(R.string.home_queries_chart_permitted_queries_label),
-                                permittedQueriesCount
-                            ), style = MaterialTheme.typography.caption
-                        )
-                        Text(
-                            "%s: %d".format(
-                                stringResource(R.string.home_queries_chart_blocked_queries_label),
-                                blockedQueriesCount
-                            ), style = MaterialTheme.typography.caption
-                        )
+                        Column(Modifier.alpha(if (permittedQueriesCount != null && blockedQueriesCount != null) 1f else 0f)) {
+                            Text(
+                                "${stringResource(R.string.home_queries_chart_time_info_1)} $formattedStartTime ${
+                                    stringResource(
+                                        R.string.home_queries_chart_time_info_2
+                                    )
+                                } $formattedEndTime", style = MaterialTheme.typography.caption
+                            )
+                            Text(
+                                "%s: %d".format(
+                                    stringResource(R.string.home_queries_chart_permitted_queries_label),
+                                    permittedQueriesCount
+                                ), style = MaterialTheme.typography.caption
+                            )
+                            Text(
+                                "%s: %d".format(
+                                    stringResource(R.string.home_queries_chart_blocked_queries_label),
+                                    blockedQueriesCount
+                                ), style = MaterialTheme.typography.caption
+                            )
+                        }
                     }
-                }
-                LineChart(
-                    lineData = listOf(queriesOverTimeData, adsOverTimeData),
-                    onValueSelected = { value = it },
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    xAxis.labelCount = 5
-                    xAxis.valueFormatter = object : ValueFormatter() {
-                        override fun getFormattedValue(value: Float): String =
-                            dateFormat.format(value)
+                    LineChart(
+                        lineData = listOf(queriesOverTimeData, adsOverTimeData),
+                        onValueSelected = { value = it },
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        xAxis.labelCount = 5
+                        xAxis.valueFormatter = object : ValueFormatter() {
+                            override fun getFormattedValue(value: Float): String =
+                                dateFormat.format(value)
+                        }
+                        axisLeft.axisMinimum = 0f
+                        axisRight.axisMinimum = 0f
                     }
-                    axisLeft.axisMinimum = 0f
-                    axisRight.axisMinimum = 0f
                 }
             }
         }
