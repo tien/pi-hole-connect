@@ -9,8 +9,8 @@ interface IPiHoleRepository {
     suspend fun getStatistics(): PiHoleStatistics
     suspend fun getLogs(limit: Int): PiHoleLogs
     suspend fun getFilterRules(ruleType: RuleType): PiHoleFilterRules
-    suspend fun addFilterRules(rule: String, ruleType: RuleType): ModifyFilterRuleResponse
-    suspend fun removeFilterRules(rule: String, ruleType: RuleType): ModifyFilterRuleResponse
+    suspend fun addFilterRule(rule: String, ruleType: RuleType): ModifyFilterRuleResponse
+    suspend fun removeFilterRule(rule: String, ruleType: RuleType): ModifyFilterRuleResponse
     suspend fun disable(duration: Duration)
     suspend fun enable()
 }

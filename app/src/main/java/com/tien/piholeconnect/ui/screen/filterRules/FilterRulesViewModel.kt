@@ -14,14 +14,11 @@ import javax.inject.Inject
 @HiltViewModel
 class FilterRulesViewModel @Inject constructor(private val piHoleRepository: IPiHoleRepository) :
     RefreshableViewModel() {
-    enum class Tab {
-        WHITE,
-        BLACK
-    }
+    enum class Tab { BLACK, WHITE }
 
     var rules: Iterable<PiHoleFilterRule> by mutableStateOf(listOf())
         private set
-    var selectedTab by mutableStateOf(Tab.WHITE)
+    var selectedTab by mutableStateOf(Tab.BLACK)
 
     var addRuleInputValue by mutableStateOf("")
     var addRuleIsWildcardChecked by mutableStateOf(false)
@@ -38,13 +35,17 @@ class FilterRulesViewModel @Inject constructor(private val piHoleRepository: IPi
             Tab.WHITE -> if (addRuleIsWildcardChecked) RuleType.REGEX_WHITE else RuleType.WHITE
             Tab.BLACK -> if (addRuleIsWildcardChecked) RuleType.REGEX_BLACK else RuleType.BLACK
         }
-
         val trimmedDomain = addRuleInputValue.trim()
         val parsedDomain =
             if (addRuleIsWildcardChecked) "$WILDCARD_REGEX_PREFIX$trimmedDomain$WILDCARD_REGEX_SUFFIX" else trimmedDomain
 
-        piHoleRepository.addFilterRules(parsedDomain, ruleType = ruleType)
+        piHoleRepository.addFilterRule(parsedDomain, ruleType = ruleType)
         resetAddRuleDialogInputs()
+        refresh()
+    }
+
+    suspend fun removeRule(rule: String, ruleType: RuleType) {
+        piHoleRepository.removeFilterRule(rule, ruleType = ruleType)
         refresh()
     }
 

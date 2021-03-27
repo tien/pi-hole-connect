@@ -5,8 +5,8 @@ import com.tien.piholeconnect.util.EnumIntSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-val WILDCARD_REGEX_PREFIX = "(\\.|^)"
-val WILDCARD_REGEX_SUFFIX = "$"
+const val WILDCARD_REGEX_PREFIX = "(\\.|^)"
+const val WILDCARD_REGEX_SUFFIX = "$"
 
 @Serializable(RuleType.Companion.Serializer::class)
 enum class RuleType {
@@ -51,5 +51,5 @@ data class ModifyFilterRuleResponse(
     @SerialName("success")
     val success: Boolean = false,
     @SerialName("message")
-    val message: String = ""
+    val message: String? = null
 )

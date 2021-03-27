@@ -84,7 +84,7 @@ class PiHoleRepository constructor(
             }
         }
 
-    override suspend fun addFilterRules(
+    override suspend fun addFilterRule(
         rule: String,
         ruleType: RuleType
     ): ModifyFilterRuleResponse =
@@ -98,7 +98,7 @@ class PiHoleRepository constructor(
             }
         }
 
-    override suspend fun removeFilterRules(
+    override suspend fun removeFilterRule(
         rule: String,
         ruleType: RuleType
     ): ModifyFilterRuleResponse =
