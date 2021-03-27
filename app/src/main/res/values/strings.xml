@@ -30,9 +30,9 @@
     <string name="filter_rules_white_list">White list</string>
     <string name="disable_dialog_title">Disable ads blocking?</string>
     <string name="disable_dialog_msg">This will disable Pi-hole ads blocking for the selected period. You can always re-enable ads blocking within the app.</string>
-    <string name="disable_dialog_button_permanent">PERMANENTLY</string>
-    <string name="disable_dialog_button_cancel">NO THANKS</string>
+    <string name="disable_dialog_button_permanent">Permanently</string>
+    <string name="disable_dialog_button_cancel">No thanks</string>
     <string name="enable_dialog_title">Enable ads blocking?</string>
-    <string name="enable_dialog_button_confirm">ENABLE</string>
-    <string name="enable_dialog_button_dismiss">CANCEL</string>
+    <string name="enable_dialog_button_confirm">Enable</string>
+    <string name="enable_dialog_button_dismiss">@android:string/cancel</string>
 </resources>

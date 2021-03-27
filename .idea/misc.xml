@@ -87,11 +87,15 @@
         <entry key="../../../../layout/compose-model-1616811240193.xml" value="1.0" />
         <entry key="../../../../layout/compose-model-1616813681982.xml" value="0.1" />
         <entry key="../../../../layout/compose-model-1616818606869.xml" value="0.4805414551607445" />
+        <entry key="../../../../layout/compose-model-1616838673102.xml" value="0.1" />
         <entry key="../../../../layout/custom_preview.xml" value="0.31197916666666664" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2546875" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.2546875" />
+        <entry key="app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.14814814814814814" />
         <entry key="app/src/main/res/layout/fragment_scanner.xml" value="0.15579710144927536" />
         <entry key="app/src/main/res/layout/viewfinder.xml" value="0.305352798053528" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.2546875" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.2546875" />
       </map>
     </option>
   </component>
