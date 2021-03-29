@@ -62,7 +62,7 @@ fun App(
 
     val currentRoute by navController.currentRouteAsState()
     val title = currentRoute?.let { stringResource(screenForRoute(it).labelResourceId) }
-        ?: "Pi Hole Connect"
+        ?: "Pi-hole Connect"
 
     PiHoleConnectTheme(
         darkTheme = when (preferences!!.theme) {
