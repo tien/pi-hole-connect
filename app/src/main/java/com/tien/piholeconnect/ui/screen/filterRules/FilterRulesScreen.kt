@@ -21,11 +21,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tien.piholeconnect.R
+import com.tien.piholeconnect.extension.showGenericPiHoleConnectionError
 import com.tien.piholeconnect.model.RuleType
 import com.tien.piholeconnect.ui.component.AddFilterRuleDialog
 import com.tien.piholeconnect.ui.component.SwipeToRefreshLayout
@@ -39,6 +41,9 @@ fun FilterRulesScreen(
     modifier: Modifier = Modifier,
     viewModel: FilterRulesViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+    val scaffoldState = rememberScaffoldState()
+
     val dateTimeInstance = remember { DateFormat.getDateInstance() }
     val whiteListTabRules = rememberSaveable { listOf(RuleType.WHITE, RuleType.REGEX_WHITE) }
     val blackListTabRules = rememberSaveable { listOf(RuleType.BLACK, RuleType.REGEX_BLACK) }
@@ -47,7 +52,12 @@ fun FilterRulesScreen(
 
     LaunchedEffect(Unit) {
         viewModel.viewModelScope.launch {
-            viewModel.refresh()
+            viewModel.apply {
+                refresh()
+                error?.let {
+                    scaffoldState.snackbarHostState.showGenericPiHoleConnectionError(context)
+                }
+            }
         }
     }
 
@@ -68,7 +78,7 @@ fun FilterRulesScreen(
             })
     }
 
-    Scaffold(modifier, floatingActionButton = {
+    Scaffold(modifier, scaffoldState = scaffoldState, floatingActionButton = {
         FloatingActionButton(onClick = { isAddDialogVisible = true }) {
             Icon(Icons.Default.Add, contentDescription = "Add filter rule")
         }
@@ -78,7 +88,12 @@ fun FilterRulesScreen(
             onRefresh = {
                 viewModel.viewModelScope.launch {
                     isRefreshing = true
-                    viewModel.refresh()
+                    viewModel.apply {
+                        refresh()
+                        error?.let {
+                            scaffoldState.snackbarHostState.showGenericPiHoleConnectionError(context)
+                        }
+                    }
                     isRefreshing = false
                 }
             }) {

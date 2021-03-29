@@ -2,11 +2,13 @@ package com.tien.piholeconnect.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Analytics
 import androidx.compose.material.icons.twotone.Home
 import androidx.compose.material.icons.twotone.Insights
 import androidx.compose.material.icons.twotone.Shield
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -17,7 +19,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.*
 import com.tien.piholeconnect.extension.currentRouteAsState
 import com.tien.piholeconnect.model.*
-import com.tien.piholeconnect.ui.component.Scaffold
+import com.tien.piholeconnect.ui.component.BottomTab
+import com.tien.piholeconnect.ui.component.TopBar
 import com.tien.piholeconnect.ui.screen.filterRules.FilterRulesScreen
 import com.tien.piholeconnect.ui.screen.filterRules.FilterRulesViewModel
 import com.tien.piholeconnect.ui.screen.home.HomeScreen
@@ -44,6 +47,7 @@ fun App(
     val preferences by preferencesViewModel.userPreferencesFlow.collectAsState(initial = null)
     if (preferences == null) return
 
+    val scaffoldState = rememberScaffoldState()
     val navController = rememberNavController()
 
     val optionsMenuItems =
@@ -68,20 +72,30 @@ fun App(
         }
     ) {
         Scaffold(
-            optionsMenuItems = optionsMenuItems,
-            bottomTabItems = tabItems,
-            title = title,
-            currentRoute = currentRoute ?: Screen.Home.route,
-            isBottomTabEnabled = currentRoute != Screen.Preferences.route && currentRoute != Screen.PiHoleConnection.route,
-            isBackButtonEnabled = currentRoute == Screen.Preferences.route || currentRoute == Screen.PiHoleConnection.route,
-            onBackButtonClick = { navController.navigateUp() },
-            onBottomTabItemClick = {
-                navController.navigate(it.screen.route) {
-                    popUpTo = navController.graph.startDestination
-                    launchSingleTop = true
-                }
+            scaffoldState = scaffoldState,
+            topBar = {
+                TopBar(
+                    title = title,
+                    optionsMenuItems = optionsMenuItems,
+                    onOptionsMenuItemClick = { navController.navigate(it.key) },
+                    isBackButtonEnabled = currentRoute == Screen.Preferences.route || currentRoute == Screen.PiHoleConnection.route,
+                    onBackButtonClick = { navController.navigateUp() }
+                )
             },
-            onOptionsMenuItemClick = { navController.navigate(it.key) },
+            bottomBar = {
+                if (currentRoute != Screen.Preferences.route && currentRoute != Screen.PiHoleConnection.route) {
+                    BottomTab(
+                        items = tabItems,
+                        currentRoute = currentRoute ?: Screen.Home.route,
+                        onBottomTabItemClick = {
+                            navController.navigate(it.screen.route) {
+                                popUpTo = navController.graph.startDestination
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
+            }
         ) { padding ->
             NavHost(navController = navController, startDestination = Screen.Home.route) {
                 composable(Screen.Home.route) {
@@ -91,10 +105,18 @@ fun App(
                     )
                 }
                 composable(Screen.Statistics.route) {
-                    StatisticsScreen(Modifier.padding(padding), viewModel = statisticsViewModel)
+                    StatisticsScreen(
+                        Modifier.padding(padding),
+                        viewModel = statisticsViewModel,
+                        scaffoldState = scaffoldState
+                    )
                 }
                 composable(Screen.Log.route) {
-                    LogScreen(Modifier.padding(padding), viewModel = logViewModel)
+                    LogScreen(
+                        Modifier.padding(padding),
+                        viewModel = logViewModel,
+                        scaffoldState = scaffoldState
+                    )
                 }
                 composable(Screen.FilterRules.route) {
                     FilterRulesScreen(Modifier.padding(padding), viewModel = filterRulesViewModel)

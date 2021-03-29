@@ -3,20 +3,19 @@ package com.tien.piholeconnect.ui.screen.home
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.tien.piholeconnect.R
+import com.tien.piholeconnect.extension.showGenericPiHoleConnectionError
 import com.tien.piholeconnect.ui.component.*
 import com.tien.piholeconnect.ui.theme.info
 import com.tien.piholeconnect.ui.theme.success
@@ -31,6 +30,9 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+    val scaffoldState = rememberScaffoldState()
+
     var isRefreshing by rememberSaveable { mutableStateOf(false) }
     var isDisableDialogVisible by rememberSaveable { mutableStateOf(false) }
 
@@ -64,7 +66,7 @@ fun HomeScreen(
         val job = viewModel.viewModelScope.launch {
             while (true) {
                 viewModel.refresh()
-                delay(5000)
+                delay(10_000)
             }
         }
 
@@ -95,8 +97,9 @@ fun HomeScreen(
         }
     }
 
-    androidx.compose.material.Scaffold(
+    Scaffold(
         modifier.fillMaxHeight(),
+        scaffoldState = scaffoldState,
         floatingActionButton = {
             PiHoleSwitchFloatingActionButton(
                 isAdsBlockingEnabled = viewModel.isAdsBlockingEnabled,
@@ -110,7 +113,14 @@ fun HomeScreen(
                 onRefresh = {
                     viewModel.viewModelScope.launch {
                         isRefreshing = true
-                        viewModel.refresh()
+                        viewModel.apply {
+                            refresh()
+                            error?.let {
+                                scaffoldState.snackbarHostState.showGenericPiHoleConnectionError(
+                                    context
+                                )
+                            }
+                        }
                         isRefreshing = false
                     }
                 }) {
@@ -215,14 +225,5 @@ fun HomeScreen(
                 }
             }
         }
-    }
-}
-
-@Suppress("UNREACHABLE_CODE")
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    ScaffoldPreview {
-        HomeScreen()
     }
 }

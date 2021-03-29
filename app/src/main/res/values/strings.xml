@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">Pi Hole Connect</string>
+    <string name="app_name">Pi-hole Connect</string>
     <string name="title_activity_home">Home</string>
     <string name="label_home">Home</string>
     <string name="label_statistics">Statistics</string>
     <string name="label_log">Log</string>
-    <string name="label_lists">Lists</string>
+    <string name="label_filter_rules">Filters</string>
     <string name="label_preferences">Preferences</string>
     <string name="label_enable_blocking">Enable blocking</string>
     <string name="label_disable_blocking">Disable blocking</string>
@@ -35,4 +35,5 @@
     <string name="enable_dialog_title">Enable ads blocking?</string>
     <string name="enable_dialog_button_confirm">Enable</string>
     <string name="enable_dialog_button_dismiss">@android:string/cancel</string>
+    <string name="error_pi_hole_connection_generic">An error have occurred, please check your internet connection or whether the API key has been set</string>
 </resources>

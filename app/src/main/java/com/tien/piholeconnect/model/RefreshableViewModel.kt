@@ -12,7 +12,6 @@ abstract class RefreshableViewModel : ViewModel() {
     private var refreshJob: Job? = null
 
     var error: Throwable? by mutableStateOf(null)
-        protected set
     var isRefreshing by mutableStateOf(false)
         protected set
 
@@ -22,6 +21,7 @@ abstract class RefreshableViewModel : ViewModel() {
         refreshJob?.cancel()
         refreshJob = viewModelScope.launch {
             kotlin.runCatching {
+                error = null
                 isRefreshing = true
                 queueRefresh()
                 isRefreshing = false

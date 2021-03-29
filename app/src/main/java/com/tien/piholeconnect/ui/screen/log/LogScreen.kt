@@ -2,6 +2,7 @@ package com.tien.piholeconnect.ui.screen.log
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -9,20 +10,32 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.tien.piholeconnect.extension.showGenericPiHoleConnectionError
 import com.tien.piholeconnect.ui.component.LogItem
 import com.tien.piholeconnect.ui.component.SwipeToRefreshLayout
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun LogScreen(modifier: Modifier = Modifier, viewModel: LogViewModel = viewModel()) {
+fun LogScreen(
+    modifier: Modifier = Modifier,
+    viewModel: LogViewModel = viewModel(),
+    scaffoldState: ScaffoldState
+) {
+    val context = LocalContext.current
     var isRefreshing by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.viewModelScope.launch {
-            viewModel.refresh()
+            viewModel.apply {
+                refresh()
+                error?.let {
+                    scaffoldState.snackbarHostState.showGenericPiHoleConnectionError(context)
+                }
+            }
         }
     }
 
@@ -33,7 +46,12 @@ fun LogScreen(modifier: Modifier = Modifier, viewModel: LogViewModel = viewModel
         onRefresh = {
             viewModel.viewModelScope.launch {
                 isRefreshing = true
-                viewModel.refresh()
+                viewModel.apply {
+                    refresh()
+                    error?.let {
+                        scaffoldState.snackbarHostState.showGenericPiHoleConnectionError(context)
+                    }
+                }
                 isRefreshing = false
             }
         }) {
