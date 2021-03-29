@@ -83,6 +83,7 @@ dependencies {
     implementation("com.google.dagger:hilt-android:$hiltVersion")
     implementation("com.google.mlkit:barcode-scanning:16.1.1")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation("com.android.billingclient:billing-ktx:3.0.3")
 
     kapt("com.google.dagger:hilt-compiler:$hiltVersion")
 
