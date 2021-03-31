@@ -15,45 +15,50 @@ import com.tien.piholeconnect.model.TopBarOptionsMenuItem
 @Composable
 fun TopBar(
     title: String,
-    isBackButtonEnabled: Boolean = false,
+    isBackButtonEnabled: Boolean,
+    isMenusButtonEnabled: Boolean,
     onBackButtonClick: () -> Unit = {},
     optionsMenuItems: Iterable<TopBarOptionsMenuItem>,
     onOptionsMenuItemClick: (TopBarOptionsMenuItem) -> Unit
 ) {
-    TopAppBar(title = { Text(title) }, navigationIcon = if (!isBackButtonEnabled) null else ({
-        IconButton(onClick = onBackButtonClick) {
-            Icon(
-                Icons.Default.ArrowBack,
-                contentDescription = stringResource(R.string.back_button_label)
-            )
-        }
-    }), actions = {
-        Box {
-            var isOptionsMenuExpanded by remember { mutableStateOf(false) }
-
-            IconButton(onClick = { isOptionsMenuExpanded = true }) {
+    TopAppBar(
+        title = { Text(title) }, navigationIcon = if (!isBackButtonEnabled) null else ({
+            IconButton(onClick = onBackButtonClick) {
                 Icon(
-                    Icons.Default.MoreVert, contentDescription = stringResource(
-                        R.string.top_bar_more_options_label
-                    )
+                    Icons.Default.ArrowBack,
+                    contentDescription = stringResource(R.string.back_button_label)
                 )
             }
-            DropdownMenu(
-                expanded = isOptionsMenuExpanded,
-                onDismissRequest = { isOptionsMenuExpanded = false }
-            ) {
-                optionsMenuItems.forEach {
-                    DropdownMenuItem(onClick = {
-                        isOptionsMenuExpanded = false
-                        onOptionsMenuItemClick(it)
-                    }) {
-                        Text(stringResource(it.labelResourceId))
+        }), actions = {
+            if (isMenusButtonEnabled) {
+                Box {
+                    var isOptionsMenuExpanded by remember { mutableStateOf(false) }
+
+                    IconButton(onClick = { isOptionsMenuExpanded = true }) {
+                        Icon(
+                            Icons.Default.MoreVert, contentDescription = stringResource(
+                                R.string.top_bar_more_options_label
+                            )
+                        )
                     }
+                    DropdownMenu(
+                        expanded = isOptionsMenuExpanded,
+                        onDismissRequest = { isOptionsMenuExpanded = false }
+                    ) {
+                        optionsMenuItems.forEach {
+                            DropdownMenuItem(onClick = {
+                                isOptionsMenuExpanded = false
+                                onOptionsMenuItemClick(it)
+                            }) {
+                                Text(stringResource(it.labelResourceId))
+                            }
+                        }
+                    }
+
                 }
             }
-
         }
-    })
+    )
 }
 
 @Preview
@@ -68,6 +73,7 @@ fun TopBarPreview() {
             )
         ),
         onOptionsMenuItemClick = {},
-        isBackButtonEnabled = true
+        isBackButtonEnabled = true,
+        isMenusButtonEnabled = true
     )
 }

@@ -4,14 +4,27 @@ import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.tien.piholeconnect.R
 
-sealed class Screen(val route: String, @StringRes val labelResourceId: Int) {
-    object Home : Screen("home", R.string.label_home)
-    object Statistics : Screen("statistics", R.string.label_statistics)
-    object Log : Screen("log", R.string.label_log)
-    object FilterRules : Screen("filterRules", R.string.label_filter_rules)
-    object Preferences : Screen("preferences", R.string.label_preferences)
-    object PiHoleConnection : Screen("piHoleConnection", R.string.label_pi_hole_connection)
-    object TipJar : Screen("tipJar", R.string.label_tip_jat)
+data class ScreenOptions(val showTab: Boolean, val showMenus: Boolean, val showBackButton: Boolean)
+
+private val DefaultScreenOptions =
+    ScreenOptions(showTab = false, showMenus = false, showBackButton = true)
+private val TabScreenOptions =
+    ScreenOptions(showTab = true, showMenus = true, showBackButton = false)
+
+sealed class Screen(
+    val route: String,
+    @StringRes val labelResourceId: Int,
+    val options: ScreenOptions
+) {
+    object Home : Screen("home", R.string.label_home, TabScreenOptions)
+    object Statistics : Screen("statistics", R.string.label_statistics, TabScreenOptions)
+    object Log : Screen("log", R.string.label_log, TabScreenOptions)
+    object FilterRules : Screen("filterRules", R.string.label_filter_rules, TabScreenOptions)
+    object Preferences : Screen("preferences", R.string.label_preferences, DefaultScreenOptions)
+    object PiHoleConnection :
+        Screen("piHoleConnection", R.string.label_pi_hole_connection, DefaultScreenOptions)
+
+    object TipJar : Screen("tipJar", R.string.label_tip_jat, DefaultScreenOptions)
 }
 
 fun screenForRoute(route: String) =

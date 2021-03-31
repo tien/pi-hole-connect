@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltNavGraphViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.*
+import com.tien.piholeconnect.R
 import com.tien.piholeconnect.extension.currentRouteAsState
 import com.tien.piholeconnect.model.*
 import com.tien.piholeconnect.ui.component.BottomTab
@@ -65,8 +66,9 @@ fun App(
     )
 
     val currentRoute by navController.currentRouteAsState()
+    val currentScreen = currentRoute?.let(::screenForRoute)
     val title = currentRoute?.let { stringResource(screenForRoute(it).labelResourceId) }
-        ?: "Pi-hole Connect"
+        ?: stringResource(R.string.app_name)
 
     PiHoleConnectTheme(
         darkTheme = when (preferences!!.theme) {
@@ -81,13 +83,14 @@ fun App(
                 TopBar(
                     title = title,
                     optionsMenuItems = optionsMenuItems,
+                    isBackButtonEnabled = currentScreen?.options?.showBackButton ?: false,
+                    isMenusButtonEnabled = currentScreen?.options?.showMenus ?: false,
                     onOptionsMenuItemClick = { navController.navigate(it.key) },
-                    isBackButtonEnabled = currentRoute == Screen.Preferences.route || currentRoute == Screen.PiHoleConnection.route,
                     onBackButtonClick = { navController.navigateUp() }
                 )
             },
             bottomBar = {
-                if (currentRoute != Screen.Preferences.route && currentRoute != Screen.PiHoleConnection.route) {
+                if (currentScreen?.options?.showTab != false) {
                     BottomTab(
                         items = tabItems,
                         currentRoute = currentRoute ?: Screen.Home.route,
