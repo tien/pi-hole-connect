@@ -6,7 +6,6 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.Router
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -24,7 +23,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.navigate
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.Screen
-import com.tien.piholeconnect.model.TemperatureUnit
 import com.tien.piholeconnect.model.Theme
 import com.tien.piholeconnect.model.UserPreferences
 import kotlinx.coroutines.launch
@@ -57,10 +55,10 @@ fun PreferencesScreen(
                 text = { Text(it.name) },
                 secondaryText = { Text(it.host) })
         }
-        ListItem(
-            Modifier.clickable { navController.navigate(Screen.PiHoleConnection.route) },
-            icon = { Icon(Icons.Default.AddCircleOutline, contentDescription = "Add Pi-hole") },
-            text = { Text(stringResource(R.string.preferences_add_pi_hole)) })
+//        ListItem(
+//            Modifier.clickable { navController.navigate(Screen.PiHoleConnection.route) },
+//            icon = { Icon(Icons.Default.AddCircleOutline, contentDescription = "Add Pi-hole") },
+//            text = { Text(stringResource(R.string.preferences_add_pi_hole)) })
         Column(
             Modifier
                 .padding(horizontal = 15.dp)
@@ -103,47 +101,47 @@ fun PreferencesScreen(
                     }
                 }
         }
-        Column(
-            Modifier
-                .padding(horizontal = 15.dp)
-                .selectableGroup()
-        ) {
-            Text(
-                stringResource(R.string.preferences_temperature),
-                style = MaterialTheme.typography.caption
-            )
-            TemperatureUnit.values()
-                .filter { it != TemperatureUnit.UNRECOGNIZED }
-                .forEach { temperatureUnit ->
-                    Row(
-                        PreferenceItemModifier
-                            .selectable(
-                                selected = temperatureUnit == userPreferences.temperatureUnit,
-                                onClick = {
-                                    viewModel.viewModelScope.launch {
-                                        viewModel.updateUserPreferences {
-                                            it
-                                                .toBuilder()
-                                                .setTemperatureUnit(temperatureUnit)
-                                                .build()
-                                        }
-                                    }
-                                },
-                                role = Role.RadioButton
-                            ),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            modifier = Modifier.padding(end = 32.dp),
-                            selected = temperatureUnit == userPreferences.temperatureUnit,
-                            onClick = null
-                        )
-                        Text(
-                            text = temperatureUnit.name.toLowerCase(Locale.current)
-                                .capitalize(Locale.current)
-                        )
-                    }
-                }
-        }
+//        Column(
+//            Modifier
+//                .padding(horizontal = 15.dp)
+//                .selectableGroup()
+//        ) {
+//            Text(
+//                stringResource(R.string.preferences_temperature),
+//                style = MaterialTheme.typography.caption
+//            )
+//            TemperatureUnit.values()
+//                .filter { it != TemperatureUnit.UNRECOGNIZED }
+//                .forEach { temperatureUnit ->
+//                    Row(
+//                        PreferenceItemModifier
+//                            .selectable(
+//                                selected = temperatureUnit == userPreferences.temperatureUnit,
+//                                onClick = {
+//                                    viewModel.viewModelScope.launch {
+//                                        viewModel.updateUserPreferences {
+//                                            it
+//                                                .toBuilder()
+//                                                .setTemperatureUnit(temperatureUnit)
+//                                                .build()
+//                                        }
+//                                    }
+//                                },
+//                                role = Role.RadioButton
+//                            ),
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        RadioButton(
+//                            modifier = Modifier.padding(end = 32.dp),
+//                            selected = temperatureUnit == userPreferences.temperatureUnit,
+//                            onClick = null
+//                        )
+//                        Text(
+//                            text = temperatureUnit.name.toLowerCase(Locale.current)
+//                                .capitalize(Locale.current)
+//                        )
+//                    }
+//                }
+//        }
     }
 }
