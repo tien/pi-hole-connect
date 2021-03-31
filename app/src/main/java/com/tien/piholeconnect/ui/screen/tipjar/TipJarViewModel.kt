@@ -12,6 +12,8 @@ import com.android.billingclient.api.querySkuDetails
 import com.tien.piholeconnect.model.RefreshableViewModel
 import com.tien.piholeconnect.service.InAppPurchase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,7 +27,7 @@ class TipJarViewModel @Inject constructor(
     var tipOptions by mutableStateOf(listOf<SkuDetails>())
         private set
 
-    override suspend fun queueRefresh() {
+    override fun CoroutineScope.queueRefresh() = launch {
         val params = SkuDetailsParams.newBuilder().setType(INAPP).setSkusList(skuLists).build()
         inAppPurchase.billingClient.querySkuDetails(params).skuDetailsList?.also { options ->
             tipOptions = options.sortedBy { it.priceAmountMicros }

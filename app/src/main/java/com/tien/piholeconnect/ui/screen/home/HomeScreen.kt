@@ -115,13 +115,13 @@ fun HomeScreen(
                         isRefreshing = true
                         viewModel.apply {
                             refresh()
+                            isRefreshing = false
                             error?.let {
                                 scaffoldState.snackbarHostState.showGenericPiHoleConnectionError(
                                     context
                                 )
                             }
                         }
-                        isRefreshing = false
                     }
                 }) {
                 Column {

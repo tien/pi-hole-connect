@@ -25,7 +25,7 @@ fun RankedListCard(
     modifier: Modifier = Modifier,
     elevation: Dp = 1.dp,
 ) {
-    Card(modifier = modifier, elevation = elevation) {
+    Card(modifier = modifier.fillMaxWidth(), elevation = elevation) {
         Column {
             Row(
                 Modifier.padding(start = 15.dp, end = 15.dp, top = 15.dp),

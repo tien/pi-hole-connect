@@ -3,10 +3,10 @@ package com.tien.piholeconnect.ui.screen.home
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.model.RefreshableViewModel
 import com.tien.piholeconnect.repository.IPiHoleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,9 +33,9 @@ class HomeViewModel @Inject constructor(private val piHoleRepository: IPiHoleRep
     var adsOverTime by mutableStateOf(mapOf<Int, Int>())
         private set
 
-    override suspend fun queueRefresh() {
+    override fun CoroutineScope.queueRefresh() = launch {
         joinAll(
-            viewModelScope.launch {
+            launch {
                 val summary = piHoleRepository.getStatusSummary()
 
                 isAdsBlockingEnabled = summary.status == "enabled"
@@ -44,7 +44,7 @@ class HomeViewModel @Inject constructor(private val piHoleRepository: IPiHoleRep
                 queryBlockingPercentage = summary.adsPercentageToday
                 blockedDomainListCount = summary.domainsBeingBlocked
             },
-            viewModelScope.launch {
+            launch {
                 val overTimeData = piHoleRepository.getOverTimeData10Minutes()
 
                 queriesOverTime = overTimeData.domainsOverTime

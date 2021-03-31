@@ -7,8 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.model.*
 import com.tien.piholeconnect.repository.IPiHoleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,7 +22,7 @@ class FilterRulesViewModel @Inject constructor(private val piHoleRepository: IPi
     var addRuleInputValue by mutableStateOf("")
     var addRuleIsWildcardChecked by mutableStateOf(false)
 
-    override suspend fun queueRefresh() {
+    override fun CoroutineScope.queueRefresh(): Job = launch {
         rules =
             RuleType.values().map { viewModelScope.async { piHoleRepository.getFilterRules(it) } }
                 .awaitAll()
