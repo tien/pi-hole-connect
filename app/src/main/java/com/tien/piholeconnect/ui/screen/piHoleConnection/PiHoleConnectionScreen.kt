@@ -29,6 +29,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.tien.piholeconnect.R
+import com.tien.piholeconnect.model.URLProtocol
 import com.tien.piholeconnect.ui.component.Scanner
 import kotlinx.coroutines.launch
 
@@ -76,7 +77,8 @@ fun PiHoleConnectionScreen(
     Column(
         Modifier
             .padding(25.dp)
-            .verticalScroll(scrollState)
+            .verticalScroll(scrollState),
+        verticalArrangement = Arrangement.spacedBy(25.dp)
     ) {
         OutlinedTextField(
             modifier = Modifier
@@ -101,7 +103,6 @@ fun PiHoleConnectionScreen(
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
         )
-        Spacer(modifier = Modifier.height(25.dp))
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
@@ -125,7 +126,6 @@ fun PiHoleConnectionScreen(
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri)
         )
-        Spacer(modifier = Modifier.height(25.dp))
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
@@ -149,7 +149,6 @@ fun PiHoleConnectionScreen(
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri)
         )
-        Spacer(modifier = Modifier.height(25.dp))
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
@@ -173,7 +172,15 @@ fun PiHoleConnectionScreen(
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
-        Spacer(modifier = Modifier.height(25.dp))
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text("Use HTTPS")
+            Switch(
+                checked = viewModel.protocol == URLProtocol.HTTPS,
+                onCheckedChange = {
+                    viewModel.protocol = if (it) URLProtocol.HTTPS else URLProtocol.HTTP
+                }
+            )
+        }
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
@@ -219,7 +226,6 @@ fun PiHoleConnectionScreen(
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
         )
-        Spacer(modifier = Modifier.height(25.dp))
         OutlinedButton(modifier = Modifier.fillMaxWidth(), onClick = {
             viewModel.viewModelScope.launch {
                 viewModel.save()

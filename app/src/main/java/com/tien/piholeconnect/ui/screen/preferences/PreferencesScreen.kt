@@ -42,7 +42,7 @@ fun PreferencesScreen(
 
     if (userPreferences === UserPreferences.getDefaultInstance()) return
 
-    Column(Modifier.padding(vertical = 15.dp)) {
+    Column(Modifier.padding(vertical = 15.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
         Text(
             "My Pi-holes",
             modifier = Modifier.padding(horizontal = 15.dp),
@@ -101,7 +101,8 @@ fun PreferencesScreen(
         Column(
             Modifier
                 .padding(horizontal = 15.dp)
-                .selectableGroup()) {
+                .selectableGroup()
+        ) {
             Text("Temperature display", style = MaterialTheme.typography.caption)
             TemperatureUnit.values()
                 .filter { it != TemperatureUnit.UNRECOGNIZED }

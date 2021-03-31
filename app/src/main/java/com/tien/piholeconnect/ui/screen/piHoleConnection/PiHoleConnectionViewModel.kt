@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.tien.piholeconnect.extension.populateDefaultValues
 import com.tien.piholeconnect.model.PiHoleConnection
+import com.tien.piholeconnect.model.URLProtocol
 import com.tien.piholeconnect.repository.IUserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
@@ -25,6 +26,7 @@ class PiHoleConnectionViewModel @Inject constructor(
     private var id: String? = null
     var name: String by mutableStateOf(default.name)
     var description: String by mutableStateOf(default.description)
+    var protocol: URLProtocol by mutableStateOf(default.protocol)
     var host: String by mutableStateOf(default.host)
     var apiPath: String by mutableStateOf(default.apiPath)
     var port: Int by mutableStateOf(default.port)
