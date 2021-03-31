@@ -13,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.toLowerCase
@@ -21,6 +22,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.navigate
+import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.Screen
 import com.tien.piholeconnect.model.TemperatureUnit
 import com.tien.piholeconnect.model.Theme
@@ -44,7 +46,7 @@ fun PreferencesScreen(
 
     Column(Modifier.padding(vertical = 15.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
         Text(
-            "My Pi-holes",
+            stringResource(R.string.preferences_my_pi_hole),
             modifier = Modifier.padding(horizontal = 15.dp),
             style = MaterialTheme.typography.caption
         )
@@ -58,13 +60,16 @@ fun PreferencesScreen(
         ListItem(
             Modifier.clickable { navController.navigate(Screen.PiHoleConnection.route) },
             icon = { Icon(Icons.Default.AddCircleOutline, contentDescription = "Add Pi-hole") },
-            text = { Text("Add Pi-hole") })
+            text = { Text(stringResource(R.string.preferences_add_pi_hole)) })
         Column(
             Modifier
                 .padding(horizontal = 15.dp)
                 .selectableGroup()
         ) {
-            Text("Theme", style = MaterialTheme.typography.caption)
+            Text(
+                stringResource(R.string.preferences_theme),
+                style = MaterialTheme.typography.caption
+            )
             Theme.values()
                 .filter { it != Theme.UNRECOGNIZED }
                 .forEach { theme ->
@@ -103,7 +108,10 @@ fun PreferencesScreen(
                 .padding(horizontal = 15.dp)
                 .selectableGroup()
         ) {
-            Text("Temperature display", style = MaterialTheme.typography.caption)
+            Text(
+                stringResource(R.string.preferences_temperature),
+                style = MaterialTheme.typography.caption
+            )
             TemperatureUnit.values()
                 .filter { it != TemperatureUnit.UNRECOGNIZED }
                 .forEach { temperatureUnit ->
