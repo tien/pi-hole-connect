@@ -9,7 +9,7 @@ import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.tien.piholeconnect.extension.populateDefaultValues
 import com.tien.piholeconnect.model.PiHoleConnection
 import com.tien.piholeconnect.model.URLProtocol
-import com.tien.piholeconnect.repository.IUserPreferencesRepository
+import com.tien.piholeconnect.repository.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PiHoleConnectionViewModel @Inject constructor(
-    private val userPreferencesRepository: IUserPreferencesRepository,
+    private val userPreferencesRepository: UserPreferencesRepository,
     val barcodeScanner: BarcodeScanner
 ) : ViewModel() {
     private val default = PiHoleConnection.newBuilder().populateDefaultValues()

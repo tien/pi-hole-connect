@@ -1,15 +1,9 @@
 package com.tien.piholeconnect.repository
 
-import androidx.datastore.core.DataStore
 import com.tien.piholeconnect.model.UserPreferences
+import kotlinx.coroutines.flow.Flow
 
-class UserPreferencesRepository constructor(private val dataStore: DataStore<UserPreferences>) :
-    IUserPreferencesRepository {
-    override val userPreferencesFlow = dataStore.data
-
-    override suspend fun updateUserPreferences(transform: (UserPreferences) -> UserPreferences) {
-        dataStore.updateData {
-            transform(it)
-        }
-    }
+interface UserPreferencesRepository {
+    val userPreferencesFlow: Flow<UserPreferences>
+    suspend fun updateUserPreferences(transform: (UserPreferences) -> UserPreferences)
 }

@@ -5,13 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.model.*
-import com.tien.piholeconnect.repository.IPiHoleRepository
+import com.tien.piholeconnect.repository.PiHoleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @HiltViewModel
-class FilterRulesViewModel @Inject constructor(private val piHoleRepository: IPiHoleRepository) :
+class FilterRulesViewModel @Inject constructor(private val piHoleRepository: PiHoleRepository) :
     RefreshableViewModel() {
     enum class Tab { BLACK, WHITE }
 

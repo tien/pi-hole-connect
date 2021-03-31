@@ -5,14 +5,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.tien.piholeconnect.model.PiHoleStatistics
 import com.tien.piholeconnect.model.RefreshableViewModel
-import com.tien.piholeconnect.repository.IPiHoleRepository
+import com.tien.piholeconnect.repository.PiHoleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class StatisticsViewModel @Inject constructor(private val piHoleRepository: IPiHoleRepository) :
+class StatisticsViewModel @Inject constructor(private val piHoleRepository: PiHoleRepository) :
     RefreshableViewModel() {
     var statistics: PiHoleStatistics by mutableStateOf(PiHoleStatistics())
         private set

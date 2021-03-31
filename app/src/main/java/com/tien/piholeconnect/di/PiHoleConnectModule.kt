@@ -8,10 +8,10 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.tien.piholeconnect.data.userPreferencesDataStore
 import com.tien.piholeconnect.model.UserPreferences
-import com.tien.piholeconnect.repository.IPiHoleRepository
-import com.tien.piholeconnect.repository.IUserPreferencesRepository
 import com.tien.piholeconnect.repository.PiHoleRepository
 import com.tien.piholeconnect.repository.UserPreferencesRepository
+import com.tien.piholeconnect.repository.PiHoleRepositoryImpl
+import com.tien.piholeconnect.repository.UserPreferencesRepositoryImpl
 import com.tien.piholeconnect.service.InAppPurchase
 import com.tien.piholeconnect.service.InAppPurchaseImpl
 import dagger.Binds
@@ -50,12 +50,12 @@ abstract class PiHoleConnectModule {
         fun providePiHoleRepository(
             httpClient: HttpClient,
             userPreferencesDataStore: DataStore<UserPreferences>
-        ): IPiHoleRepository =
-            PiHoleRepository(httpClient, userPreferencesDataStore)
+        ): PiHoleRepository =
+            PiHoleRepositoryImpl(httpClient, userPreferencesDataStore)
 
         @Provides
-        fun provideUserPreferencesRepository(dataStore: DataStore<UserPreferences>): IUserPreferencesRepository =
-            UserPreferencesRepository(dataStore)
+        fun provideUserPreferencesRepository(dataStore: DataStore<UserPreferences>): UserPreferencesRepository =
+            UserPreferencesRepositoryImpl(dataStore)
 
         @Provides
         fun provideBarcodeScanner(): BarcodeScanner {

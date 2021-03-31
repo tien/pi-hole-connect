@@ -4,7 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.tien.piholeconnect.model.RefreshableViewModel
-import com.tien.piholeconnect.repository.IPiHoleRepository
+import com.tien.piholeconnect.repository.PiHoleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.joinAll
@@ -13,7 +13,7 @@ import javax.inject.Inject
 import kotlin.time.Duration
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val piHoleRepository: IPiHoleRepository) :
+class HomeViewModel @Inject constructor(private val piHoleRepository: PiHoleRepository) :
     RefreshableViewModel() {
     var isPiHoleSwitchLoading by mutableStateOf(false)
         private set
