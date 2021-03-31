@@ -11,6 +11,7 @@ sealed class Screen(val route: String, @StringRes val labelResourceId: Int) {
     object FilterRules : Screen("filterRules", R.string.label_filter_rules)
     object Preferences : Screen("preferences", R.string.label_preferences)
     object PiHoleConnection : Screen("piHoleConnection", R.string.label_pi_hole_connection)
+    object TipJar : Screen("tipJar", R.string.label_tip_jat)
 }
 
 fun screenForRoute(route: String) =

@@ -33,6 +33,7 @@ import com.tien.piholeconnect.ui.screen.preferences.PreferencesScreen
 import com.tien.piholeconnect.ui.screen.preferences.PreferencesViewModel
 import com.tien.piholeconnect.ui.screen.statistics.StatisticsScreen
 import com.tien.piholeconnect.ui.screen.statistics.StatisticsViewModel
+import com.tien.piholeconnect.ui.screen.tipjar.TipJarScreen
 import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 
 
@@ -51,7 +52,10 @@ fun App(
     val navController = rememberNavController()
 
     val optionsMenuItems =
-        setOf(TopBarOptionsMenuItem(Screen.Preferences.route, Screen.Preferences.labelResourceId))
+        setOf(
+            TopBarOptionsMenuItem(Screen.Preferences.route, Screen.Preferences.labelResourceId),
+            TopBarOptionsMenuItem(Screen.TipJar.route, Screen.TipJar.labelResourceId)
+        )
 
     val tabItems = listOf(
         BottomTabItem(Screen.Home, Icons.TwoTone.Home),
@@ -140,6 +144,9 @@ fun App(
                         connectionId = id,
                         navController = navController
                     )
+                }
+                composable(Screen.TipJar.route) {
+                    TipJarScreen(viewModel = hiltNavGraphViewModel())
                 }
             }
         }

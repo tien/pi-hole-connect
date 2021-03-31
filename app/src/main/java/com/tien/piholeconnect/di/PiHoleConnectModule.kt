@@ -12,10 +12,15 @@ import com.tien.piholeconnect.repository.IPiHoleRepository
 import com.tien.piholeconnect.repository.IUserPreferencesRepository
 import com.tien.piholeconnect.repository.PiHoleRepository
 import com.tien.piholeconnect.repository.UserPreferencesRepository
+import com.tien.piholeconnect.service.InAppPurchase
+import com.tien.piholeconnect.service.InAppPurchaseImpl
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
@@ -53,10 +58,18 @@ abstract class PiHoleConnectModule {
             UserPreferencesRepository(dataStore)
 
         @Provides
-        fun providesBarcodeScanner(): BarcodeScanner {
+        fun provideBarcodeScanner(): BarcodeScanner {
             val options =
                 BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_QR_CODE).build()
             return BarcodeScanning.getClient(options)
         }
     }
+}
+
+@Module
+@InstallIn(ActivityRetainedComponent::class)
+abstract class PiHoleConnectActivityModule {
+    @Binds
+    @ActivityRetainedScoped
+    abstract fun bindInAppPurchase(inAppPurchaseImpl: InAppPurchaseImpl): InAppPurchase
 }
