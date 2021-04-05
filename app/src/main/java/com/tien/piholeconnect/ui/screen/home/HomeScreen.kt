@@ -107,7 +107,10 @@ fun HomeScreen(
                 onClick = { isDisableDialogVisible = true }
             )
         }) {
-        Column(Modifier.padding(start = 15.dp, top = 15.dp, end = 15.dp)) {
+        Column(
+            Modifier.padding(start = 15.dp, top = 15.dp, end = 15.dp),
+            verticalArrangement = Arrangement.spacedBy(15.dp)
+        ) {
             SwipeToRefreshLayout(
                 refreshingState = isRefreshing,
                 onRefresh = {
@@ -165,9 +168,7 @@ fun HomeScreen(
             }
             Card(
                 Modifier
-                    .padding(vertical = 15.dp)
-                    .weight(1f)
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .padding(bottom = 80.dp)
             ) {
                 var value: Iterable<SelectedValue> by remember { mutableStateOf(listOf()) }
