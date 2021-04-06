@@ -1,4 +1,4 @@
-package com.tien.piholeconnect.ui.screen.piHoleConnection
+package com.tien.piholeconnect.ui.screen.piholeconnection
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

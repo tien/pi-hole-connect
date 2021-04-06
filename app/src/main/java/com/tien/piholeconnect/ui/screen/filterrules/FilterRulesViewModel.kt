@@ -1,4 +1,4 @@
-package com.tien.piholeconnect.ui.screen.filterRules
+package com.tien.piholeconnect.ui.screen.filterrules
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
