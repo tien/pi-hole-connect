@@ -12,7 +12,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:7.0.0-alpha12")
+        classpath("com.android.tools.build:gradle:7.0.0-alpha13")
         classpath(kotlin("gradle-plugin", version = "1.4.31"))
         classpath("com.google.dagger:hilt-android-gradle-plugin:${project.extra["hiltVersion"]}")
     }
