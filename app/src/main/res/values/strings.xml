@@ -42,4 +42,9 @@
     <string name="preferences_add_pi_hole">Add Pi-hole</string>
     <string name="preferences_theme">Theme</string>
     <string name="preferences_temperature">Temperature display</string>
+    <string name="pi_hole_connection_label_basic_auth_username">Basic Auth username</string>
+    <string name="pi_hole_connection_label_basic_auth_password">Basic Auth password</string>
+    <string name="pi_hole_connection_label_basic_auth_realm">Basic Auth realm</string>
+    <string name="pi_hole_connection_label_use_https">Use HTTPS</string>
+    <string name="pi_hole_connection_label_show_advance_options">Show advance options</string>
 </resources>

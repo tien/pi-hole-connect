@@ -42,6 +42,7 @@ fun PiHoleConnectionScreen(
     val context = LocalContext.current
 
     var isLoading by rememberSaveable { mutableStateOf(connectionId != null) }
+    var showAdvanceOptions by rememberSaveable { mutableStateOf(false) }
     val scrollState = rememberScrollState()
     val positionMap = remember { mutableStateMapOf<String, Float>() }
     var isScannerExpanded by rememberSaveable { mutableStateOf(false) }
@@ -76,8 +77,8 @@ fun PiHoleConnectionScreen(
 
     Column(
         Modifier
-            .padding(25.dp)
-            .verticalScroll(scrollState),
+            .verticalScroll(scrollState)
+            .padding(25.dp),
         verticalArrangement = Arrangement.spacedBy(25.dp)
     ) {
         OutlinedTextField(
@@ -172,15 +173,6 @@ fun PiHoleConnectionScreen(
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Use HTTPS")
-            Switch(
-                checked = viewModel.protocol == URLProtocol.HTTPS,
-                onCheckedChange = {
-                    viewModel.protocol = if (it) URLProtocol.HTTPS else URLProtocol.HTTP
-                }
-            )
-        }
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
@@ -226,6 +218,94 @@ fun PiHoleConnectionScreen(
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
         )
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(stringResource(R.string.pi_hole_connection_label_show_advance_options))
+            Switch(
+                checked = showAdvanceOptions,
+                onCheckedChange = { showAdvanceOptions = it }
+            )
+        }
+        if (showAdvanceOptions) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(stringResource(R.string.pi_hole_connection_label_use_https))
+                Switch(
+                    checked = viewModel.protocol == URLProtocol.HTTPS,
+                    onCheckedChange = {
+                        viewModel.protocol = if (it) URLProtocol.HTTPS else URLProtocol.HTTP
+                    }
+                )
+            }
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onGloballyPositioned {
+                        positionMap[viewModel::basicAuthUsername.name] = it.positionInParent().y
+                    }
+                    .onFocusEvent { focusState ->
+                        if (focusState.isFocused) {
+                            viewModel.viewModelScope.launch {
+                                positionMap[viewModel::basicAuthUsername.name]?.let {
+                                    scrollState.scrollTo(
+                                        it.toInt()
+                                    )
+                                }
+                            }
+                        }
+                    },
+                label = { Text(stringResource(R.string.pi_hole_connection_label_basic_auth_username)) },
+                value = viewModel.basicAuthUsername,
+                onValueChange = { viewModel.basicAuthUsername = it },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+            )
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onGloballyPositioned {
+                        positionMap[viewModel::basicAuthPassword.name] = it.positionInParent().y
+                    }
+                    .onFocusEvent { focusState ->
+                        if (focusState.isFocused) {
+                            viewModel.viewModelScope.launch {
+                                positionMap[viewModel::basicAuthPassword.name]?.let {
+                                    scrollState.scrollTo(
+                                        it.toInt()
+                                    )
+                                }
+                            }
+                        }
+                    },
+                label = { Text(stringResource(R.string.pi_hole_connection_label_basic_auth_password)) },
+                value = viewModel.basicAuthPassword,
+                onValueChange = { viewModel.basicAuthPassword = it },
+                visualTransformation = PasswordVisualTransformation(),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            )
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onGloballyPositioned {
+                        positionMap[viewModel::basicAuthRealm.name] = it.positionInParent().y
+                    }
+                    .onFocusEvent { focusState ->
+                        if (focusState.isFocused) {
+                            viewModel.viewModelScope.launch {
+                                positionMap[viewModel::basicAuthRealm.name]?.let {
+                                    scrollState.scrollTo(
+                                        it.toInt()
+                                    )
+                                }
+                            }
+                        }
+                    },
+                label = { Text(stringResource(R.string.pi_hole_connection_label_basic_auth_realm)) },
+                value = viewModel.basicAuthRealm,
+                onValueChange = { viewModel.basicAuthRealm = it },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+            )
+        }
         OutlinedButton(modifier = Modifier.fillMaxWidth(), onClick = {
             viewModel.viewModelScope.launch {
                 viewModel.save()

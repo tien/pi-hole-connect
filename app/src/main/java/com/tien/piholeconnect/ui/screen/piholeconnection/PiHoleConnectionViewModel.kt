@@ -31,6 +31,9 @@ class PiHoleConnectionViewModel @Inject constructor(
     var apiPath: String by mutableStateOf(default.apiPath)
     var port: Int by mutableStateOf(default.port)
     var apiToken: String by mutableStateOf(default.apiToken)
+    var basicAuthUsername: String by mutableStateOf(default.basicAuthUsername)
+    var basicAuthPassword: String by mutableStateOf(default.basicAuthPassword)
+    var basicAuthRealm: String by mutableStateOf(default.basicAuthRealm)
     var shouldShowDeleteButton: Boolean by mutableStateOf(false)
         private set
 
@@ -48,6 +51,9 @@ class PiHoleConnectionViewModel @Inject constructor(
             apiPath = connection.apiPath
             port = connection.port
             apiToken = connection.apiToken
+            basicAuthUsername = connection.basicAuthUsername
+            basicAuthPassword = connection.basicAuthPassword
+            basicAuthRealm = connection.basicAuthRealm
             shouldShowDeleteButton = preferences.piHoleConnectionsCount > 1
         }
     }
@@ -64,6 +70,9 @@ class PiHoleConnectionViewModel @Inject constructor(
                 .setApiPath(apiPath)
                 .setPort(port)
                 .setApiToken(apiToken)
+                .setBasicAuthUsername(basicAuthUsername)
+                .setBasicAuthPassword(basicAuthPassword)
+                .setBasicAuthRealm(basicAuthRealm)
 
             if (id == null) {
                 return@updateUserPreferences builder.addPiHoleConnections(connectionBuilder).build()

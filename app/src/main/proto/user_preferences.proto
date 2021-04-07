@@ -29,6 +29,9 @@ message PiHoleConnection {
   string apiPath = 6;
   uint32 port = 7;
   optional string apiToken = 8;
+  optional string basicAuthUsername = 9;
+  optional string basicAuthPassword = 10;
+  optional string basicAuthRealm = 11;
 }
 
 message UserPreferences {

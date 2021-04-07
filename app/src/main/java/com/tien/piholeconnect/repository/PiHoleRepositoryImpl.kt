@@ -4,10 +4,12 @@ import androidx.datastore.core.DataStore
 import com.tien.piholeconnect.extension.toKtorURLProtocol
 import com.tien.piholeconnect.model.*
 import io.ktor.client.*
+import io.ktor.client.features.auth.providers.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import java.util.*
 import kotlin.time.Duration
 
@@ -28,6 +30,21 @@ class PiHoleRepositoryImpl constructor(
                     encodedPath = piHoleConnection.apiPath
                     port = piHoleConnection.port
                     parameters["auth"] = piHoleConnection.apiToken
+                }
+                if (piHoleConnection.basicAuthUsername.isNotBlank() || piHoleConnection.basicAuthPassword.isNotBlank()) {
+                    val basicAuthProvider = BasicAuthProvider(
+                        username = piHoleConnection.basicAuthUsername,
+                        password = piHoleConnection.basicAuthPassword,
+                        realm = if (piHoleConnection.basicAuthRealm.isBlank()) null else piHoleConnection.basicAuthRealm,
+                        sendWithoutRequest = true
+                    )
+                    let {
+                        // We know that BasicAuthProvider addRequestHeaders is synchronous, it's only a suspend function to conform to the AuthProvider Interface
+                        @Suppress("BlockingMethodInNonBlockingContext")
+                        runBlocking {
+                            basicAuthProvider.addRequestHeaders(it)
+                        }
+                    }
                 }
             }
         }

@@ -79,6 +79,7 @@ dependencies {
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-android:$ktorVersion")
     implementation("io.ktor:ktor-client-serialization:$ktorVersion")
+    implementation("io.ktor:ktor-client-auth:$ktorVersion")
     implementation("com.google.protobuf:protobuf-javalite:$protoBufJavaLiteVersion")
     implementation("com.google.dagger:hilt-android:$hiltVersion")
     implementation("com.google.mlkit:barcode-scanning:16.1.1")
