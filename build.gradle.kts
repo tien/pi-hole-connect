@@ -1,6 +1,7 @@
 buildscript {
     allprojects {
-        extra["composeVersion"] = "1.0.0-beta03"
+        extra["kotlinVersion"] = "1.4.31"
+        extra["composeVersion"] = "1.0.0-beta04"
         extra["ktorVersion"] = "1.5.3"
         extra["protoBufJavaLiteVersion"] = "3.15.6"
         extra["hiltVersion"] = "2.33-beta"
@@ -12,8 +13,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:7.0.0-alpha13")
-        classpath(kotlin("gradle-plugin", version = "1.4.31"))
+        classpath("com.android.tools.build:gradle:7.0.0-alpha14")
+        classpath(kotlin("gradle-plugin", version = project.extra["kotlinVersion"] as String))
         classpath("com.google.dagger:hilt-android-gradle-plugin:${project.extra["hiltVersion"]}")
     }
 }
