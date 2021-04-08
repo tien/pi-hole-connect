@@ -47,6 +47,7 @@ class PiHoleConnectionViewModel @Inject constructor(
             id = connection.id
             name = connection.name
             description = connection.description
+            protocol = connection.protocol
             host = connection.host
             apiPath = connection.apiPath
             port = connection.port
@@ -66,6 +67,7 @@ class PiHoleConnectionViewModel @Inject constructor(
                 .setId(id ?: UUID.randomUUID().toString())
                 .setName(name)
                 .setDescription(description)
+                .setProtocol(protocol)
                 .setHost(host)
                 .setApiPath(apiPath)
                 .setPort(port)
