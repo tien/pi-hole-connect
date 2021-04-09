@@ -8,7 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
-import com.github.mikephil.charting.animation.Easing.*
+import com.github.mikephil.charting.animation.Easing.EaseOutBounce
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
@@ -28,16 +28,16 @@ data class SelectedValue(val label: String, val value: Coordinate?)
 
 @Composable
 fun LineChart(
-    lineData: LineChartData,
     modifier: Modifier = Modifier,
+    lineData: LineChartData,
     onValueSelected: (Iterable<SelectedValue>) -> Unit = {},
     configure: com.github.mikephil.charting.charts.LineChart.() -> Unit = {}
-) = LineChart(listOf(lineData), modifier, onValueSelected, configure)
+) = LineChart(modifier, listOf(lineData), onValueSelected, configure)
 
 @Composable
 fun LineChart(
-    lineData: Iterable<LineChartData>,
     modifier: Modifier = Modifier,
+    lineData: Iterable<LineChartData>,
     onValueSelected: (Iterable<SelectedValue>) -> Unit = {},
     configure: com.github.mikephil.charting.charts.LineChart.() -> Unit = {}
 ) {
@@ -125,7 +125,7 @@ private fun LineDataSet.configure(contentColor: Int? = null) {
 @Composable
 fun LineChartPreview() {
     LineChart(
-        LineChartData(label = "label", data = listOf(Pair(0f, 0f), Pair(3f, 6f))),
-        Modifier.fillMaxSize()
+        Modifier.fillMaxSize(),
+        lineData = LineChartData(label = "label", data = listOf(Pair(0f, 0f), Pair(3f, 6f))),
     )
 }

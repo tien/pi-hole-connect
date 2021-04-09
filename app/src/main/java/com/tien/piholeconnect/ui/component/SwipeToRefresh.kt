@@ -38,6 +38,7 @@ fun SwipeToRefreshLayout(
     },
     refreshingState: Boolean,
     onRefresh: () -> Unit,
+    enabled: Boolean = true,
     content: @Composable () -> Unit,
 ) {
     val refreshDistance = with(LocalDensity.current) { RefreshDistance.toPx() }
@@ -57,7 +58,8 @@ fun SwipeToRefreshLayout(
                     refreshDistance to true
                 ),
                 thresholds = { _, _ -> FractionalThreshold(0.5f) },
-                orientation = Orientation.Vertical
+                orientation = Orientation.Vertical,
+                enabled = enabled
             )
     ) {
         content()
