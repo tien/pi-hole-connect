@@ -26,8 +26,7 @@ private val RefreshDistance = 80.dp
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SwipeToRefreshLayout(
-    refreshingState: Boolean,
-    onRefresh: () -> Unit,
+    modifier: Modifier = Modifier,
     refreshIndicator: @Composable () -> Unit = {
         Surface(elevation = 10.dp, shape = CircleShape) {
             CircularProgressIndicator(
@@ -37,7 +36,9 @@ fun SwipeToRefreshLayout(
             )
         }
     },
-    content: @Composable () -> Unit
+    refreshingState: Boolean,
+    onRefresh: () -> Unit,
+    content: @Composable () -> Unit,
 ) {
     val refreshDistance = with(LocalDensity.current) { RefreshDistance.toPx() }
     val state = rememberSwipeableState(refreshingState) { newValue ->
@@ -47,7 +48,7 @@ fun SwipeToRefreshLayout(
     }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .nestedScroll(state.PreUpPostDownNestedScrollConnection)
             .swipeable(
                 state = state,

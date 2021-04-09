@@ -3,6 +3,8 @@ package com.tien.piholeconnect.ui.screen.home
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -108,7 +110,11 @@ fun HomeScreen(
             )
         }) {
         Column(
-            Modifier.padding(start = 15.dp, top = 15.dp, end = 15.dp),
+            Modifier
+                .fillMaxHeight()
+                .verticalScroll(rememberScrollState())
+                .heightIn(min = 500.dp)
+                .padding(start = 15.dp, top = 15.dp, end = 15.dp, bottom = 80.dp),
             verticalArrangement = Arrangement.spacedBy(15.dp)
         ) {
             SwipeToRefreshLayout(
@@ -166,11 +172,7 @@ fun HomeScreen(
                     }
                 }
             }
-            Card(
-                Modifier
-                    .fillMaxSize()
-                    .padding(bottom = 80.dp)
-            ) {
+            Card(Modifier.weight(1f)) {
                 var value: Iterable<SelectedValue> by remember { mutableStateOf(listOf()) }
                 val permittedQueriesCount =
                     value.firstOrNull { it.label == queriesOverTimeData.label }?.value?.second?.toInt()
