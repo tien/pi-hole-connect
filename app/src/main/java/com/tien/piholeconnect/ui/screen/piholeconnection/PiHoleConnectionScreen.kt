@@ -168,8 +168,12 @@ fun PiHoleConnectionScreen(
                     }
                 },
             label = { Text(stringResource(R.string.pi_hole_connection_label_port)) },
-            value = viewModel.port.toString(),
-            onValueChange = { viewModel.port = it.toInt() },
+            value = viewModel.port,
+            onValueChange = {
+                if (Regex("^(|[1-9][0-9]*)$").matches(it)) {
+                    viewModel.port = it
+                }
+            },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )

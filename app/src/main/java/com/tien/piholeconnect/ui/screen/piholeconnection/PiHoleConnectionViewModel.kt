@@ -29,7 +29,7 @@ class PiHoleConnectionViewModel @Inject constructor(
     var protocol: URLProtocol by mutableStateOf(default.protocol)
     var host: String by mutableStateOf(default.host)
     var apiPath: String by mutableStateOf(default.apiPath)
-    var port: Int by mutableStateOf(default.port)
+    var port: String by mutableStateOf(default.port.toString())
     var apiToken: String by mutableStateOf(default.apiToken)
     var basicAuthUsername: String by mutableStateOf(default.basicAuthUsername)
     var basicAuthPassword: String by mutableStateOf(default.basicAuthPassword)
@@ -50,7 +50,7 @@ class PiHoleConnectionViewModel @Inject constructor(
             protocol = connection.protocol
             host = connection.host
             apiPath = connection.apiPath
-            port = connection.port
+            port = connection.port.toString()
             apiToken = connection.apiToken
             basicAuthUsername = connection.basicAuthUsername
             basicAuthPassword = connection.basicAuthPassword
@@ -70,7 +70,7 @@ class PiHoleConnectionViewModel @Inject constructor(
                 .setProtocol(protocol)
                 .setHost(host)
                 .setApiPath(apiPath)
-                .setPort(port)
+                .setPort(port.toIntOrNull() ?: 80)
                 .setApiToken(apiToken)
                 .setBasicAuthUsername(basicAuthUsername)
                 .setBasicAuthPassword(basicAuthPassword)
