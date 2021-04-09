@@ -23,8 +23,8 @@ android {
         applicationId = "com.tien.piholeconnect"
         minSdkVersion(21)
         targetSdkVersion(30)
-        versionCode = 5
-        versionName = "2.1"
+        versionCode = 6
+        versionName = "2.2"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
