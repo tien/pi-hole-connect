@@ -1,6 +1,6 @@
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:$ext.protoBufJavaLiteVersion"
+        artifact = "com.google.protobuf:protoc:$rootProject.ext.protoBufJavaLiteVersion"
     }
 
     generateProtoTasks {

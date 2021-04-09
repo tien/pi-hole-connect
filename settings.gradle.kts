@@ -4,7 +4,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven("https://jitpack.io")
-        jcenter() // TODO: migrate to mavenCentral
+        maven("https://kotlin.bintray.com/kotlinx")
     }
 }
 rootProject.name = "Pi-hole Connect"
