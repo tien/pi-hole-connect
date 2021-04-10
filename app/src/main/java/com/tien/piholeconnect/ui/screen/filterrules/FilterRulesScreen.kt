@@ -1,16 +1,10 @@
 package com.tien.piholeconnect.ui.screen.filterrules
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
-import androidx.compose.material.DismissDirection.EndToStart
-import androidx.compose.material.DismissValue.Default
-import androidx.compose.material.DismissValue.DismissedToStart
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Block
@@ -20,9 +14,10 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -31,9 +26,9 @@ import com.tien.piholeconnect.extension.showGenericPiHoleConnectionError
 import com.tien.piholeconnect.model.RuleType
 import com.tien.piholeconnect.ui.component.AddFilterRuleDialog
 import com.tien.piholeconnect.ui.component.SwipeToRefreshLayout
-import com.tien.piholeconnect.ui.theme.contentColorFor
 import kotlinx.coroutines.launch
 import java.text.DateFormat
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -121,42 +116,47 @@ fun FilterRulesScreen(
                         }
                     }.forEach { rule ->
                         item(rule.id) {
-                            val dismissState = rememberDismissState()
-                            val dismissed = dismissState.isDismissed(EndToStart)
+                            val swipeableState = rememberSwipeableState(0)
+                            val iconSize = with(LocalDensity.current) { 48.dp.toPx() }
 
-                            LaunchedEffect(dismissed) {
-                                if (dismissed) viewModel.viewModelScope.launch {
-                                    viewModel.removeRule(rule.domain, ruleType = rule.type)
-                                }
-                            }
-
-                            SwipeToDismiss(
-                                state = dismissState,
-                                directions = setOf(EndToStart),
-                                background = {
-                                    val color by animateColorAsState(
-                                        when (dismissState.targetValue) {
-                                            Default -> Color.LightGray
-                                            DismissedToStart -> MaterialTheme.colors.error
-                                            else -> throw NotImplementedError()
-                                        }
-                                    )
-                                    Box(
+                            Box(
+                                Modifier.swipeable(
+                                    state = swipeableState,
+                                    anchors = mapOf(0f to 0, -iconSize to 1),
+                                    orientation = Orientation.Horizontal
+                                )
+                            ) {
+                                Box(Modifier.matchParentSize()) {
+                                    Row(
                                         Modifier
                                             .fillMaxSize()
-                                            .background(color)
-                                            .padding(horizontal = 20.dp),
-                                        contentAlignment = Alignment.CenterEnd
+                                            .background(MaterialTheme.colors.error),
+                                        horizontalArrangement = Arrangement.End,
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Icon(
-                                            Icons.Default.Delete,
-                                            contentDescription = null,
-                                            tint = contentColorFor(color)
-                                        )
+                                        IconButton(modifier = Modifier.fillMaxHeight(),
+                                            onClick = {
+                                                viewModel.viewModelScope.launch {
+                                                    viewModel.removeRule(
+                                                        rule.domain,
+                                                        ruleType = rule.type
+                                                    )
+                                                }
+                                            }) {
+                                            Icon(
+                                                Icons.Default.Delete,
+                                                contentDescription = "Delete filter",
+                                                tint = contentColorFor(MaterialTheme.colors.error)
+                                            )
+                                        }
                                     }
-                                }) {
+                                }
                                 ListItem(
-                                    Modifier.background(MaterialTheme.colors.background),
+                                    Modifier
+                                        .offset {
+                                            IntOffset(swipeableState.offset.value.roundToInt(), 0)
+                                        }
+                                        .background(MaterialTheme.colors.background),
                                     overlineText = when (rule.type) {
                                         RuleType.REGEX_BLACK, RuleType.REGEX_WHITE -> ({ Text("RegExr") })
                                         else -> null
