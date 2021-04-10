@@ -75,7 +75,10 @@ fun FilterRulesScreen(
 
     Scaffold(modifier, scaffoldState = scaffoldState, floatingActionButton = {
         FloatingActionButton(onClick = { isAddDialogVisible = true }) {
-            Icon(Icons.Default.Add, contentDescription = "Add filter rule")
+            Icon(
+                Icons.Default.Add,
+                contentDescription = stringResource(R.string.filter_rules_desc_add_filter)
+            )
         }
     }) {
         SwipeToRefreshLayout(
@@ -145,7 +148,7 @@ fun FilterRulesScreen(
                                             }) {
                                             Icon(
                                                 Icons.Default.Delete,
-                                                contentDescription = "Delete filter",
+                                                contentDescription = stringResource(R.string.filter_rules_desc_delete_filter),
                                                 tint = contentColorFor(MaterialTheme.colors.error)
                                             )
                                         }

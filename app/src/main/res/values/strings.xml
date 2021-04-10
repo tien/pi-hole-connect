@@ -47,4 +47,6 @@
     <string name="pi_hole_connection_label_basic_auth_realm">Basic Auth realm</string>
     <string name="pi_hole_connection_label_use_https">Use HTTPS</string>
     <string name="pi_hole_connection_label_show_advance_options">Show advance options</string>
+    <string name="filter_rules_desc_delete_filter">Delete filter</string>
+    <string name="filter_rules_desc_add_filter">Add filter rule</string>
 </resources>
