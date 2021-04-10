@@ -108,7 +108,7 @@ fun FilterRulesScreen(
                         },
                         text = { Text(stringResource(R.string.filter_rules_white_list)) })
                 }
-                LazyColumn {
+                LazyColumn(contentPadding = PaddingValues(bottom = 80.dp)) {
                     viewModel.rules.filter {
                         when (viewModel.selectedTab) {
                             FilterRulesViewModel.Tab.BLACK -> blackListTabRules.contains(it.type)
