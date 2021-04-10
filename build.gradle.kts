@@ -1,5 +1,5 @@
 buildscript {
-    val kotlinVersion by extra("1.4.32")
+    val kotlinVersion: String by project
     extra["composeVersion"] = "1.0.0-beta04"
     extra["ktorVersion"] = "1.5.3"
     extra["protoBufJavaLiteVersion"] = "3.15.6"

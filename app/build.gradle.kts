@@ -8,10 +8,10 @@ val cameraxVersion: String by rootProject.extra
 
 plugins {
     id("com.android.application")
-    id("com.google.protobuf") version "0.8.15"
+    id("com.google.protobuf")
     id("dagger.hilt.android.plugin")
     kotlin("android")
-    kotlin("plugin.serialization") version "1.4.30"
+    kotlin("plugin.serialization")
     kotlin("kapt")
 }
 
@@ -60,6 +60,7 @@ android {
 apply(from = "protobuf.gradle")
 
 dependencies {
+    implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
     implementation("androidx.core:core-ktx:1.3.2")
     implementation("androidx.appcompat:appcompat:1.2.0")
