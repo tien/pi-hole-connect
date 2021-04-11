@@ -22,10 +22,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tien.piholeconnect.R
-import com.tien.piholeconnect.extension.showGenericPiHoleConnectionError
 import com.tien.piholeconnect.model.RuleType
 import com.tien.piholeconnect.ui.component.AddFilterRuleDialog
 import com.tien.piholeconnect.ui.component.SwipeToRefreshLayout
+import com.tien.piholeconnect.util.showGenericPiHoleConnectionError
 import kotlinx.coroutines.launch
 import java.text.DateFormat
 import kotlin.math.roundToInt

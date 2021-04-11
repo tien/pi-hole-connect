@@ -1,4 +1,4 @@
-package com.tien.piholeconnect.extension
+package com.tien.piholeconnect.util
 
 import android.content.Context
 import androidx.compose.material.SnackbarHostState

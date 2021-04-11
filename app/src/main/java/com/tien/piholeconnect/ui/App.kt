@@ -18,7 +18,6 @@ import androidx.hilt.navigation.compose.hiltNavGraphViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.*
 import com.tien.piholeconnect.R
-import com.tien.piholeconnect.extension.currentRouteAsState
 import com.tien.piholeconnect.model.*
 import com.tien.piholeconnect.ui.component.BottomTab
 import com.tien.piholeconnect.ui.component.TopBar
@@ -36,6 +35,7 @@ import com.tien.piholeconnect.ui.screen.statistics.StatisticsScreen
 import com.tien.piholeconnect.ui.screen.statistics.StatisticsViewModel
 import com.tien.piholeconnect.ui.screen.tipjar.TipJarScreen
 import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
+import com.tien.piholeconnect.util.currentRouteAsState
 
 
 @Composable

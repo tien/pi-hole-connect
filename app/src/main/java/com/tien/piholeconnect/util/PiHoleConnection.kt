@@ -1,4 +1,4 @@
-package com.tien.piholeconnect.extension
+package com.tien.piholeconnect.util
 
 import com.tien.piholeconnect.model.URLProtocol
 import io.ktor.http.URLProtocol.Companion.HTTP

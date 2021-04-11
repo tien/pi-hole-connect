@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package com.tien.piholeconnect.extension
+package com.tien.piholeconnect.util
 
 import com.tien.piholeconnect.model.PiHoleConnection.*
 import com.tien.piholeconnect.model.URLProtocol

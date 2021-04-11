@@ -20,12 +20,12 @@ import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.listener.ChartTouchListener
 import com.github.mikephil.charting.listener.OnChartGestureListener
 import com.tien.piholeconnect.R
-import com.tien.piholeconnect.extension.showGenericPiHoleConnectionError
 import com.tien.piholeconnect.ui.component.*
 import com.tien.piholeconnect.ui.theme.info
 import com.tien.piholeconnect.ui.theme.success
 import com.tien.piholeconnect.ui.theme.toColorInt
 import com.tien.piholeconnect.ui.theme.warning
+import com.tien.piholeconnect.util.showGenericPiHoleConnectionError
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.DateFormat.getTimeInstance

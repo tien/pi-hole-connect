@@ -3,8 +3,8 @@ package com.tien.piholeconnect.data
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
 import com.google.protobuf.InvalidProtocolBufferException
-import com.tien.piholeconnect.extension.populateDefaultValues
 import com.tien.piholeconnect.model.UserPreferences
+import com.tien.piholeconnect.util.populateDefaultValues
 import java.io.InputStream
 import java.io.OutputStream
 

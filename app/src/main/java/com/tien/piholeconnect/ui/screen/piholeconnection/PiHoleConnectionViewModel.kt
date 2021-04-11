@@ -6,10 +6,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.mlkit.vision.barcode.BarcodeScanner
-import com.tien.piholeconnect.extension.populateDefaultValues
 import com.tien.piholeconnect.model.PiHoleConnection
 import com.tien.piholeconnect.model.URLProtocol
 import com.tien.piholeconnect.repository.UserPreferencesRepository
+import com.tien.piholeconnect.util.populateDefaultValues
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch

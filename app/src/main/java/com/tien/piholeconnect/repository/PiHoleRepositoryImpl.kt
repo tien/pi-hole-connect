@@ -1,8 +1,8 @@
 package com.tien.piholeconnect.repository
 
 import androidx.datastore.core.DataStore
-import com.tien.piholeconnect.extension.toKtorURLProtocol
 import com.tien.piholeconnect.model.*
+import com.tien.piholeconnect.util.toKtorURLProtocol
 import io.ktor.client.*
 import io.ktor.client.features.auth.providers.*
 import io.ktor.client.request.*

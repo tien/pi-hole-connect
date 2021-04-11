@@ -13,9 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.tien.piholeconnect.extension.showGenericPiHoleConnectionError
 import com.tien.piholeconnect.ui.component.LogItem
 import com.tien.piholeconnect.ui.component.SwipeToRefreshLayout
+import com.tien.piholeconnect.util.showGenericPiHoleConnectionError
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
