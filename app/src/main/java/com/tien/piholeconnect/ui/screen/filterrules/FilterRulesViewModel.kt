@@ -30,22 +30,26 @@ class FilterRulesViewModel @Inject constructor(private val piHoleRepository: PiH
     }
 
     suspend fun addRule() {
-        val ruleType = when (selectedTab) {
-            Tab.WHITE -> if (addRuleIsWildcardChecked) RuleType.REGEX_WHITE else RuleType.WHITE
-            Tab.BLACK -> if (addRuleIsWildcardChecked) RuleType.REGEX_BLACK else RuleType.BLACK
-        }
-        val trimmedDomain = addRuleInputValue.trim()
-        val parsedDomain =
-            if (addRuleIsWildcardChecked) "$WILDCARD_REGEX_PREFIX$trimmedDomain$WILDCARD_REGEX_SUFFIX" else trimmedDomain
+        kotlin.runCatching {
+            val ruleType = when (selectedTab) {
+                Tab.WHITE -> if (addRuleIsWildcardChecked) RuleType.REGEX_WHITE else RuleType.WHITE
+                Tab.BLACK -> if (addRuleIsWildcardChecked) RuleType.REGEX_BLACK else RuleType.BLACK
+            }
+            val trimmedDomain = addRuleInputValue.trim()
+            val parsedDomain =
+                if (addRuleIsWildcardChecked) "$WILDCARD_REGEX_PREFIX$trimmedDomain$WILDCARD_REGEX_SUFFIX" else trimmedDomain
 
-        piHoleRepository.addFilterRule(parsedDomain, ruleType = ruleType)
-        resetAddRuleDialogInputs()
-        refresh()
+            piHoleRepository.addFilterRule(parsedDomain, ruleType = ruleType)
+            resetAddRuleDialogInputs()
+            refresh()
+        }.onFailure { error = it }
     }
 
     suspend fun removeRule(rule: String, ruleType: RuleType) {
-        piHoleRepository.removeFilterRule(rule, ruleType = ruleType)
-        refresh()
+        kotlin.runCatching {
+            piHoleRepository.removeFilterRule(rule, ruleType = ruleType)
+            refresh()
+        }.onFailure { error = it }
     }
 
     fun resetAddRuleDialogInputs() {
