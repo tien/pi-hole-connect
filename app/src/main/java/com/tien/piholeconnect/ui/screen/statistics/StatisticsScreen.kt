@@ -22,6 +22,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tien.piholeconnect.ui.component.RankedListCard
 import com.tien.piholeconnect.ui.component.SwipeToRefreshLayout
+import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
 import com.tien.piholeconnect.ui.theme.info
 import com.tien.piholeconnect.ui.theme.success
 import com.tien.piholeconnect.util.showGenericPiHoleConnectionError
@@ -36,16 +37,21 @@ fun StatisticsScreen(
     val context = LocalContext.current
     var isRefreshing by rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        viewModel.viewModelScope.launch {
-            viewModel.apply {
-                refresh()
-                error?.let {
-                    scaffoldState.snackbarHostState.showGenericPiHoleConnectionError(context)
-                }
-            }
+    viewModel.RefreshOnConnectionChangeEffect()
+
+    LaunchedEffect(viewModel.error) {
+        viewModel.error?.let {
+            scaffoldState.snackbarHostState.showGenericPiHoleConnectionError(context, it)
         }
     }
+
+    LaunchedEffect(Unit) {
+        viewModel.refresh()
+    }
+
+    TopBarProgressIndicator(visible = !viewModel.hasBeenLoaded && viewModel.isRefreshing)
+
+    if (!viewModel.hasBeenLoaded) return
 
     SwipeToRefreshLayout(
         refreshingState = isRefreshing,
@@ -55,9 +61,6 @@ fun StatisticsScreen(
                 viewModel.apply {
                     refresh()
                     isRefreshing = false
-                    error?.let {
-                        scaffoldState.snackbarHostState.showGenericPiHoleConnectionError(context)
-                    }
                 }
             }
         }) {

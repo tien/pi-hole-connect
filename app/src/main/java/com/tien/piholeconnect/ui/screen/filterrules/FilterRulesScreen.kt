@@ -25,6 +25,7 @@ import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.RuleType
 import com.tien.piholeconnect.ui.component.AddFilterRuleDialog
 import com.tien.piholeconnect.ui.component.SwipeToRefreshLayout
+import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
 import com.tien.piholeconnect.util.showGenericPiHoleConnectionError
 import kotlinx.coroutines.launch
 import java.text.DateFormat
@@ -45,16 +46,19 @@ fun FilterRulesScreen(
     var isRefreshing by rememberSaveable { mutableStateOf(false) }
     var isAddDialogVisible by rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        viewModel.viewModelScope.launch {
-            viewModel.apply {
-                refresh()
-                error?.let {
-                    scaffoldState.snackbarHostState.showGenericPiHoleConnectionError(context)
-                }
-            }
+    viewModel.RefreshOnConnectionChangeEffect()
+
+    LaunchedEffect(viewModel.error) {
+        viewModel.error?.let {
+            scaffoldState.snackbarHostState.showGenericPiHoleConnectionError(context, it)
         }
     }
+
+    LaunchedEffect(Unit) {
+        viewModel.refresh()
+    }
+
+    TopBarProgressIndicator(visible = !viewModel.hasBeenLoaded && viewModel.isRefreshing)
 
     if (isAddDialogVisible) {
         AddFilterRuleDialog(
@@ -86,13 +90,8 @@ fun FilterRulesScreen(
             onRefresh = {
                 viewModel.viewModelScope.launch {
                     isRefreshing = true
-                    viewModel.apply {
-                        refresh()
-                        isRefreshing = false
-                        error?.let {
-                            scaffoldState.snackbarHostState.showGenericPiHoleConnectionError(context)
-                        }
-                    }
+                    viewModel.refresh()
+                    isRefreshing = false
                 }
             }) {
             Column {
@@ -111,66 +110,72 @@ fun FilterRulesScreen(
                         },
                         text = { Text(stringResource(R.string.filter_rules_white_list)) })
                 }
-                LazyColumn(contentPadding = PaddingValues(bottom = 80.dp)) {
-                    viewModel.rules.filter {
-                        when (viewModel.selectedTab) {
-                            FilterRulesViewModel.Tab.BLACK -> blackListTabRules.contains(it.type)
-                            FilterRulesViewModel.Tab.WHITE -> whiteListTabRules.contains(it.type)
-                        }
-                    }.forEach { rule ->
-                        item(rule.id) {
-                            val swipeableState = rememberSwipeableState(0)
-                            val iconSize = with(LocalDensity.current) { 48.dp.toPx() }
 
-                            Box(
-                                Modifier.swipeable(
-                                    state = swipeableState,
-                                    anchors = mapOf(0f to 0, -iconSize to 1),
-                                    orientation = Orientation.Horizontal
-                                )
-                            ) {
-                                Box(Modifier.matchParentSize()) {
-                                    Row(
-                                        Modifier
-                                            .fillMaxSize()
-                                            .background(MaterialTheme.colors.error),
-                                        horizontalArrangement = Arrangement.End,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        IconButton(modifier = Modifier.fillMaxHeight(),
-                                            onClick = {
-                                                viewModel.viewModelScope.launch {
-                                                    viewModel.removeRule(
-                                                        rule.domain,
-                                                        ruleType = rule.type
-                                                    )
-                                                }
-                                            }) {
-                                            Icon(
-                                                Icons.Default.Delete,
-                                                contentDescription = stringResource(R.string.filter_rules_desc_delete_filter),
-                                                tint = contentColorFor(MaterialTheme.colors.error)
-                                            )
+                if (viewModel.hasBeenLoaded) {
+                    LazyColumn(contentPadding = PaddingValues(bottom = 80.dp)) {
+                        viewModel.rules.filter {
+                            when (viewModel.selectedTab) {
+                                FilterRulesViewModel.Tab.BLACK -> blackListTabRules.contains(it.type)
+                                FilterRulesViewModel.Tab.WHITE -> whiteListTabRules.contains(it.type)
+                            }
+                        }.forEach { rule ->
+                            item(rule.id) {
+                                val swipeableState = rememberSwipeableState(0)
+                                val iconSize = with(LocalDensity.current) { 48.dp.toPx() }
+
+                                Box(
+                                    Modifier.swipeable(
+                                        state = swipeableState,
+                                        anchors = mapOf(0f to 0, -iconSize to 1),
+                                        orientation = Orientation.Horizontal
+                                    )
+                                ) {
+                                    Box(Modifier.matchParentSize()) {
+                                        Row(
+                                            Modifier
+                                                .fillMaxSize()
+                                                .background(MaterialTheme.colors.error),
+                                            horizontalArrangement = Arrangement.End,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            IconButton(modifier = Modifier.fillMaxHeight(),
+                                                onClick = {
+                                                    viewModel.viewModelScope.launch {
+                                                        viewModel.removeRule(
+                                                            rule.domain,
+                                                            ruleType = rule.type
+                                                        )
+                                                    }
+                                                }) {
+                                                Icon(
+                                                    Icons.Default.Delete,
+                                                    contentDescription = stringResource(R.string.filter_rules_desc_delete_filter),
+                                                    tint = contentColorFor(MaterialTheme.colors.error)
+                                                )
+                                            }
                                         }
                                     }
+                                    ListItem(
+                                        Modifier
+                                            .offset {
+                                                IntOffset(
+                                                    swipeableState.offset.value.roundToInt(),
+                                                    0
+                                                )
+                                            }
+                                            .background(MaterialTheme.colors.background),
+                                        overlineText = when (rule.type) {
+                                            RuleType.REGEX_BLACK, RuleType.REGEX_WHITE -> ({ Text("RegExr") })
+                                            else -> null
+                                        },
+                                        text = { Text(rule.domain) },
+                                        secondaryText = rule.comment?.let { { Text(it) } },
+                                        trailing = {
+                                            Text(
+                                                text = dateTimeInstance.format(rule.dateAdded * 1000L)
+                                            )
+                                        })
                                 }
-                                ListItem(
-                                    Modifier
-                                        .offset {
-                                            IntOffset(swipeableState.offset.value.roundToInt(), 0)
-                                        }
-                                        .background(MaterialTheme.colors.background),
-                                    overlineText = when (rule.type) {
-                                        RuleType.REGEX_BLACK, RuleType.REGEX_WHITE -> ({ Text("RegExr") })
-                                        else -> null
-                                    },
-                                    text = { Text(rule.domain) },
-                                    secondaryText = rule.comment?.let { { Text(it) } },
-                                    trailing = {
-                                        Text(
-                                            text = dateTimeInstance.format(rule.dateAdded * 1000L)
-                                        )
-                                    })
                             }
                         }
                     }

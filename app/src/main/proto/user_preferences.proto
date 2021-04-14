@@ -35,8 +35,9 @@ message PiHoleConnection {
 }
 
 message UserPreferences {
+  reserved 3;
   Theme theme = 1;
   TemperatureUnit temperatureUnit = 2;
-  uint32 selectedPiHoleConnectionIndex = 3;
   repeated PiHoleConnection piHoleConnections = 4;
+  optional string selectedPiHoleConnectionId = 5;
 }

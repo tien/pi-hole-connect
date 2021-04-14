@@ -14,6 +14,8 @@ abstract class RefreshableViewModel : ViewModel() {
     private var refreshJob: Job? = null
 
     var error: Throwable? by mutableStateOf(null)
+    var hasBeenLoaded: Boolean by mutableStateOf(false)
+        protected set
     var isRefreshing by mutableStateOf(false)
         protected set
 
@@ -28,6 +30,7 @@ abstract class RefreshableViewModel : ViewModel() {
                 coroutineScope {
                     queueRefresh().join()
                 }
+                hasBeenLoaded = true
                 isRefreshing = false
             }.onFailure { error = it }
         }

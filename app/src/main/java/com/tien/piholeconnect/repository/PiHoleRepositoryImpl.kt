@@ -17,8 +17,9 @@ class PiHoleRepositoryImpl constructor(
     private val httpClient: HttpClient,
     userPreferencesDataStore: DataStore<UserPreferences>
 ) : PiHoleRepository {
-    private val currentSelectedPiHoleFlow = userPreferencesDataStore.data.map {
-        it.getPiHoleConnections(it.selectedPiHoleConnectionIndex)
+    private val currentSelectedPiHoleFlow = userPreferencesDataStore.data.map { userPreferences ->
+        userPreferences.piHoleConnectionsList.firstOrNull { it.id == userPreferences.selectedPiHoleConnectionId }
+            ?: userPreferences.getPiHoleConnections(0)
     }
 
     private val baseRequestFlow: Flow<HttpRequestBuilder.() -> Unit> =

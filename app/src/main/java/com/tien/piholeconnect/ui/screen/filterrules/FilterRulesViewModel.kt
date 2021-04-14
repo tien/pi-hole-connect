@@ -6,13 +6,16 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.model.*
 import com.tien.piholeconnect.repository.PiHoleRepository
+import com.tien.piholeconnect.repository.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @HiltViewModel
-class FilterRulesViewModel @Inject constructor(private val piHoleRepository: PiHoleRepository) :
-    RefreshableViewModel() {
+class FilterRulesViewModel @Inject constructor(
+    private val piHoleRepository: PiHoleRepository,
+    val userPreferencesRepository: UserPreferencesRepository
+) : PiHoleConnectionAwareViewModel(userPreferencesRepository) {
     enum class Tab { BLACK, WHITE }
 
     var rules: Iterable<PiHoleFilterRule> by mutableStateOf(listOf())

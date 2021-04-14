@@ -3,8 +3,9 @@ package com.tien.piholeconnect.ui.screen.home
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.tien.piholeconnect.model.RefreshableViewModel
+import com.tien.piholeconnect.model.PiHoleConnectionAwareViewModel
 import com.tien.piholeconnect.repository.PiHoleRepository
+import com.tien.piholeconnect.repository.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.joinAll
@@ -13,8 +14,10 @@ import javax.inject.Inject
 import kotlin.time.Duration
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val piHoleRepository: PiHoleRepository) :
-    RefreshableViewModel() {
+class HomeViewModel @Inject constructor(
+    private val piHoleRepository: PiHoleRepository,
+    userPreferencesRepository: UserPreferencesRepository
+) : PiHoleConnectionAwareViewModel(userPreferencesRepository) {
     var isPiHoleSwitchLoading by mutableStateOf(false)
         private set
     var isAdsBlockingEnabled by mutableStateOf(true)

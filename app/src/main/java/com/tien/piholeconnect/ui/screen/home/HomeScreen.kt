@@ -1,6 +1,7 @@
 package com.tien.piholeconnect.ui.screen.home
 
 import android.view.MotionEvent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.layout.*
@@ -30,6 +31,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.DateFormat.getTimeInstance
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -67,6 +69,14 @@ fun HomeScreen(
         }
     }
 
+    viewModel.RefreshOnConnectionChangeEffect()
+
+    LaunchedEffect(viewModel.error) {
+        viewModel.error?.let {
+            scaffoldState.snackbarHostState.showGenericPiHoleConnectionError(context, it)
+        }
+    }
+
     DisposableEffect(Unit) {
         val job = viewModel.viewModelScope.launch {
             while (true) {
@@ -79,6 +89,8 @@ fun HomeScreen(
             job.cancel()
         }
     }
+
+    TopBarProgressIndicator(visible = !viewModel.hasBeenLoaded && viewModel.isRefreshing)
 
     if (isDisableDialogVisible) {
         if (viewModel.isAdsBlockingEnabled) {
@@ -122,11 +134,6 @@ fun HomeScreen(
                     viewModel.apply {
                         refresh()
                         isRefreshing = false
-                        error?.let {
-                            scaffoldState.snackbarHostState.showGenericPiHoleConnectionError(
-                                context
-                            )
-                        }
                     }
                 }
             })
