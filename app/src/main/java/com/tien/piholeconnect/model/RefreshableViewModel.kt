@@ -5,9 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 abstract class RefreshableViewModel : ViewModel() {
@@ -17,7 +15,15 @@ abstract class RefreshableViewModel : ViewModel() {
     var isRefreshing by mutableStateOf(false)
         protected set
 
-    protected abstract fun CoroutineScope.queueRefresh(): Job
+    protected abstract suspend fun queueRefresh()
+
+    protected open fun onFailure(throwable: Throwable) {
+        error = throwable
+    }
+
+    protected open fun onSuccess() {
+        isRefreshing = false
+    }
 
     suspend fun refresh() {
         refreshJob?.cancel()
@@ -25,11 +31,10 @@ abstract class RefreshableViewModel : ViewModel() {
             kotlin.runCatching {
                 error = null
                 isRefreshing = true
-                coroutineScope {
-                    queueRefresh().join()
-                }
-                isRefreshing = false
-            }.onFailure { error = it }
+                queueRefresh()
+            }
+                .onFailure(::onFailure)
+                .onSuccess { onSuccess() }
         }
         refreshJob?.join()
     }

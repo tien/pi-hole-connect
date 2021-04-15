@@ -4,10 +4,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.twotone.Analytics
-import androidx.compose.material.icons.twotone.Home
-import androidx.compose.material.icons.twotone.Insights
-import androidx.compose.material.icons.twotone.Shield
+import androidx.compose.material.icons.twotone.*
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -15,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltNavGraphViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.*
 import com.tien.piholeconnect.R
@@ -36,6 +34,7 @@ import com.tien.piholeconnect.ui.screen.statistics.StatisticsViewModel
 import com.tien.piholeconnect.ui.screen.tipjar.TipJarScreen
 import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 import com.tien.piholeconnect.util.currentRouteAsState
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -46,16 +45,24 @@ fun App(
     logViewModel: LogViewModel = viewModel(),
     filterRulesViewModel: FilterRulesViewModel = viewModel()
 ) {
-    val preferences by preferencesViewModel.userPreferencesFlow.collectAsState(initial = null)
-    if (preferences == null) return
+    val userPreferences by preferencesViewModel.userPreferencesFlow.collectAsState(initial = null)
+    if (userPreferences == null) return
 
     val scaffoldState = rememberScaffoldState()
     val navController = rememberNavController()
 
     val optionsMenuItems =
         setOf(
-            TopBarOptionsMenuItem(Screen.Preferences.route, Screen.Preferences.labelResourceId),
-            TopBarOptionsMenuItem(Screen.TipJar.route, Screen.TipJar.labelResourceId)
+            TopBarOptionsMenuItem(
+                Screen.Preferences.route,
+                Screen.Preferences.labelResourceId,
+                Icons.TwoTone.Settings
+            ),
+            TopBarOptionsMenuItem(
+                Screen.TipJar.route,
+                Screen.TipJar.labelResourceId,
+                Icons.TwoTone.Paid
+            )
         )
 
     val tabItems = listOf(
@@ -71,7 +78,7 @@ fun App(
         ?: stringResource(R.string.app_name)
 
     PiHoleConnectTheme(
-        darkTheme = when (preferences!!.theme) {
+        darkTheme = when (userPreferences!!.theme) {
             Theme.DARK -> true
             Theme.LIGHT -> false
             else -> isSystemInDarkTheme()
@@ -82,10 +89,20 @@ fun App(
             topBar = {
                 TopBar(
                     title = title,
+                    selectedPiHoleConnectionId = userPreferences!!.selectedPiHoleConnectionId,
+                    piHoleConnections = userPreferences!!.piHoleConnectionsList,
                     optionsMenuItems = optionsMenuItems,
                     isBackButtonEnabled = currentScreen?.options?.showBackButton ?: false,
                     isMenusButtonEnabled = currentScreen?.options?.showMenus ?: false,
                     onOptionsMenuItemClick = { navController.navigate(it.key) },
+                    onPiHoleConnectionClick = { piHoleConnection ->
+                        preferencesViewModel.viewModelScope.launch {
+                            preferencesViewModel.updateUserPreferences {
+                                it.toBuilder().setSelectedPiHoleConnectionId(piHoleConnection.id)
+                                    .build()
+                            }
+                        }
+                    },
                     onBackButtonClick = { navController.navigateUp() }
                 )
             },

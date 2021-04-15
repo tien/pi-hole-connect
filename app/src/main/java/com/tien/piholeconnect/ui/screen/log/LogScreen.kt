@@ -15,6 +15,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tien.piholeconnect.ui.component.LogItem
 import com.tien.piholeconnect.ui.component.SwipeToRefreshLayout
+import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
 import com.tien.piholeconnect.util.showGenericPiHoleConnectionError
 import kotlinx.coroutines.launch
 
@@ -28,31 +29,33 @@ fun LogScreen(
     val context = LocalContext.current
     var isRefreshing by rememberSaveable { mutableStateOf(false) }
 
+    viewModel.RefreshOnConnectionChangeEffect()
+
+    LaunchedEffect(viewModel.error) {
+        viewModel.error?.let {
+            scaffoldState.snackbarHostState.showGenericPiHoleConnectionError(context, it)
+        }
+    }
+
     LaunchedEffect(Unit) {
         viewModel.viewModelScope.launch {
             viewModel.apply {
                 refresh()
-                error?.let {
-                    scaffoldState.snackbarHostState.showGenericPiHoleConnectionError(context)
-                }
             }
         }
     }
 
-    if (viewModel.logs.count() == 0) return
+    TopBarProgressIndicator(visible = !viewModel.hasBeenLoaded && viewModel.isRefreshing)
+
+    if (!viewModel.hasBeenLoaded) return
 
     SwipeToRefreshLayout(
         refreshingState = isRefreshing,
         onRefresh = {
             viewModel.viewModelScope.launch {
                 isRefreshing = true
-                viewModel.apply {
-                    refresh()
-                    isRefreshing = false
-                    error?.let {
-                        scaffoldState.snackbarHostState.showGenericPiHoleConnectionError(context)
-                    }
-                }
+                viewModel.refresh()
+                isRefreshing = false
             }
         }) {
         LazyColumn(modifier) {

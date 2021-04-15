@@ -3,16 +3,20 @@ package com.tien.piholeconnect.ui.screen.filterrules
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.model.*
 import com.tien.piholeconnect.repository.PiHoleRepository
+import com.tien.piholeconnect.repository.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
 @HiltViewModel
-class FilterRulesViewModel @Inject constructor(private val piHoleRepository: PiHoleRepository) :
-    RefreshableViewModel() {
+class FilterRulesViewModel @Inject constructor(
+    private val piHoleRepository: PiHoleRepository,
+    val userPreferencesRepository: UserPreferencesRepository
+) : PiHoleConnectionAwareViewModel(userPreferencesRepository) {
     enum class Tab { BLACK, WHITE }
 
     var rules: Iterable<PiHoleFilterRule> by mutableStateOf(listOf())
@@ -22,11 +26,11 @@ class FilterRulesViewModel @Inject constructor(private val piHoleRepository: PiH
     var addRuleInputValue by mutableStateOf("")
     var addRuleIsWildcardChecked by mutableStateOf(false)
 
-    override fun CoroutineScope.queueRefresh(): Job = launch {
-        rules =
-            RuleType.values().map { viewModelScope.async { piHoleRepository.getFilterRules(it) } }
-                .awaitAll()
-                .flatMap { it.data }
+    override suspend fun queueRefresh() = coroutineScope {
+        rules = RuleType.values()
+            .map { async { piHoleRepository.getFilterRules(it) } }
+            .awaitAll()
+            .flatMap { it.data }
     }
 
     suspend fun addRule() {

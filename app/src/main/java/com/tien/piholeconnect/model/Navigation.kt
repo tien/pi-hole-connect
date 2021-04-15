@@ -34,4 +34,8 @@ fun screenForRoute(route: String) =
 
 data class BottomTabItem(val screen: Screen, val icon: ImageVector)
 
-data class TopBarOptionsMenuItem(val key: String, @StringRes val labelResourceId: Int)
+data class TopBarOptionsMenuItem(
+    val key: String,
+    @StringRes val labelResourceId: Int,
+    val icon: ImageVector
+)

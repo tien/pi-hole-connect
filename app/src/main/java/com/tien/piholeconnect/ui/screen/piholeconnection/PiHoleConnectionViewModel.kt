@@ -88,13 +88,10 @@ class PiHoleConnectionViewModel @Inject constructor(
     }
 
     suspend fun remove() {
-        if (id == null) return
-
-        userPreferencesRepository.updateUserPreferences { userPreferences ->
-            val builder = userPreferences.toBuilder()
-            val index = builder.piHoleConnectionsList.indexOfFirst { it.id == id }
-
-            builder.removePiHoleConnections(index).build()
+        id?.let {
+            runCatching {
+                userPreferencesRepository.removePiHoleConnection(it)
+            }
         }
     }
 }

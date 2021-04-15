@@ -2,10 +2,13 @@ package com.tien.piholeconnect.ui.screen.preferences
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.Router
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -42,7 +45,11 @@ fun PreferencesScreen(
 
     if (userPreferences === UserPreferences.getDefaultInstance()) return
 
-    Column(Modifier.padding(vertical = 15.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+    Column(
+        Modifier
+            .verticalScroll(rememberScrollState())
+            .padding(vertical = 15.dp), verticalArrangement = Arrangement.spacedBy(5.dp)
+    ) {
         Text(
             stringResource(R.string.preferences_my_pi_hole),
             modifier = Modifier.padding(horizontal = 15.dp),
@@ -55,10 +62,12 @@ fun PreferencesScreen(
                 text = { Text(it.name) },
                 secondaryText = { Text(it.host) })
         }
-//        ListItem(
-//            Modifier.clickable { navController.navigate(Screen.PiHoleConnection.route) },
-//            icon = { Icon(Icons.Default.AddCircleOutline, contentDescription = "Add Pi-hole") },
-//            text = { Text(stringResource(R.string.preferences_add_pi_hole)) })
+        if (userPreferences.piHoleConnectionsCount < 5) {
+            ListItem(
+                Modifier.clickable { navController.navigate(Screen.PiHoleConnection.route) },
+                icon = { Icon(Icons.Default.AddCircleOutline, contentDescription = null) },
+                text = { Text(stringResource(R.string.preferences_add_pi_hole)) })
+        }
         Column(
             Modifier
                 .padding(horizontal = 15.dp)

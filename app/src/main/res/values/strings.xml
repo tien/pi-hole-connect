@@ -8,7 +8,7 @@
     <string name="label_preferences">Preferences</string>
     <string name="label_enable_blocking">Enable blocking</string>
     <string name="label_disable_blocking">Disable blocking</string>
-    <string name="home_queries_chart_title">Queries over last 24 hour</string>
+    <string name="home_queries_chart_title">Queries over last 24 hours</string>
     <string name="home_queries_chart_time_info_1">Queries from</string>
     <string name="home_queries_chart_time_info_2">to</string>
     <string name="home_queries_chart_permitted_queries_label">Permitted queries</string>
@@ -35,7 +35,7 @@
     <string name="enable_dialog_title">Enable ads blocking?</string>
     <string name="enable_dialog_button_confirm">Enable</string>
     <string name="enable_dialog_button_dismiss">@android:string/cancel</string>
-    <string name="error_pi_hole_connection_generic">An error have occurred, please check your internet connection or whether the API key has been set</string>
+    <string name="error_pi_hole_connection_generic">Please check your internet connection or whether the API key has been set.</string>
     <string name="label_tip_jat">Toss a coin</string>
     <string name="tip_jar_msg">If you like what you are seeing. Then great, please also leave a tip and some feedback as it would greatly help me on developing this app further. Here\'s some confetti as a thank you (ﾉ´ヮ`)ﾉ*: ･ﾟ</string>
     <string name="preferences_my_pi_hole">My Pi-holes</string>
@@ -49,4 +49,5 @@
     <string name="pi_hole_connection_label_show_advance_options">Show advance options</string>
     <string name="filter_rules_desc_delete_filter">Delete filter</string>
     <string name="filter_rules_desc_add_filter">Add filter rule</string>
+    <string name="error_pi_hole_connection_genericerror_pi_hole_connection_generic_prefix">An error has occurred</string>
 </resources>

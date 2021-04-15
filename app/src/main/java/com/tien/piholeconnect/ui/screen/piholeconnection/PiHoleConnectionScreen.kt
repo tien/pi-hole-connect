@@ -319,7 +319,6 @@ fun PiHoleConnectionScreen(
             Text(stringResource(R.string.pi_hole_connection_save))
         }
         if (viewModel.shouldShowDeleteButton) {
-            Spacer(modifier = Modifier.height(25.dp))
             Button(modifier = Modifier.fillMaxWidth(),
                 colors = buttonColors(backgroundColor = MaterialTheme.colors.error), onClick = {
                     viewModel.viewModelScope.launch {
