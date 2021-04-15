@@ -26,6 +26,9 @@ android {
         versionCode = 7
         versionName = "2.3"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        ndk {
+            debugSymbolLevel = "FULL"
+        }
     }
 
     buildTypes {
