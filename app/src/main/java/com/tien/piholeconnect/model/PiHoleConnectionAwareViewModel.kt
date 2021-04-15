@@ -3,7 +3,6 @@ package com.tien.piholeconnect.model
 import androidx.compose.runtime.*
 import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.repository.UserPreferencesRepository
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.drop
@@ -14,8 +13,6 @@ abstract class PiHoleConnectionAwareViewModel constructor(userPreferencesReposit
     private val distinctPiHoleConnectionFlow = userPreferencesRepository.userPreferencesFlow
         .drop(1)
         .distinctUntilChangedBy { it.selectedPiHoleConnectionId }
-
-    private var userPreferencesCollectionJob: Job? = null
 
     var hasBeenLoaded by mutableStateOf(false)
         private set
@@ -30,20 +27,6 @@ abstract class PiHoleConnectionAwareViewModel constructor(userPreferencesReposit
         }
     }
 
-    private fun startRefreshOnSelectedConnectionChangeJob() {
-        userPreferencesCollectionJob?.cancel()
-        userPreferencesCollectionJob = viewModelScope.launch {
-            runCatching {
-                distinctPiHoleConnectionFlow.collectLatest {
-                    refresh()
-                }
-            }
-        }
-    }
-
-    private fun cancelRefreshOnSelectedConnectionChangeJob() =
-        userPreferencesCollectionJob?.cancel()
-
     override fun onSuccess() {
         super.onSuccess()
         hasBeenLoaded = true
@@ -52,9 +35,10 @@ abstract class PiHoleConnectionAwareViewModel constructor(userPreferencesReposit
     @Composable
     @NonRestartableComposable
     fun RefreshOnConnectionChangeEffect() {
-        DisposableEffect(Unit) {
-            startRefreshOnSelectedConnectionChangeJob()
-            onDispose { cancelRefreshOnSelectedConnectionChangeJob() }
+        LaunchedEffect(Unit) {
+            distinctPiHoleConnectionFlow.collectLatest {
+                refresh()
+            }
         }
     }
 }
