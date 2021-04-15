@@ -6,11 +6,14 @@ import androidx.compose.material.SnackbarHostState
 import com.tien.piholeconnect.R
 import io.ktor.client.features.*
 import io.ktor.utils.io.errors.*
+import java.util.concurrent.CancellationException
 
 suspend fun SnackbarHostState.showGenericPiHoleConnectionError(
     context: Context,
     throwable: Throwable
 ) {
+    if (throwable is CancellationException) return
+
     val message = with(StringBuilder()) {
         when (throwable) {
             is ResponseException -> {

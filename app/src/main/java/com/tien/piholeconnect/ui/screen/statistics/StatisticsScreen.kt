@@ -58,10 +58,8 @@ fun StatisticsScreen(
         onRefresh = {
             viewModel.viewModelScope.launch {
                 isRefreshing = true
-                viewModel.apply {
-                    refresh()
-                    isRefreshing = false
-                }
+                viewModel.refresh()
+                isRefreshing = false
             }
         }) {
         Column(

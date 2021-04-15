@@ -1,37 +1,53 @@
 package com.tien.piholeconnect.model
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.runtime.*
 import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
-abstract class PiHoleConnectionAwareViewModel constructor(private val userPreferencesRepository: UserPreferencesRepository) :
+abstract class PiHoleConnectionAwareViewModel constructor(userPreferencesRepository: UserPreferencesRepository) :
     RefreshableViewModel() {
+    private val distinctPiHoleConnectionFlow = userPreferencesRepository.userPreferencesFlow
+        .drop(1)
+        .distinctUntilChangedBy { it.selectedPiHoleConnectionId }
+
     private var userPreferencesCollectionJob: Job? = null
+
+    var hasBeenLoaded by mutableStateOf(false)
+        private set
+
+    init {
+        viewModelScope.launch {
+            runCatching {
+                distinctPiHoleConnectionFlow.collectLatest {
+                    hasBeenLoaded = false
+                }
+            }
+        }
+    }
 
     private fun startRefreshOnSelectedConnectionChangeJob() {
         userPreferencesCollectionJob?.cancel()
         userPreferencesCollectionJob = viewModelScope.launch {
             runCatching {
-                userPreferencesRepository.userPreferencesFlow
-                    .drop(1)
-                    .distinctUntilChangedBy { it.selectedPiHoleConnectionId }
-                    .collect {
-                        hasBeenLoaded = false
-                        refresh()
-                    }
+                distinctPiHoleConnectionFlow.collectLatest {
+                    refresh()
+                }
             }
         }
     }
 
     private fun cancelRefreshOnSelectedConnectionChangeJob() =
         userPreferencesCollectionJob?.cancel()
+
+    override fun onSuccess() {
+        super.onSuccess()
+        hasBeenLoaded = true
+    }
 
     @Composable
     @NonRestartableComposable

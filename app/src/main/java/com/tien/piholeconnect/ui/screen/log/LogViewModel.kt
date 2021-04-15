@@ -8,8 +8,6 @@ import com.tien.piholeconnect.model.PiHoleLog
 import com.tien.piholeconnect.repository.PiHoleRepository
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,7 +18,7 @@ class LogViewModel @Inject constructor(
     var logs: Iterable<PiHoleLog> by mutableStateOf(listOf())
         private set
 
-    override fun CoroutineScope.queueRefresh() = launch {
+    override suspend fun queueRefresh() {
         logs = piHoleRepository.getLogs(200).data
     }
 }

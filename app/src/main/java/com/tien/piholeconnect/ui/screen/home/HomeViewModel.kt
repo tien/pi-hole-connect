@@ -7,9 +7,9 @@ import com.tien.piholeconnect.model.PiHoleConnectionAwareViewModel
 import com.tien.piholeconnect.repository.PiHoleRepository
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 import kotlin.time.Duration
 
@@ -36,24 +36,23 @@ class HomeViewModel @Inject constructor(
     var adsOverTime by mutableStateOf(mapOf<Int, Int>())
         private set
 
-    override fun CoroutineScope.queueRefresh() = launch {
-        joinAll(
-            launch {
-                val summary = piHoleRepository.getStatusSummary()
+    override suspend fun queueRefresh() = coroutineScope {
+        val deferredSummary = async { piHoleRepository.getStatusSummary() }
+        val deferredOverTimeData = async { piHoleRepository.getOverTimeData10Minutes() }
 
-                isAdsBlockingEnabled = summary.status == "enabled"
-                totalQueries = summary.dnsQueriesToday
-                totalBlockedQueries = summary.adsBlockedToday
-                queryBlockingPercentage = summary.adsPercentageToday
-                blockedDomainListCount = summary.domainsBeingBlocked
-            },
-            launch {
-                val overTimeData = piHoleRepository.getOverTimeData10Minutes()
+        awaitAll(deferredSummary, deferredOverTimeData)
 
-                queriesOverTime = overTimeData.domainsOverTime
-                adsOverTime = overTimeData.adsOverTime
-            }
-        )
+        deferredSummary.await().let { summary ->
+            isAdsBlockingEnabled = summary.status == "enabled"
+            totalQueries = summary.dnsQueriesToday
+            totalBlockedQueries = summary.adsBlockedToday
+            queryBlockingPercentage = summary.adsPercentageToday
+            blockedDomainListCount = summary.domainsBeingBlocked
+        }
+        deferredOverTimeData.await().let { overTimeData ->
+            queriesOverTime = overTimeData.domainsOverTime
+            adsOverTime = overTimeData.adsOverTime
+        }
     }
 
     suspend fun disable(duration: Duration) {
