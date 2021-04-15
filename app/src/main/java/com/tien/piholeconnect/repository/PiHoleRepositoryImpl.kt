@@ -6,10 +6,12 @@ import com.tien.piholeconnect.util.toKtorURLProtocol
 import io.ktor.client.*
 import io.ktor.client.features.auth.providers.*
 import io.ktor.client.request.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.time.Duration
 
@@ -51,53 +53,63 @@ class PiHoleRepositoryImpl constructor(
         }
 
     override suspend fun getStatusSummary(): PiHoleSummary =
-        baseRequestFlow.first().let { requestBuilder ->
-            httpClient.get {
-                requestBuilder(this)
-                url {
-                    parameters.append("summaryRaw", true.toString())
+        withContext(Dispatchers.IO) {
+            baseRequestFlow.first().let { requestBuilder ->
+                httpClient.get {
+                    requestBuilder(this)
+                    url {
+                        parameters.append("summaryRaw", true.toString())
+                    }
                 }
             }
         }
 
     override suspend fun getOverTimeData10Minutes(): PiHoleOverTimeData =
-        baseRequestFlow.first().let { requestBuilder ->
-            httpClient.get {
-                requestBuilder(this)
-                url {
-                    parameters.append("overTimeData10mins", true.toString())
+        withContext(Dispatchers.IO) {
+            baseRequestFlow.first().let { requestBuilder ->
+                httpClient.get {
+                    requestBuilder(this)
+                    url {
+                        parameters.append("overTimeData10mins", true.toString())
+                    }
                 }
             }
         }
 
     override suspend fun getStatistics(): PiHoleStatistics =
-        baseRequestFlow.first().let { requestBuilder ->
-            httpClient.get {
-                requestBuilder(this)
-                url {
-                    parameters.append("getQueryTypes", true.toString())
-                    parameters.append("topItems", true.toString())
-                    parameters.append("topClients", true.toString())
+        withContext(Dispatchers.IO) {
+            baseRequestFlow.first().let { requestBuilder ->
+                httpClient.get {
+                    requestBuilder(this)
+                    url {
+                        parameters.append("getQueryTypes", true.toString())
+                        parameters.append("topItems", true.toString())
+                        parameters.append("topClients", true.toString())
+                    }
                 }
             }
         }
 
     override suspend fun getLogs(limit: Int): PiHoleLogs =
-        baseRequestFlow.first().let { requestBuilder ->
-            httpClient.get {
-                requestBuilder(this)
-                url {
-                    parameters.append("getAllQueries", limit.toString())
+        withContext(Dispatchers.IO) {
+            baseRequestFlow.first().let { requestBuilder ->
+                httpClient.get {
+                    requestBuilder(this)
+                    url {
+                        parameters.append("getAllQueries", limit.toString())
+                    }
                 }
             }
         }
 
     override suspend fun getFilterRules(ruleType: RuleType): PiHoleFilterRules =
-        baseRequestFlow.first().let { requestBuilder ->
-            httpClient.get {
-                requestBuilder(this)
-                url {
-                    parameters.append("list", ruleType.toString().toLowerCase(Locale.ENGLISH))
+        withContext(Dispatchers.IO) {
+            baseRequestFlow.first().let { requestBuilder ->
+                httpClient.get {
+                    requestBuilder(this)
+                    url {
+                        parameters.append("list", ruleType.toString().toLowerCase(Locale.ENGLISH))
+                    }
                 }
             }
         }
@@ -106,12 +118,14 @@ class PiHoleRepositoryImpl constructor(
         rule: String,
         ruleType: RuleType
     ): ModifyFilterRuleResponse =
-        baseRequestFlow.first().let { requestBuilder ->
-            httpClient.get {
-                requestBuilder(this)
-                url {
-                    parameters.append("list", ruleType.toString().toLowerCase(Locale.ENGLISH))
-                    parameters.append("add", rule)
+        withContext(Dispatchers.IO) {
+            baseRequestFlow.first().let { requestBuilder ->
+                httpClient.get {
+                    requestBuilder(this)
+                    url {
+                        parameters.append("list", ruleType.toString().toLowerCase(Locale.ENGLISH))
+                        parameters.append("add", rule)
+                    }
                 }
             }
         }
@@ -120,33 +134,39 @@ class PiHoleRepositoryImpl constructor(
         rule: String,
         ruleType: RuleType
     ): ModifyFilterRuleResponse =
-        baseRequestFlow.first().let { requestBuilder ->
-            httpClient.get {
-                requestBuilder(this)
-                url {
-                    parameters.append("list", ruleType.toString().toLowerCase(Locale.ENGLISH))
-                    parameters.append("sub", rule)
+        withContext(Dispatchers.IO) {
+            baseRequestFlow.first().let { requestBuilder ->
+                httpClient.get {
+                    requestBuilder(this)
+                    url {
+                        parameters.append("list", ruleType.toString().toLowerCase(Locale.ENGLISH))
+                        parameters.append("sub", rule)
+                    }
                 }
             }
         }
 
     override suspend fun disable(duration: Duration): Unit =
-        baseRequestFlow.first().let { requestBuilder ->
-            httpClient.get {
-                requestBuilder(this)
-                url {
-                    parameters["disable"] =
-                        if (duration == Duration.INFINITE) 0.toString() else duration.inSeconds.toString()
+        withContext(Dispatchers.IO) {
+            baseRequestFlow.first().let { requestBuilder ->
+                httpClient.get {
+                    requestBuilder(this)
+                    url {
+                        parameters["disable"] =
+                            if (duration == Duration.INFINITE) 0.toString() else duration.inSeconds.toString()
+                    }
                 }
             }
         }
 
     override suspend fun enable(): Unit =
-        baseRequestFlow.first().let { requestBuilder ->
-            httpClient.get {
-                requestBuilder(this)
-                url {
-                    parameters["enable"] = true.toString()
+        withContext(Dispatchers.IO) {
+            baseRequestFlow.first().let { requestBuilder ->
+                httpClient.get {
+                    requestBuilder(this)
+                    url {
+                        parameters["enable"] = true.toString()
+                    }
                 }
             }
         }
