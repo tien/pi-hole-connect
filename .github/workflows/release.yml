@@ -1,0 +1,54 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Git Tag (Optional)
+        required: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        if: ${{ github.event.inputs.tag == '' }}
+      - uses: actions/checkout@v2
+        if: ${{ github.event.inputs.tag != '' }}
+        with:
+          ref: ${{ format('refs/tags/{0}', github.event.inputs.tag) }}
+
+      - name: set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: "11"
+          distribution: "adopt"
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build APK
+        run: ./gradlew assembleRelease
+      - name: Build AAB
+        run: ./gradlew bundleRelease
+
+      - name: Generate changelog
+        id: generate-changelog
+        uses: heinrichreimer/github-changelog-generator-action@v2.1.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          tag_name: ${{ github.event.inputs.tag }}
+          body: ${{ steps.generate-changelog.outputs.changelog }}
+          files: |
+            app/build/outputs/bundle/release/app-release.aab
+            app/build/outputs/apk/release/app-release-unsigned.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
