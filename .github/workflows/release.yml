@@ -37,9 +37,9 @@ jobs:
 
       - name: Generate changelog
         id: generate-changelog
-        uses: heinrichreimer/github-changelog-generator-action@v2.1.1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+        uses: mikepenz/release-changelog-builder-action@v1.7.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Release
         uses: softprops/action-gh-release@v1
