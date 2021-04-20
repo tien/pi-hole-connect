@@ -239,6 +239,13 @@ fun PiHoleConnectionScreen(
                     }
                 )
             }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(stringResource(R.string.pi_hole_connection_label_trust_all_certificates))
+                Switch(
+                    checked = viewModel.trustAllCertificates,
+                    onCheckedChange = { viewModel.trustAllCertificates = it }
+                )
+            }
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
