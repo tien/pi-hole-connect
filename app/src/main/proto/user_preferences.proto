@@ -32,6 +32,7 @@ message PiHoleConnection {
   optional string basicAuthUsername = 9;
   optional string basicAuthPassword = 10;
   optional string basicAuthRealm = 11;
+  optional bool trustAllCertificates = 12;
 }
 
 message UserPreferences {

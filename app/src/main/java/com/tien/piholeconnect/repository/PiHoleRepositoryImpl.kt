@@ -1,6 +1,8 @@
 package com.tien.piholeconnect.repository
 
 import androidx.datastore.core.DataStore
+import com.tien.piholeconnect.di.DefaultHttpClient
+import com.tien.piholeconnect.di.TrustAllCertificatesHttpClient
 import com.tien.piholeconnect.model.*
 import com.tien.piholeconnect.util.toKtorURLProtocol
 import io.ktor.client.*
@@ -13,10 +15,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.util.*
+import javax.inject.Inject
 import kotlin.time.Duration
 
-class PiHoleRepositoryImpl constructor(
-    private val httpClient: HttpClient,
+class PiHoleRepositoryImpl @Inject constructor(
+    @DefaultHttpClient private val defaultHttpClient: HttpClient,
+    @TrustAllCertificatesHttpClient trustAllCertificatesHttpClient: HttpClient,
     userPreferencesDataStore: DataStore<UserPreferences>
 ) : PiHoleRepository {
     private val currentSelectedPiHoleFlow = userPreferencesDataStore.data.map { userPreferences ->
@@ -24,9 +28,12 @@ class PiHoleRepositoryImpl constructor(
             ?: userPreferences.getPiHoleConnections(0)
     }
 
-    private val baseRequestFlow: Flow<HttpRequestBuilder.() -> Unit> =
+    private val baseRequestFlow: Flow<Pair<HttpClient, HttpRequestBuilder.() -> Unit>> =
         currentSelectedPiHoleFlow.map { piHoleConnection ->
-            {
+            val httpClient =
+                if (piHoleConnection.trustAllCertificates) trustAllCertificatesHttpClient else defaultHttpClient
+
+            val requestBuilder: HttpRequestBuilder.() -> Unit = {
                 url {
                     protocol = piHoleConnection.protocol.toKtorURLProtocol()
                     host = piHoleConnection.host
@@ -50,11 +57,13 @@ class PiHoleRepositoryImpl constructor(
                     }
                 }
             }
+
+            Pair(httpClient, requestBuilder)
         }
 
     override suspend fun getStatusSummary(): PiHoleSummary =
         withContext(Dispatchers.IO) {
-            baseRequestFlow.first().let { requestBuilder ->
+            baseRequestFlow.first().let { (httpClient, requestBuilder) ->
                 httpClient.get {
                     requestBuilder(this)
                     url {
@@ -66,7 +75,7 @@ class PiHoleRepositoryImpl constructor(
 
     override suspend fun getOverTimeData10Minutes(): PiHoleOverTimeData =
         withContext(Dispatchers.IO) {
-            baseRequestFlow.first().let { requestBuilder ->
+            baseRequestFlow.first().let { (httpClient, requestBuilder) ->
                 httpClient.get {
                     requestBuilder(this)
                     url {
@@ -78,7 +87,7 @@ class PiHoleRepositoryImpl constructor(
 
     override suspend fun getStatistics(): PiHoleStatistics =
         withContext(Dispatchers.IO) {
-            baseRequestFlow.first().let { requestBuilder ->
+            baseRequestFlow.first().let { (httpClient, requestBuilder) ->
                 httpClient.get {
                     requestBuilder(this)
                     url {
@@ -92,7 +101,7 @@ class PiHoleRepositoryImpl constructor(
 
     override suspend fun getLogs(limit: Int): PiHoleLogs =
         withContext(Dispatchers.IO) {
-            baseRequestFlow.first().let { requestBuilder ->
+            baseRequestFlow.first().let { (httpClient, requestBuilder) ->
                 httpClient.get {
                     requestBuilder(this)
                     url {
@@ -104,7 +113,7 @@ class PiHoleRepositoryImpl constructor(
 
     override suspend fun getFilterRules(ruleType: RuleType): PiHoleFilterRules =
         withContext(Dispatchers.IO) {
-            baseRequestFlow.first().let { requestBuilder ->
+            baseRequestFlow.first().let { (httpClient, requestBuilder) ->
                 httpClient.get {
                     requestBuilder(this)
                     url {
@@ -119,7 +128,7 @@ class PiHoleRepositoryImpl constructor(
         ruleType: RuleType
     ): ModifyFilterRuleResponse =
         withContext(Dispatchers.IO) {
-            baseRequestFlow.first().let { requestBuilder ->
+            baseRequestFlow.first().let { (httpClient, requestBuilder) ->
                 httpClient.get {
                     requestBuilder(this)
                     url {
@@ -135,7 +144,7 @@ class PiHoleRepositoryImpl constructor(
         ruleType: RuleType
     ): ModifyFilterRuleResponse =
         withContext(Dispatchers.IO) {
-            baseRequestFlow.first().let { requestBuilder ->
+            baseRequestFlow.first().let { (httpClient, requestBuilder) ->
                 httpClient.get {
                     requestBuilder(this)
                     url {
@@ -148,7 +157,7 @@ class PiHoleRepositoryImpl constructor(
 
     override suspend fun disable(duration: Duration): Unit =
         withContext(Dispatchers.IO) {
-            baseRequestFlow.first().let { requestBuilder ->
+            baseRequestFlow.first().let { (httpClient, requestBuilder) ->
                 httpClient.get {
                     requestBuilder(this)
                     url {
@@ -161,7 +170,7 @@ class PiHoleRepositoryImpl constructor(
 
     override suspend fun enable(): Unit =
         withContext(Dispatchers.IO) {
-            baseRequestFlow.first().let { requestBuilder ->
+            baseRequestFlow.first().let { (httpClient, requestBuilder) ->
                 httpClient.get {
                     requestBuilder(this)
                     url {
