@@ -62,7 +62,7 @@ fun DisableAdsBlockingAlertDialog(
             ) {
                 TextButton(onClick = { onDurationButtonClick(Duration.INFINITE) }) {
                     Text(
-                        stringResource(R.string.disable_dialog_button_permanent).toUpperCase(Locale.ROOT)
+                        stringResource(R.string.disable_dialog_button_permanent).toUpperCase(Locale.getDefault())
                     )
                 }
                 TextButton(onClick = { onDurationButtonClick(30.seconds) }) { Text("30 SECONDS") }
@@ -70,9 +70,7 @@ fun DisableAdsBlockingAlertDialog(
                 TextButton(onClick = { onDurationButtonClick(5.minutes) }) { Text("5 MINUTES") }
                 TextButton(onClick = onDismissRequest) {
                     Text(
-                        stringResource(R.string.disable_dialog_button_cancel).toUpperCase(
-                            Locale.ROOT
-                        )
+                        stringResource(R.string.disable_dialog_button_cancel).toUpperCase(Locale.getDefault())
                     )
                 }
             }
@@ -86,18 +84,14 @@ fun EnableAdsBlockingAlertDialog(onConfirmRequest: () -> Unit, onDismissRequest:
         confirmButton = {
             TextButton(onClick = onConfirmRequest) {
                 Text(
-                    stringResource(R.string.enable_dialog_button_confirm).toUpperCase(
-                        Locale.ROOT
-                    )
+                    stringResource(R.string.enable_dialog_button_confirm).toUpperCase(Locale.getDefault())
                 )
             }
         },
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
                 Text(
-                    stringResource(R.string.enable_dialog_button_dismiss).toUpperCase(
-                        Locale.ROOT
-                    )
+                    stringResource(R.string.enable_dialog_button_dismiss).toUpperCase(Locale.getDefault())
                 )
             }
         },
