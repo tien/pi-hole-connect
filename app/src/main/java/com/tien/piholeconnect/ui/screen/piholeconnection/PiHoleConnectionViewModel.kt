@@ -10,6 +10,7 @@ import com.tien.piholeconnect.model.PiHoleConnection
 import com.tien.piholeconnect.model.URLProtocol
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import com.tien.piholeconnect.util.populateDefaultValues
+import com.tien.piholeconnect.util.toKtorURLProtocol
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -72,7 +73,7 @@ class PiHoleConnectionViewModel @Inject constructor(
                 .setProtocol(protocol)
                 .setHost(host)
                 .setApiPath(apiPath)
-                .setPort(port.toIntOrNull() ?: 80)
+                .setPort(port.toIntOrNull() ?: protocol.toKtorURLProtocol().defaultPort)
                 .setApiToken(apiToken)
                 .setBasicAuthUsername(basicAuthUsername)
                 .setBasicAuthPassword(basicAuthPassword)

@@ -31,6 +31,9 @@ import androidx.navigation.NavController
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.URLProtocol
 import com.tien.piholeconnect.ui.component.Scanner
+import com.tien.piholeconnect.util.toKtorURLProtocol
+import io.ktor.http.URLProtocol.Companion.HTTP
+import io.ktor.http.URLProtocol.Companion.HTTPS
 import kotlinx.coroutines.launch
 
 @Composable
@@ -235,7 +238,13 @@ fun PiHoleConnectionScreen(
                 Switch(
                     checked = viewModel.protocol == URLProtocol.HTTPS,
                     onCheckedChange = {
-                        viewModel.protocol = if (it) URLProtocol.HTTPS else URLProtocol.HTTP
+                        val protocol = if (it) URLProtocol.HTTPS else URLProtocol.HTTP
+                        if ((viewModel.protocol == URLProtocol.HTTP && viewModel.port == HTTP.defaultPort.toString()) ||
+                            (viewModel.protocol == URLProtocol.HTTPS && viewModel.port == HTTPS.defaultPort.toString())
+                        ) {
+                            viewModel.port = protocol.toKtorURLProtocol().defaultPort.toString()
+                        }
+                        viewModel.protocol = protocol
                     }
                 )
             }
