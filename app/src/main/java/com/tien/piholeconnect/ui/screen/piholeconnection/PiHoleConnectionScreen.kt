@@ -35,6 +35,7 @@ import com.tien.piholeconnect.util.toKtorURLProtocol
 import io.ktor.http.URLProtocol.Companion.HTTP
 import io.ktor.http.URLProtocol.Companion.HTTPS
 import kotlinx.coroutines.launch
+import java.util.*
 
 @Composable
 fun PiHoleConnectionScreen(
@@ -49,6 +50,7 @@ fun PiHoleConnectionScreen(
     val scrollState = rememberScrollState()
     val positionMap = remember { mutableStateMapOf<String, Float>() }
     var isScannerExpanded by rememberSaveable { mutableStateOf(false) }
+    var isDeleteAlertDialogExpanded by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         if (connectionId != null) {
@@ -76,6 +78,31 @@ fun PiHoleConnectionScreen(
                         }
                     })
             })
+    }
+
+    if (isDeleteAlertDialogExpanded) {
+        AlertDialog(
+            text = { Text(stringResource(R.string.pi_hole_connection_remove_dialog_title)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.viewModelScope.launch {
+                        viewModel.remove()
+                        navController.navigateUp()
+                    }
+                }) {
+                    Text(
+                        stringResource(R.string.pi_hole_connection_remove_dialog_button_remove).toUpperCase(
+                            Locale.getDefault()
+                        )
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    isDeleteAlertDialogExpanded = false
+                }) { Text(stringResource(android.R.string.cancel).toUpperCase(Locale.getDefault())) }
+            },
+            onDismissRequest = { isDeleteAlertDialogExpanded = false })
     }
 
     Column(
@@ -336,12 +363,8 @@ fun PiHoleConnectionScreen(
         }
         if (viewModel.shouldShowDeleteButton) {
             Button(modifier = Modifier.fillMaxWidth(),
-                colors = buttonColors(backgroundColor = MaterialTheme.colors.error), onClick = {
-                    viewModel.viewModelScope.launch {
-                        viewModel.remove()
-                        navController.navigateUp()
-                    }
-                }) {
+                colors = buttonColors(backgroundColor = MaterialTheme.colors.error),
+                onClick = { isDeleteAlertDialogExpanded = true }) {
                 Text(stringResource(R.string.pi_hole_connection_remove))
             }
         }
