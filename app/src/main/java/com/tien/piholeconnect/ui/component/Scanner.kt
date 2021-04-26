@@ -1,6 +1,6 @@
 package com.tien.piholeconnect.ui.component
 
-import androidx.annotation.experimental.UseExperimental
+import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
@@ -20,7 +20,7 @@ import com.google.mlkit.vision.barcode.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.common.InputImage
 
-@UseExperimental(markerClass = ExperimentalGetImage::class)
+@OptIn(ExperimentalGetImage::class)
 @Composable
 fun Scanner(
     barcodeScanner: BarcodeScanner,
