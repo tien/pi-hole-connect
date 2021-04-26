@@ -37,16 +37,17 @@ jobs:
 
       - name: Generate changelog
         id: generate-changelog
-        uses: mikepenz/release-changelog-builder-action@v1.7.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: TriPSs/conventional-changelog-action@v3.7.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          output-file: "false"
 
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           draft: true
           tag_name: ${{ github.event.inputs.tag }}
-          body: ${{ steps.generate-changelog.outputs.changelog }}
+          body: ${{ steps.generate-changelog.outputs.clean_changelog }}
           files: |
             app/build/outputs/bundle/release/app-release.aab
             app/build/outputs/apk/release/app-release-unsigned.apk
