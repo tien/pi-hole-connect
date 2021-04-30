@@ -31,6 +31,7 @@ import androidx.navigation.NavController
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.URLProtocol
 import com.tien.piholeconnect.ui.component.Scanner
+import com.tien.piholeconnect.util.isNumericOrWhitespace
 import com.tien.piholeconnect.util.toKtorURLProtocol
 import io.ktor.http.URLProtocol.Companion.HTTP
 import io.ktor.http.URLProtocol.Companion.HTTPS
@@ -200,7 +201,7 @@ fun PiHoleConnectionScreen(
             label = { Text(stringResource(R.string.pi_hole_connection_label_port)) },
             value = viewModel.port,
             onValueChange = {
-                if (Regex("^(|[1-9][0-9]*)$").matches(it)) {
+                if (it.isNumericOrWhitespace()) {
                     viewModel.port = it
                 }
             },

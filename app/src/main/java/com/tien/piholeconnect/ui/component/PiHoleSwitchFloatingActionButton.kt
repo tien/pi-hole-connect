@@ -9,6 +9,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.GppBad
 import androidx.compose.material.icons.filled.GppGood
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -48,33 +52,53 @@ fun DisableAdsBlockingAlertDialog(
     onDismissRequest: () -> Unit,
     onDurationButtonClick: (Duration) -> Unit
 ) {
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        title = { Text(stringResource(R.string.disable_dialog_title)) },
-        text = { Text(stringResource(R.string.disable_dialog_msg)) },
-        buttons = {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                TextButton(onClick = { onDurationButtonClick(Duration.INFINITE) }) {
-                    Text(
-                        stringResource(R.string.disable_dialog_button_permanent).toUpperCase(Locale.getDefault())
-                    )
+    var isDurationPickerVisible by rememberSaveable { mutableStateOf(false) }
+
+    if (isDurationPickerVisible) {
+        DurationPickerDialog(
+            onDurationConfirm = onDurationButtonClick,
+            onDismissRequest = onDismissRequest
+        )
+    } else {
+        AlertDialog(
+            onDismissRequest = onDismissRequest,
+            title = { Text(stringResource(R.string.disable_dialog_title)) },
+            text = { Text(stringResource(R.string.disable_dialog_msg)) },
+            buttons = {
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    TextButton(onClick = { onDurationButtonClick(Duration.INFINITE) }) {
+                        Text(
+                            stringResource(R.string.disable_dialog_button_permanent).toUpperCase(
+                                Locale.getDefault()
+                            )
+                        )
+                    }
+                    TextButton(onClick = { onDurationButtonClick(10.seconds) }) {
+                        Text(stringResource(R.string.disable_dialog_button_10_seconds))
+                    }
+                    TextButton(onClick = { onDurationButtonClick(30.seconds) }) {
+                        Text(stringResource(R.string.disable_dialog_button_30_seconds))
+                    }
+                    TextButton(onClick = { onDurationButtonClick(5.minutes) }) {
+                        Text(stringResource(R.string.disable_dialog_button_5_minutes))
+                    }
+                    TextButton(onClick = {
+                        isDurationPickerVisible = true
+                    }) { Text(stringResource(R.string.disable_dialog_button_custom_time)) }
+                    TextButton(onClick = onDismissRequest) {
+                        Text(
+                            stringResource(R.string.disable_dialog_button_cancel).toUpperCase(Locale.getDefault())
+                        )
+                    }
                 }
-                TextButton(onClick = { onDurationButtonClick(30.seconds) }) { Text("30 SECONDS") }
-                TextButton(onClick = { onDurationButtonClick(1.minutes) }) { Text("1 MINUTES") }
-                TextButton(onClick = { onDurationButtonClick(5.minutes) }) { Text("5 MINUTES") }
-                TextButton(onClick = onDismissRequest) {
-                    Text(
-                        stringResource(R.string.disable_dialog_button_cancel).toUpperCase(Locale.getDefault())
-                    )
-                }
-            }
-        })
+            })
+    }
 }
 
 @Composable

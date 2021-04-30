@@ -53,4 +53,10 @@
     <string name="pi_hole_connection_label_trust_all_certificates">Trust all certificates</string>
     <string name="pi_hole_connection_remove_dialog_title">Remove connection?</string>
     <string name="pi_hole_connection_remove_dialog_button_remove">Remove</string>
+    <string name="disable_dialog_button_custom_time">CUSTOM TIME</string>
+    <string name="disable_dialog_button_5_minutes">5 MINUTES</string>
+    <string name="disable_dialog_button_30_seconds">30 SECONDS</string>
+    <string name="disable_dialog_button_10_seconds">10 SECONDS</string>
+    <string name="duration_picker_dialog_hour">Hour</string>
+    <string name="duration_picker_dialog_minute">Minute</string>
 </resources>
