@@ -7,6 +7,8 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -28,7 +30,12 @@ import kotlin.time.minutes
 enum class TimeTextFieldType { PRIMARY, SECONDARY }
 
 @Composable
-fun TimeTextField(value: String, type: TimeTextFieldType, onValueChange: (value: String) -> Unit) {
+fun TimeTextField(
+    value: String,
+    modifier: Modifier = Modifier,
+    type: TimeTextFieldType,
+    onValueChange: (value: String) -> Unit
+) {
     val colors = when (type) {
         TimeTextFieldType.PRIMARY -> TextFieldDefaults.outlinedTextFieldColors(
             backgroundColor = MaterialTheme.colors.primary.copy(TextFieldDefaults.BackgroundOpacity),
@@ -69,7 +76,7 @@ fun TimeTextField(value: String, type: TimeTextFieldType, onValueChange: (value:
         },
         colors = colors,
         shape = MaterialTheme.shapes.medium,
-        modifier = Modifier.width(96.dp),
+        modifier = modifier.width(96.dp),
     )
 }
 
@@ -85,20 +92,30 @@ fun DurationPickerDialog(onDismissRequest: () -> Unit, onDurationConfirm: (Durat
             onHoursChange = { hours = it },
             onMinutesChange = { minutes = it },
             onOkayClick = onDurationConfirm,
-            onCancelClick = onDismissRequest
+            onCancelClick = onDismissRequest,
+            autoFocus = true
         )
     }
 }
 
 @Composable
 fun DurationPicker(
+    autoFocus: Boolean = false,
     hours: String,
     minutes: String,
     onHoursChange: (hours: String) -> Unit,
     onMinutesChange: (minutes: String) -> Unit,
     onOkayClick: (Duration) -> Unit,
-    onCancelClick: () -> Unit
+    onCancelClick: () -> Unit,
 ) {
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        if (autoFocus) {
+            focusRequester.requestFocus()
+        }
+    }
+
     Card {
         Column(Modifier.width(IntrinsicSize.Max)) {
             Column(
@@ -117,6 +134,7 @@ fun DurationPicker(
                 Row(Modifier.padding(top = 24.dp), verticalAlignment = Alignment.CenterVertically) {
                     TimeTextField(
                         value = hours,
+                        modifier = Modifier.focusRequester(focusRequester),
                         type = TimeTextFieldType.PRIMARY,
                         onValueChange = {
                             if (it.isNumericOrWhitespace()) {
