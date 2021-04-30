@@ -11,6 +11,6 @@ interface PiHoleRepository {
     suspend fun getFilterRules(ruleType: RuleType): PiHoleFilterRules
     suspend fun addFilterRule(rule: String, ruleType: RuleType): ModifyFilterRuleResponse
     suspend fun removeFilterRule(rule: String, ruleType: RuleType): ModifyFilterRuleResponse
-    suspend fun disable(duration: Duration)
-    suspend fun enable()
+    suspend fun disable(duration: Duration): PiHoleEnableStatus
+    suspend fun enable(): PiHoleEnableStatus
 }
