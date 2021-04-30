@@ -57,6 +57,6 @@
     <string name="disable_dialog_button_5_minutes">5 MINUTES</string>
     <string name="disable_dialog_button_30_seconds">30 SECONDS</string>
     <string name="disable_dialog_button_10_seconds">10 SECONDS</string>
-    <string name="duration_picker_dialog_hour">Hour</string>
-    <string name="duration_picker_dialog_minute">Minute</string>
+    <string name="duration_picker_dialog_hours">Hours</string>
+    <string name="duration_picker_dialog_minutes">Minutes</string>
 </resources>
