@@ -162,7 +162,7 @@ class PiHoleRepositoryImpl @Inject constructor(
                     requestBuilder(this)
                     url {
                         parameters["disable"] =
-                            if (duration == Duration.INFINITE) 0.toString() else duration.inSeconds.toString()
+                            if (duration.isInfinite()) 0.toString() else duration.inSeconds.toString()
                     }
                 }
             }
