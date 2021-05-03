@@ -67,7 +67,7 @@ class PiHoleRepositoryImpl @Inject constructor(
                 httpClient.get {
                     requestBuilder(this)
                     url {
-                        parameters.append("summaryRaw", true.toString())
+                        parameters["summaryRaw"] = true.toString()
                     }
                 }
             }
@@ -79,7 +79,7 @@ class PiHoleRepositoryImpl @Inject constructor(
                 httpClient.get {
                     requestBuilder(this)
                     url {
-                        parameters.append("overTimeData10mins", true.toString())
+                        parameters["overTimeData10mins"] = true.toString()
                     }
                 }
             }
@@ -91,9 +91,9 @@ class PiHoleRepositoryImpl @Inject constructor(
                 httpClient.get {
                     requestBuilder(this)
                     url {
-                        parameters.append("getQueryTypes", true.toString())
-                        parameters.append("topItems", true.toString())
-                        parameters.append("topClients", true.toString())
+                        parameters["getQueryTypes"] = true.toString()
+                        parameters["topItems"] = true.toString()
+                        parameters["topClients"] = true.toString()
                     }
                 }
             }
@@ -105,7 +105,7 @@ class PiHoleRepositoryImpl @Inject constructor(
                 httpClient.get {
                     requestBuilder(this)
                     url {
-                        parameters.append("getAllQueries", limit.toString())
+                        parameters["getAllQueries"] = limit.toString()
                     }
                 }
             }
@@ -117,7 +117,7 @@ class PiHoleRepositoryImpl @Inject constructor(
                 httpClient.get {
                     requestBuilder(this)
                     url {
-                        parameters.append("list", ruleType.toString().toLowerCase(Locale.ENGLISH))
+                        parameters["list"] = ruleType.toString().toLowerCase(Locale.ENGLISH)
                     }
                 }
             }
@@ -132,8 +132,8 @@ class PiHoleRepositoryImpl @Inject constructor(
                 httpClient.get {
                     requestBuilder(this)
                     url {
-                        parameters.append("list", ruleType.toString().toLowerCase(Locale.ENGLISH))
-                        parameters.append("add", rule)
+                        parameters["list"] = ruleType.toString().toLowerCase(Locale.ENGLISH)
+                        parameters["add"] = rule
                     }
                 }
             }
@@ -148,8 +148,8 @@ class PiHoleRepositoryImpl @Inject constructor(
                 httpClient.get {
                     requestBuilder(this)
                     url {
-                        parameters.append("list", ruleType.toString().toLowerCase(Locale.ENGLISH))
-                        parameters.append("sub", rule)
+                        parameters["list"] = ruleType.toString().toLowerCase(Locale.ENGLISH)
+                        parameters["sub"] = rule
                     }
                 }
             }
