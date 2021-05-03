@@ -43,7 +43,9 @@ fun LogItem(log: PiHoleLog) {
                 icon,
                 tint = tint,
                 contentDescription = log.answerType.toString(),
-                modifier = Modifier.padding(top = 11.dp).size(35.dp)
+                modifier = Modifier
+                    .padding(top = 11.dp)
+                    .size(35.dp)
             )
         },
         overlineText = { Text(log.answerType.toString()) },
@@ -52,7 +54,7 @@ fun LogItem(log: PiHoleLog) {
         trailing = {
             Column {
                 Text(dateFormat.format(log.timestamp * 1000L))
-                Text("${log.responseTime} ms")
+                Text("%.1f ms".format(log.responseTime * 0.1))
             }
         })
 }
