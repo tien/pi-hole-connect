@@ -20,6 +20,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.listener.ChartTouchListener
 import com.github.mikephil.charting.listener.OnChartGestureListener
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.ui.component.*
 import com.tien.piholeconnect.ui.theme.info
@@ -125,19 +127,15 @@ fun HomeScreen(
             )
         }) {
         var isScrollEnabled by remember { mutableStateOf(true) }
-        SwipeToRefreshLayout(
-            enabled = isScrollEnabled,
-            refreshingState = isRefreshing,
+        SwipeRefresh(
+            state = rememberSwipeRefreshState(isRefreshing),
             onRefresh = {
                 viewModel.viewModelScope.launch {
                     isRefreshing = true
-                    viewModel.apply {
-                        refresh()
-                        isRefreshing = false
-                    }
+                    viewModel.refresh()
+                    isRefreshing = false
                 }
-            })
-        {
+            }) {
             Column(
                 Modifier
                     .fillMaxHeight()

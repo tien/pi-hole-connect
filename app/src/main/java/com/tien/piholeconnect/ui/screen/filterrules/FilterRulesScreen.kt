@@ -21,10 +21,11 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.RuleType
 import com.tien.piholeconnect.ui.component.AddFilterRuleDialog
-import com.tien.piholeconnect.ui.component.SwipeToRefreshLayout
 import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
 import com.tien.piholeconnect.util.showGenericPiHoleConnectionError
 import kotlinx.coroutines.launch
@@ -85,8 +86,8 @@ fun FilterRulesScreen(
             )
         }
     }) {
-        SwipeToRefreshLayout(
-            refreshingState = isRefreshing,
+        SwipeRefresh(
+            state = rememberSwipeRefreshState(isRefreshing),
             onRefresh = {
                 viewModel.viewModelScope.launch {
                     isRefreshing = true

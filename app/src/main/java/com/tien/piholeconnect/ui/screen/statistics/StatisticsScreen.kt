@@ -20,8 +20,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.tien.piholeconnect.ui.component.RankedListCard
-import com.tien.piholeconnect.ui.component.SwipeToRefreshLayout
 import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
 import com.tien.piholeconnect.ui.theme.info
 import com.tien.piholeconnect.ui.theme.success
@@ -53,8 +54,8 @@ fun StatisticsScreen(
 
     if (!viewModel.hasBeenLoaded) return
 
-    SwipeToRefreshLayout(
-        refreshingState = isRefreshing,
+    SwipeRefresh(
+        state = rememberSwipeRefreshState(isRefreshing),
         onRefresh = {
             viewModel.viewModelScope.launch {
                 isRefreshing = true
