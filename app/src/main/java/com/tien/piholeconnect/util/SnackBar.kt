@@ -27,7 +27,7 @@ suspend fun SnackbarHostState.showGenericPiHoleConnectionError(
                 }
             }
             else -> {
-                append(context.getString(R.string.error_pi_hole_connection_genericerror_pi_hole_connection_generic_prefix))
+                append(context.getString(R.string.error_pi_hole_connection_generic_error_prefix))
                 append(", ")
             }
         }
