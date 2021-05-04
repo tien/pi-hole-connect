@@ -49,7 +49,7 @@
     <string name="pi_hole_connection_label_show_advance_options">Show advance options</string>
     <string name="filter_rules_desc_delete_filter">Delete filter</string>
     <string name="filter_rules_desc_add_filter">Add filter rule</string>
-    <string name="error_pi_hole_connection_genericerror_pi_hole_connection_generic_prefix">An error has occurred</string>
+    <string name="error_pi_hole_connection_generic_error_prefix">An error has occurred</string>
     <string name="pi_hole_connection_label_trust_all_certificates">Trust all certificates</string>
     <string name="pi_hole_connection_remove_dialog_title">Remove connection?</string>
     <string name="pi_hole_connection_remove_dialog_button_remove">Remove</string>
