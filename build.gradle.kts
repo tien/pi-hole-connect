@@ -1,11 +1,11 @@
 buildscript {
     val kotlinVersion: String by project
-    extra["composeVersion"] = "1.0.0-beta05"
-    extra["ktorVersion"] = "1.5.3"
+    extra["composeVersion"] = "1.0.0-beta06"
+    extra["ktorVersion"] = "1.5.4"
     extra["protoBufJavaLiteVersion"] = "3.15.8"
-    val hiltVersion by extra("2.33-beta")
+    val hiltVersion by extra("2.35.1")
     extra["lifecycleVersion"] = "2.3.1"
-    extra["cameraxVersion"] = "1.0.0-rc05"
+    extra["cameraxVersion"] = "1.0.0"
     repositories {
         google()
         mavenCentral()

@@ -10,7 +10,7 @@ dependencyResolutionManagement {
 pluginManagement {
     val kotlinVersion: String by settings
     plugins {
-        id("com.google.protobuf") version "0.8.15"
+        id("com.google.protobuf") version "0.8.16"
         kotlin("plugin.serialization") version kotlinVersion
     }
 }
