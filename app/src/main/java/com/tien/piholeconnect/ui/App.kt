@@ -122,25 +122,22 @@ fun App(
                 }
             }
         ) { padding ->
-            NavHost(navController = navController, startDestination = Screen.Home.route) {
+            NavHost(
+                navController = navController,
+                startDestination = Screen.Home.route,
+                modifier = Modifier.padding(padding)
+            ) {
                 composable(Screen.Home.route) {
-                    HomeScreen(
-                        Modifier.padding(padding),
-                        viewModel = homeViewModel
-                    )
+                    HomeScreen(viewModel = homeViewModel)
                 }
                 composable(Screen.Statistics.route) {
-                    StatisticsScreen(
-                        Modifier.padding(padding),
-                        viewModel = statisticsViewModel,
-                        scaffoldState = scaffoldState
-                    )
+                    StatisticsScreen(viewModel = statisticsViewModel, scaffoldState = scaffoldState)
                 }
                 composable(Screen.Log.route) {
                     LogScreen(viewModel = hiltNavGraphViewModel())
                 }
                 composable(Screen.FilterRules.route) {
-                    FilterRulesScreen(Modifier.padding(padding), viewModel = filterRulesViewModel)
+                    FilterRulesScreen(viewModel = filterRulesViewModel)
                 }
                 composable(Screen.Preferences.route) {
                     PreferencesScreen(
