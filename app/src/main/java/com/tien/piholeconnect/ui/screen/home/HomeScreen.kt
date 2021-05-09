@@ -35,10 +35,7 @@ import java.text.DateFormat.getTimeInstance
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun HomeScreen(
-    modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = viewModel()
-) {
+fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
 
@@ -117,7 +114,7 @@ fun HomeScreen(
     }
 
     Scaffold(
-        modifier.fillMaxHeight(),
+        Modifier.fillMaxHeight(),
         scaffoldState = scaffoldState,
         floatingActionButton = {
             PiHoleSwitchFloatingActionButton(

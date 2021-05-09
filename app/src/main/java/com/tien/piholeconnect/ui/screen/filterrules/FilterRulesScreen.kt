@@ -34,10 +34,7 @@ import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun FilterRulesScreen(
-    modifier: Modifier = Modifier,
-    viewModel: FilterRulesViewModel = viewModel()
-) {
+fun FilterRulesScreen(viewModel: FilterRulesViewModel = viewModel()) {
     val context = LocalContext.current
     val scaffoldState = rememberScaffoldState()
 
@@ -78,7 +75,7 @@ fun FilterRulesScreen(
             })
     }
 
-    Scaffold(modifier, scaffoldState = scaffoldState, floatingActionButton = {
+    Scaffold(scaffoldState = scaffoldState, floatingActionButton = {
         FloatingActionButton(onClick = { isAddDialogVisible = true }) {
             Icon(
                 Icons.Default.Add,

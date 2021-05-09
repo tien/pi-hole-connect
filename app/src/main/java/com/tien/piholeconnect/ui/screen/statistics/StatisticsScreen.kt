@@ -30,11 +30,7 @@ import com.tien.piholeconnect.util.showGenericPiHoleConnectionError
 import kotlinx.coroutines.launch
 
 @Composable
-fun StatisticsScreen(
-    modifier: Modifier = Modifier,
-    viewModel: StatisticsViewModel = viewModel(),
-    scaffoldState: ScaffoldState
-) {
+fun StatisticsScreen(viewModel: StatisticsViewModel = viewModel(), scaffoldState: ScaffoldState) {
     val context = LocalContext.current
     var isRefreshing by rememberSaveable { mutableStateOf(false) }
 
@@ -64,7 +60,7 @@ fun StatisticsScreen(
             }
         }) {
         Column(
-            modifier
+            Modifier
                 .verticalScroll(rememberScrollState())
                 .padding(15.dp),
             verticalArrangement = Arrangement.spacedBy(15.dp)
