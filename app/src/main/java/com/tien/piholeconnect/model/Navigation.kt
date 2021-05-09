@@ -4,12 +4,17 @@ import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.tien.piholeconnect.R
 
-data class ScreenOptions(val showTab: Boolean, val showMenus: Boolean, val showBackButton: Boolean)
+data class ScreenOptions(
+    val showTab: Boolean,
+    val showTopAppBar: Boolean,
+    val showMenus: Boolean,
+    val showBackButton: Boolean
+)
 
 private val DefaultScreenOptions =
-    ScreenOptions(showTab = false, showMenus = false, showBackButton = true)
+    ScreenOptions(showTab = false, showTopAppBar = true, showMenus = false, showBackButton = true)
 private val TabScreenOptions =
-    ScreenOptions(showTab = true, showMenus = true, showBackButton = false)
+    ScreenOptions(showTab = true, showTopAppBar = true, showMenus = true, showBackButton = false)
 
 sealed class Screen(
     val route: String,
@@ -18,7 +23,7 @@ sealed class Screen(
 ) {
     object Home : Screen("home", R.string.label_home, TabScreenOptions)
     object Statistics : Screen("statistics", R.string.label_statistics, TabScreenOptions)
-    object Log : Screen("log", R.string.label_log, TabScreenOptions)
+    object Log : Screen("log", R.string.label_log, TabScreenOptions.copy(showTopAppBar = false))
     object FilterRules : Screen("filterRules", R.string.label_filter_rules, TabScreenOptions)
     object Preferences : Screen("preferences", R.string.label_preferences, DefaultScreenOptions)
     object PiHoleConnection :

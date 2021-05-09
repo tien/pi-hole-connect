@@ -102,14 +102,12 @@ class PiHoleRepositoryImpl @Inject constructor(
     override suspend fun getLogs(limit: Int): PiHoleLogs =
         withContext(Dispatchers.IO) {
             baseRequestFlow.first().let { (httpClient, requestBuilder) ->
-                val response = httpClient.get<PiHoleLogs> {
+                httpClient.get {
                     requestBuilder(this)
                     url {
                         parameters["getAllQueries"] = limit.toString()
                     }
                 }
-
-                response.copy(data = response.data.sortedByDescending { it.timestamp })
             }
         }
 
