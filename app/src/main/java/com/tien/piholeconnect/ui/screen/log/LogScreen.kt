@@ -71,7 +71,6 @@ fun LogScreen(viewModel: LogViewModel = viewModel(), actions: @Composable RowSco
 
     BackdropScaffold(
         scaffoldState = scaffoldState,
-        headerHeight = BackdropScaffoldDefaults.HeaderHeight + 56.dp,
         appBar = {
             val focusRequester = remember { FocusRequester() }
             var focusState by rememberSaveable { mutableStateOf(FocusState.Inactive) }
