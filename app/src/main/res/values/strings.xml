@@ -59,4 +59,15 @@
     <string name="disable_dialog_button_10_seconds">10 SECONDS</string>
     <string name="duration_picker_dialog_hours">Hours</string>
     <string name="duration_picker_dialog_minutes">Minutes</string>
+    <string name="log_screen_label_allowed">Allowed</string>
+    <string name="log_screen_label_blocked">Blocked</string>
+    <string name="log_screen_label_date_sort_asc">Date (oldest)</string>
+    <string name="log_screen_label_date_sort_desc">Date (newest)</string>
+    <string name="log_screen_label_response_time_sort_asc">Response time (fastest)</string>
+    <string name="log_screen_label_response_time_sort_desc">Response time (slowest)</string>
+    <string name="log_screen_status">Status</string>
+    <string name="log_screen_sort">Sort</string>
+    <string name="log_screen_number_of_queries">Number of queries</string>
+    <string name="log_screen_see_results">See %d results</string>
+    <string name="log_screen_results">%d results</string>
 </resources>

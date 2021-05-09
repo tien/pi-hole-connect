@@ -87,24 +87,27 @@ fun App(
         Scaffold(
             scaffoldState = scaffoldState,
             topBar = {
-                TopBar(
-                    title = title,
-                    selectedPiHoleConnectionId = userPreferences!!.selectedPiHoleConnectionId,
-                    piHoleConnections = userPreferences!!.piHoleConnectionsList,
-                    optionsMenuItems = optionsMenuItems,
-                    isBackButtonEnabled = currentScreen?.options?.showBackButton ?: false,
-                    isMenusButtonEnabled = currentScreen?.options?.showMenus ?: false,
-                    onOptionsMenuItemClick = { navController.navigate(it.key) },
-                    onPiHoleConnectionClick = { piHoleConnection ->
-                        preferencesViewModel.viewModelScope.launch {
-                            preferencesViewModel.updateUserPreferences {
-                                it.toBuilder().setSelectedPiHoleConnectionId(piHoleConnection.id)
-                                    .build()
+                if (currentScreen?.options?.showTopAppBar != false) {
+                    TopBar(
+                        title = title,
+                        selectedPiHoleConnectionId = userPreferences!!.selectedPiHoleConnectionId,
+                        piHoleConnections = userPreferences!!.piHoleConnectionsList,
+                        optionsMenuItems = optionsMenuItems,
+                        isBackButtonEnabled = currentScreen?.options?.showBackButton ?: false,
+                        isMenusButtonEnabled = currentScreen?.options?.showMenus ?: false,
+                        onOptionsMenuItemClick = { navController.navigate(it.key) },
+                        onPiHoleConnectionClick = { piHoleConnection ->
+                            preferencesViewModel.viewModelScope.launch {
+                                preferencesViewModel.updateUserPreferences {
+                                    it.toBuilder()
+                                        .setSelectedPiHoleConnectionId(piHoleConnection.id)
+                                        .build()
+                                }
                             }
-                        }
-                    },
-                    onBackButtonClick = { navController.navigateUp() }
-                )
+                        },
+                        onBackButtonClick = { navController.navigateUp() }
+                    )
+                }
             },
             bottomBar = {
                 if (currentScreen?.options?.showTab != false) {
@@ -136,11 +139,7 @@ fun App(
                     )
                 }
                 composable(Screen.Log.route) {
-                    LogScreen(
-                        Modifier.padding(padding),
-                        viewModel = logViewModel,
-                        scaffoldState = scaffoldState
-                    )
+                    LogScreen(viewModel = logViewModel)
                 }
                 composable(Screen.FilterRules.route) {
                     FilterRulesScreen(Modifier.padding(padding), viewModel = filterRulesViewModel)

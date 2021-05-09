@@ -21,9 +21,7 @@ abstract class RefreshableViewModel : ViewModel() {
         error = throwable
     }
 
-    protected open fun onSuccess() {
-        isRefreshing = false
-    }
+    protected open fun onSuccess() {}
 
     suspend fun refresh() {
         refreshJob?.cancel()
@@ -35,6 +33,7 @@ abstract class RefreshableViewModel : ViewModel() {
             }
                 .onFailure(::onFailure)
                 .onSuccess { onSuccess() }
+            isRefreshing = false
         }
         refreshJob?.join()
     }
