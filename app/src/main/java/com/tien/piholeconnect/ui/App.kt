@@ -24,7 +24,6 @@ import com.tien.piholeconnect.ui.screen.filterrules.FilterRulesViewModel
 import com.tien.piholeconnect.ui.screen.home.HomeScreen
 import com.tien.piholeconnect.ui.screen.home.HomeViewModel
 import com.tien.piholeconnect.ui.screen.log.LogScreen
-import com.tien.piholeconnect.ui.screen.log.LogViewModel
 import com.tien.piholeconnect.ui.screen.piholeconnection.PiHoleConnectionScreen
 import com.tien.piholeconnect.ui.screen.piholeconnection.PiHoleConnectionViewModel
 import com.tien.piholeconnect.ui.screen.preferences.PreferencesScreen
@@ -42,7 +41,6 @@ fun App(
     homeViewModel: HomeViewModel = viewModel(),
     preferencesViewModel: PreferencesViewModel = viewModel(),
     statisticsViewModel: StatisticsViewModel = viewModel(),
-    logViewModel: LogViewModel = viewModel(),
     filterRulesViewModel: FilterRulesViewModel = viewModel()
 ) {
     val userPreferences by preferencesViewModel.userPreferencesFlow.collectAsState(initial = null)
@@ -139,7 +137,7 @@ fun App(
                     )
                 }
                 composable(Screen.Log.route) {
-                    LogScreen(viewModel = logViewModel)
+                    LogScreen(viewModel = hiltNavGraphViewModel())
                 }
                 composable(Screen.FilterRules.route) {
                     FilterRulesScreen(Modifier.padding(padding), viewModel = filterRulesViewModel)
