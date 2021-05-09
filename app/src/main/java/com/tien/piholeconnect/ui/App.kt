@@ -18,6 +18,7 @@ import androidx.navigation.compose.*
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.*
 import com.tien.piholeconnect.ui.component.BottomTab
+import com.tien.piholeconnect.ui.component.OptionsMenu
 import com.tien.piholeconnect.ui.component.TopBar
 import com.tien.piholeconnect.ui.screen.filterrules.FilterRulesScreen
 import com.tien.piholeconnect.ui.screen.filterrules.FilterRulesViewModel
@@ -75,6 +76,24 @@ fun App(
     val title = currentRoute?.let { stringResource(screenForRoute(it).labelResourceId) }
         ?: stringResource(R.string.app_name)
 
+    val defaultOptionsMenu = @Composable {
+        OptionsMenu(
+            selectedPiHoleConnectionId = userPreferences!!.selectedPiHoleConnectionId,
+            piHoleConnections = userPreferences!!.piHoleConnectionsList,
+            optionsMenuItems = optionsMenuItems,
+            onOptionsMenuItemClick = { navController.navigate(it.key) },
+            onPiHoleConnectionClick = { piHoleConnection ->
+                preferencesViewModel.viewModelScope.launch {
+                    preferencesViewModel.updateUserPreferences {
+                        it.toBuilder()
+                            .setSelectedPiHoleConnectionId(piHoleConnection.id)
+                            .build()
+                    }
+                }
+            },
+        )
+    }
+
     PiHoleConnectTheme(
         darkTheme = when (userPreferences!!.theme) {
             Theme.DARK -> true
@@ -88,22 +107,9 @@ fun App(
                 if (currentScreen?.options?.showTopAppBar != false) {
                     TopBar(
                         title = title,
-                        selectedPiHoleConnectionId = userPreferences!!.selectedPiHoleConnectionId,
-                        piHoleConnections = userPreferences!!.piHoleConnectionsList,
-                        optionsMenuItems = optionsMenuItems,
                         isBackButtonEnabled = currentScreen?.options?.showBackButton ?: false,
-                        isMenusButtonEnabled = currentScreen?.options?.showMenus ?: false,
-                        onOptionsMenuItemClick = { navController.navigate(it.key) },
-                        onPiHoleConnectionClick = { piHoleConnection ->
-                            preferencesViewModel.viewModelScope.launch {
-                                preferencesViewModel.updateUserPreferences {
-                                    it.toBuilder()
-                                        .setSelectedPiHoleConnectionId(piHoleConnection.id)
-                                        .build()
-                                }
-                            }
-                        },
-                        onBackButtonClick = { navController.navigateUp() }
+                        onBackButtonClick = { navController.navigateUp() },
+                        actions = { defaultOptionsMenu() }
                     )
                 }
             },
@@ -134,7 +140,7 @@ fun App(
                     StatisticsScreen(viewModel = statisticsViewModel, scaffoldState = scaffoldState)
                 }
                 composable(Screen.Log.route) {
-                    LogScreen(viewModel = hiltNavGraphViewModel())
+                    LogScreen(viewModel = hiltNavGraphViewModel(), actions = { defaultOptionsMenu() })
                 }
                 composable(Screen.FilterRules.route) {
                     FilterRulesScreen(viewModel = filterRulesViewModel)

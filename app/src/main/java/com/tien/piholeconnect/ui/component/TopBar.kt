@@ -6,6 +6,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -28,13 +29,8 @@ import com.tien.piholeconnect.util.populateDefaultValues
 fun TopBar(
     title: String,
     isBackButtonEnabled: Boolean,
-    isMenusButtonEnabled: Boolean,
-    selectedPiHoleConnectionId: String,
-    piHoleConnections: Iterable<PiHoleConnection>,
-    optionsMenuItems: Iterable<TopBarOptionsMenuItem>,
-    onOptionsMenuItemClick: (TopBarOptionsMenuItem) -> Unit,
-    onPiHoleConnectionClick: (PiHoleConnection) -> Unit,
     onBackButtonClick: () -> Unit = {},
+    actions: @Composable RowScope.() -> Unit = {}
 ) {
     TopAppBar(
         title = { Text(title) }, navigationIcon = if (!isBackButtonEnabled) null else ({
@@ -44,46 +40,53 @@ fun TopBar(
                     contentDescription = stringResource(R.string.back_button_label)
                 )
             }
-        }), actions = {
-            if (isMenusButtonEnabled) {
-                Box {
-                    var isOptionsMenuExpanded by remember { mutableStateOf(false) }
-
-                    IconButton(onClick = { isOptionsMenuExpanded = true }) {
-                        Icon(
-                            Icons.Default.MoreVert, contentDescription = stringResource(
-                                R.string.top_bar_more_options_label
-                            )
-                        )
-                    }
-                    DropdownMenu(
-                        expanded = isOptionsMenuExpanded,
-                        modifier = Modifier.composed {
-                            if (piHoleConnections.count() > 1) {
-                                fillMaxWidth()
-                            } else {
-                                this
-                            }
-                        },
-                        onDismissRequest = { isOptionsMenuExpanded = false }
-                    ) {
-                        Menu(
-                            piHoleConnections = piHoleConnections,
-                            selectedPiHoleConnectionId = selectedPiHoleConnectionId,
-                            optionsMenuItems = optionsMenuItems,
-                            onOptionsMenuItemClick = {
-                                isOptionsMenuExpanded = false
-                                onOptionsMenuItemClick(it)
-                            },
-                            onPiHoleConnectionClick = {
-                                isOptionsMenuExpanded = false
-                                onPiHoleConnectionClick(it)
-                            })
-                    }
-                }
-            }
-        }
+        }), actions = actions
     )
+}
+
+@Composable
+fun OptionsMenu(
+    selectedPiHoleConnectionId: String,
+    piHoleConnections: Iterable<PiHoleConnection>,
+    optionsMenuItems: Iterable<TopBarOptionsMenuItem>,
+    onOptionsMenuItemClick: (TopBarOptionsMenuItem) -> Unit,
+    onPiHoleConnectionClick: (PiHoleConnection) -> Unit
+) {
+    Box {
+        var isOptionsMenuExpanded by remember { mutableStateOf(false) }
+
+        IconButton(onClick = { isOptionsMenuExpanded = true }) {
+            Icon(
+                Icons.Default.MoreVert, contentDescription = stringResource(
+                    R.string.top_bar_more_options_label
+                )
+            )
+        }
+        DropdownMenu(
+            expanded = isOptionsMenuExpanded,
+            modifier = Modifier.composed {
+                if (piHoleConnections.count() > 1) {
+                    fillMaxWidth()
+                } else {
+                    this
+                }
+            },
+            onDismissRequest = { isOptionsMenuExpanded = false }
+        ) {
+            Menu(
+                piHoleConnections = piHoleConnections,
+                selectedPiHoleConnectionId = selectedPiHoleConnectionId,
+                optionsMenuItems = optionsMenuItems,
+                onOptionsMenuItemClick = {
+                    isOptionsMenuExpanded = false
+                    onOptionsMenuItemClick(it)
+                },
+                onPiHoleConnectionClick = {
+                    isOptionsMenuExpanded = false
+                    onPiHoleConnectionClick(it)
+                })
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -144,19 +147,7 @@ fun TopBarProgressIndicator(visible: Boolean) {
 fun TopBarPreview() {
     TopBar(
         title = "Pi-Hole Connect",
-        selectedPiHoleConnectionId = "foo",
-        piHoleConnections = listOf(PiHoleConnection.getDefaultInstance()),
-        optionsMenuItems = listOf(
-            TopBarOptionsMenuItem(
-                Screen.Preferences.route,
-                Screen.Preferences.labelResourceId,
-                Icons.Default.Settings
-            )
-        ),
-        isBackButtonEnabled = true,
-        isMenusButtonEnabled = true,
-        onOptionsMenuItemClick = {},
-        onPiHoleConnectionClick = {}
+        isBackButtonEnabled = true
     )
 }
 

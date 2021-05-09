@@ -43,7 +43,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun LogScreen(viewModel: LogViewModel = viewModel()) {
+fun LogScreen(viewModel: LogViewModel = viewModel(), actions: @Composable RowScope.() -> Unit) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
@@ -128,6 +128,7 @@ fun LogScreen(viewModel: LogViewModel = viewModel()) {
                             contentDescription = null
                         )
                     }
+                    actions()
                 }
             }
         },
