@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.R
-import com.tien.piholeconnect.model.AnswerType
+import com.tien.piholeconnect.model.AnswerCategory
 import com.tien.piholeconnect.model.PiHoleConnectionAwareViewModel
 import com.tien.piholeconnect.model.PiHoleLog
 import com.tien.piholeconnect.repository.PiHoleRepository
@@ -29,14 +29,14 @@ class LogViewModel @Inject constructor(
         RESPONSE_TIME_DESC(R.string.log_screen_label_response_time_sort_desc)
     }
 
-    enum class Status(@StringRes val labelResourceId: Int, val contains: Set<AnswerType>) {
+    enum class Status(@StringRes val labelResourceId: Int, val contains: Set<AnswerCategory>) {
         ALLOWED(
             R.string.log_screen_label_allowed,
-            setOf(AnswerType.UPSTREAM, AnswerType.LOCAL_CACHE, AnswerType.UNKNOWN)
+            setOf(AnswerCategory.ALLOW, AnswerCategory.CACHE)
         ),
         BLOCKED(
             R.string.log_screen_label_blocked,
-            setOf(AnswerType.GRAVITY_BLOCK, AnswerType.WILD_CARD_BLOCK)
+            setOf(AnswerCategory.BLOCK, AnswerCategory.UNKNOWN)
         )
     }
 
@@ -51,7 +51,9 @@ class LogViewModel @Inject constructor(
 
     var logs = rawLogs
         .combine(enabledStatuses) { logs, statuses ->
-            logs.filter { log -> statuses.flatMap { it.contains }.contains(log.answerType) }
+            logs.filter { log ->
+                statuses.flatMap { it.contains }.contains(log.answerType.category)
+            }
         }.combine(query) { logs, query ->
             if (query.isBlank()) {
                 logs

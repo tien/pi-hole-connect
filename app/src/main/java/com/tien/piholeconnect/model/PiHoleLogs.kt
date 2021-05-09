@@ -10,20 +10,53 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.*
 
+enum class AnswerCategory { ALLOW, BLOCK, CACHE, UNKNOWN }
+
 @Serializable
-enum class AnswerType {
+enum class AnswerType(val category: AnswerCategory) {
     @SerialName("1")
-    GRAVITY_BLOCK,
+    GRAVITY_BLOCK(AnswerCategory.BLOCK),
 
     @SerialName("2")
-    UPSTREAM,
+    UPSTREAM(AnswerCategory.ALLOW),
 
     @SerialName("3")
-    LOCAL_CACHE,
+    LOCAL_CACHE(AnswerCategory.CACHE),
 
     @SerialName("4")
-    WILD_CARD_BLOCK,
-    UNKNOWN
+    REGEX_BLOCK(AnswerCategory.BLOCK),
+
+    @SerialName("5")
+    EXACT_BLOCK(AnswerCategory.BLOCK),
+
+    @SerialName("6")
+    EXTERNAL_IP_BLOCK(AnswerCategory.BLOCK),
+
+    @SerialName("7")
+    EXTERNAL_NULL_BLOCK(AnswerCategory.BLOCK),
+
+    @SerialName("8")
+    EXTERNAL_NXRA_BLOCK(AnswerCategory.BLOCK),
+
+    @SerialName("9")
+    CNAME_GRAVITY_BLOCK(AnswerCategory.BLOCK),
+
+    @SerialName("10")
+    CNAME_REGEX_BLOCK(AnswerCategory.BLOCK),
+
+    @SerialName("11")
+    CNAME_EXACT_BLOCK(AnswerCategory.BLOCK),
+
+    @SerialName("12")
+    RETRIED(AnswerCategory.ALLOW),
+
+    @SerialName("13")
+    RETRIED_IGNORED(AnswerCategory.ALLOW),
+
+    @SerialName("14")
+    ALREADY_FORWARDED(AnswerCategory.ALLOW),
+
+    UNKNOWN(AnswerCategory.UNKNOWN)
 }
 
 @Serializable
@@ -65,13 +98,8 @@ object PiHoleLogSerializer : KSerializer<PiHoleLog> {
             queryType = jsonArray[1].jsonPrimitive.content,
             requestedDomain = jsonArray[2].jsonPrimitive.content,
             client = jsonArray[3].jsonPrimitive.content,
-            answerType = when (jsonArray[4].jsonPrimitive.content) {
-                "1" -> AnswerType.GRAVITY_BLOCK
-                "2" -> AnswerType.UPSTREAM
-                "3" -> AnswerType.LOCAL_CACHE
-                "4" -> AnswerType.WILD_CARD_BLOCK
-                else -> AnswerType.UNKNOWN
-            },
+            answerType = AnswerType.values()
+                .getOrElse(jsonArray[4].jsonPrimitive.int - 1) { AnswerType.UNKNOWN },
             responseTime = jsonArray[7].jsonPrimitive.int
         )
     }
