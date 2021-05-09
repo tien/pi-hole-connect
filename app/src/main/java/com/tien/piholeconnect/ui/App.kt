@@ -66,8 +66,8 @@ fun App(
     val tabItems = listOf(
         BottomTabItem(Screen.Home, Icons.TwoTone.Home),
         BottomTabItem(Screen.Statistics, Icons.TwoTone.Insights),
+        BottomTabItem(Screen.FilterRules, Icons.TwoTone.Shield),
         BottomTabItem(Screen.Log, Icons.TwoTone.Analytics),
-        BottomTabItem(Screen.FilterRules, Icons.TwoTone.Shield)
     )
 
     val currentRoute by navController.currentRouteAsState()
