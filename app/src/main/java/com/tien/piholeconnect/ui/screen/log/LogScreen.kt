@@ -2,6 +2,7 @@ package com.tien.piholeconnect.ui.screen.log
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.BasicTextField
@@ -46,6 +47,7 @@ import kotlinx.coroutines.launch
 fun LogScreen(viewModel: LogViewModel = viewModel(), actions: @Composable RowScope.() -> Unit) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    val lazyListState = rememberLazyListState()
     val focusManager = LocalFocusManager.current
     val scaffoldState = rememberBackdropScaffoldState(BackdropValue.Concealed)
     val query by viewModel.query.collectAsState()
@@ -67,6 +69,10 @@ fun LogScreen(viewModel: LogViewModel = viewModel(), actions: @Composable RowSco
                 refresh()
             }
         }
+    }
+
+    LaunchedEffect(logs) {
+        lazyListState.scrollToItem(0)
     }
 
     BackdropScaffold(
@@ -251,7 +257,7 @@ fun LogScreen(viewModel: LogViewModel = viewModel(), actions: @Composable RowSco
                         }
                     }
                     Divider()
-                    LazyColumn {
+                    LazyColumn(state = lazyListState) {
                         if (viewModel.hasBeenLoaded) {
                             logs.forEachIndexed { index, log ->
                                 item(key = index) {
