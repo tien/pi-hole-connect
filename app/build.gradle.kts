@@ -62,13 +62,20 @@ android {
 
 apply(from = "protobuf.gradle")
 
+// FIXME Temporary fix for https://issuetracker.google.com/issues/187101535
+configurations.all {
+    exclude("androidx.compose.ui", "ui")
+}
+
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
     implementation("androidx.core:core-ktx:1.3.2")
     implementation("androidx.appcompat:appcompat:1.2.0")
     implementation("com.google.android.material:material:1.3.0")
-    implementation("androidx.compose.ui:ui:$composeVersion")
+//    implementation("androidx.compose.ui:ui:$composeVersion")
+    // FIXME Temporary fix for https://issuetracker.google.com/issues/187101535
+    implementation(files("./libs/androidx.compose.ui-ui.aar"))
     implementation("androidx.compose.material:material:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
     implementation("androidx.compose.ui:ui-tooling:$composeVersion")
