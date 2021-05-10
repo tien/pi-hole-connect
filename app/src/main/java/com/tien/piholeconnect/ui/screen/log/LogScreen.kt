@@ -71,6 +71,7 @@ fun LogScreen(viewModel: LogViewModel = viewModel(), actions: @Composable RowSco
 
     BackdropScaffold(
         scaffoldState = scaffoldState,
+        backLayerBackgroundColor = MaterialTheme.colors.primaryVariant,
         appBar = {
             val focusRequester = remember { FocusRequester() }
             var focusState by rememberSaveable { mutableStateOf(FocusState.Inactive) }
@@ -191,7 +192,7 @@ fun LogScreen(viewModel: LogViewModel = viewModel(), actions: @Composable RowSco
                                 colors = CheckboxDefaults.colors(
                                     checkedColor = Color.White,
                                     uncheckedColor = Color.White.copy(alpha = 0.6f),
-                                    checkmarkColor = MaterialTheme.colors.primary
+                                    checkmarkColor = MaterialTheme.colors.primaryVariant
                                 )
                             )
                         },
