@@ -39,7 +39,9 @@ class PiHoleRepositoryImpl @Inject constructor(
                     host = piHoleConnection.host
                     encodedPath = piHoleConnection.apiPath
                     port = piHoleConnection.port
-                    parameters["auth"] = piHoleConnection.apiToken
+                    if (piHoleConnection.apiToken.isNotBlank()) {
+                        parameters["auth"] = piHoleConnection.apiToken
+                    }
                 }
                 if (piHoleConnection.basicAuthUsername.isNotBlank() || piHoleConnection.basicAuthPassword.isNotBlank()) {
                     val basicAuthProvider = BasicAuthProvider(
