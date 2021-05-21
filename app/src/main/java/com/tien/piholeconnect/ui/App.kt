@@ -1,5 +1,7 @@
 package com.tien.piholeconnect.ui
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
@@ -10,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltNavGraphViewModel
 import androidx.lifecycle.viewModelScope
@@ -44,6 +47,7 @@ fun App(
     statisticsViewModel: StatisticsViewModel = viewModel(),
     filterRulesViewModel: FilterRulesViewModel = viewModel()
 ) {
+    val context = LocalContext.current
     val userPreferences by preferencesViewModel.userPreferencesFlow.collectAsState(initial = null)
     if (userPreferences == null) return
 
@@ -61,6 +65,12 @@ fun App(
                 Screen.TipJar.route,
                 Screen.TipJar.labelResourceId,
                 Icons.TwoTone.Paid
+            ),
+            TopBarOptionsMenuItem(
+                stringResource(R.string.bug_report_url),
+                R.string.options_menu_bug_report,
+                Icons.TwoTone.BugReport,
+                isExternalLink = true
             )
         )
 
@@ -81,7 +91,14 @@ fun App(
             selectedPiHoleConnectionId = userPreferences!!.selectedPiHoleConnectionId,
             piHoleConnections = userPreferences!!.piHoleConnectionsList,
             optionsMenuItems = optionsMenuItems,
-            onOptionsMenuItemClick = { navController.navigate(it.key) },
+            onOptionsMenuItemClick = {
+                if (!it.isExternalLink) {
+                    navController.navigate(it.key)
+                } else {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it.key))
+                    runCatching { context.startActivity(intent) }
+                }
+            },
             onPiHoleConnectionClick = { piHoleConnection ->
                 preferencesViewModel.viewModelScope.launch {
                     preferencesViewModel.updateUserPreferences {

@@ -42,5 +42,6 @@ data class BottomTabItem(val screen: Screen, val icon: ImageVector)
 data class TopBarOptionsMenuItem(
     val key: String,
     @StringRes val labelResourceId: Int,
-    val icon: ImageVector
+    val icon: ImageVector,
+    val isExternalLink: Boolean = false
 )

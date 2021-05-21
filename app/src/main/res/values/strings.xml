@@ -70,4 +70,5 @@
     <string name="log_screen_number_of_queries">Number of queries</string>
     <string name="log_screen_see_results">See %d results</string>
     <string name="log_screen_results">%d results</string>
+    <string name="options_menu_bug_report">Report issue</string>
 </resources>
