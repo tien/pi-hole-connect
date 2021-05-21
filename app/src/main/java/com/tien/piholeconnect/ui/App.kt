@@ -109,7 +109,11 @@ fun App(
                         title = title,
                         isBackButtonEnabled = currentScreen?.options?.showBackButton ?: false,
                         onBackButtonClick = { navController.navigateUp() },
-                        actions = { defaultOptionsMenu() }
+                        actions = {
+                            if (currentScreen?.options?.showMenus != false) {
+                                defaultOptionsMenu()
+                            }
+                        }
                     )
                 }
             },
@@ -140,7 +144,9 @@ fun App(
                     StatisticsScreen(viewModel = statisticsViewModel, scaffoldState = scaffoldState)
                 }
                 composable(Screen.Log.route) {
-                    LogScreen(viewModel = hiltNavGraphViewModel(), actions = { defaultOptionsMenu() })
+                    LogScreen(
+                        viewModel = hiltNavGraphViewModel(),
+                        actions = { defaultOptionsMenu() })
                 }
                 composable(Screen.FilterRules.route) {
                     FilterRulesScreen(viewModel = filterRulesViewModel)
