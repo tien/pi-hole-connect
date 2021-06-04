@@ -37,7 +37,7 @@ class InAppPurchaseImpl @Inject constructor(
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun destroy() {
         if (billingClient.isReady) {
-            billingClient.endConnection();
+            billingClient.endConnection()
         }
     }
 
@@ -63,7 +63,9 @@ class InAppPurchaseImpl @Inject constructor(
     }
 
     private fun consumeOutstandingPurchases() {
-        billingClient.queryPurchases(SkuType.INAPP).purchasesList?.apply(this::handlePurchases)
+        billingClient.queryPurchasesAsync(SkuType.INAPP) { _, purchases ->
+            handlePurchases(purchases)
+        }
     }
 
     private fun handlePurchases(purchases: Iterable<Purchase>) {

@@ -14,7 +14,6 @@ import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.isFocused
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
@@ -92,7 +91,7 @@ fun PiHoleConnectionScreen(
                     }
                 }) {
                     Text(
-                        stringResource(R.string.pi_hole_connection_remove_dialog_button_remove).toUpperCase(
+                        stringResource(R.string.pi_hole_connection_remove_dialog_button_remove).uppercase(
                             Locale.getDefault()
                         )
                     )
@@ -101,7 +100,7 @@ fun PiHoleConnectionScreen(
             dismissButton = {
                 TextButton(onClick = {
                     isDeleteAlertDialogExpanded = false
-                }) { Text(stringResource(android.R.string.cancel).toUpperCase(Locale.getDefault())) }
+                }) { Text(stringResource(android.R.string.cancel).uppercase(Locale.getDefault())) }
             },
             onDismissRequest = { isDeleteAlertDialogExpanded = false })
     }

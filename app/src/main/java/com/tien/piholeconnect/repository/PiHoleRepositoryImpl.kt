@@ -45,10 +45,14 @@ class PiHoleRepositoryImpl @Inject constructor(
                 }
                 if (piHoleConnection.basicAuthUsername.isNotBlank() || piHoleConnection.basicAuthPassword.isNotBlank()) {
                     val basicAuthProvider = BasicAuthProvider(
-                        username = piHoleConnection.basicAuthUsername,
-                        password = piHoleConnection.basicAuthPassword,
+                        credentials = {
+                            BasicAuthCredentials(
+                                username = piHoleConnection.basicAuthUsername,
+                                password = piHoleConnection.basicAuthPassword
+                            )
+                        },
                         realm = if (piHoleConnection.basicAuthRealm.isBlank()) null else piHoleConnection.basicAuthRealm,
-                        sendWithoutRequest = true
+                        sendWithoutRequestCallback = { true }
                     )
                     let {
                         // We know that BasicAuthProvider addRequestHeaders is synchronous, it's only a suspend function to conform to the AuthProvider Interface
@@ -119,7 +123,7 @@ class PiHoleRepositoryImpl @Inject constructor(
                 httpClient.get {
                     requestBuilder(this)
                     url {
-                        parameters["list"] = ruleType.toString().toLowerCase(Locale.ENGLISH)
+                        parameters["list"] = ruleType.toString().lowercase(Locale.ENGLISH)
                     }
                 }
             }
@@ -134,7 +138,7 @@ class PiHoleRepositoryImpl @Inject constructor(
                 httpClient.get {
                     requestBuilder(this)
                     url {
-                        parameters["list"] = ruleType.toString().toLowerCase(Locale.ENGLISH)
+                        parameters["list"] = ruleType.toString().lowercase(Locale.ENGLISH)
                         parameters["add"] = rule
                     }
                 }
@@ -150,7 +154,7 @@ class PiHoleRepositoryImpl @Inject constructor(
                 httpClient.get {
                     requestBuilder(this)
                     url {
-                        parameters["list"] = ruleType.toString().toLowerCase(Locale.ENGLISH)
+                        parameters["list"] = ruleType.toString().lowercase(Locale.ENGLISH)
                         parameters["sub"] = rule
                     }
                 }
@@ -164,7 +168,7 @@ class PiHoleRepositoryImpl @Inject constructor(
                     requestBuilder(this)
                     url {
                         parameters["disable"] =
-                            if (duration.isInfinite()) 0.toString() else duration.inSeconds.toString()
+                            if (duration.isInfinite()) 0.toString() else duration.inWholeSeconds.toString()
                     }
                 }
             }

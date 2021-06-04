@@ -14,7 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltNavGraphViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.*
@@ -36,7 +36,6 @@ import com.tien.piholeconnect.ui.screen.statistics.StatisticsScreen
 import com.tien.piholeconnect.ui.screen.statistics.StatisticsViewModel
 import com.tien.piholeconnect.ui.screen.tipjar.TipJarScreen
 import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
-import com.tien.piholeconnect.util.currentRouteAsState
 import kotlinx.coroutines.launch
 
 
@@ -81,7 +80,8 @@ fun App(
         BottomTabItem(Screen.Log, Icons.TwoTone.Analytics),
     )
 
-    val currentRoute by navController.currentRouteAsState()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
     val currentScreen = currentRoute?.let(::screenForRoute)
     val title = currentRoute?.let { stringResource(screenForRoute(it).labelResourceId) }
         ?: stringResource(R.string.app_name)
@@ -141,8 +141,11 @@ fun App(
                         currentRoute = currentRoute ?: Screen.Home.route,
                         onBottomTabItemClick = {
                             navController.navigate(it.screen.route) {
-                                popUpTo = navController.graph.startDestination
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
                                 launchSingleTop = true
+                                restoreState = true
                             }
                         }
                     )
@@ -162,7 +165,7 @@ fun App(
                 }
                 composable(Screen.Log.route) {
                     LogScreen(
-                        viewModel = hiltNavGraphViewModel(),
+                        viewModel = hiltViewModel(),
                         actions = { defaultOptionsMenu() })
                 }
                 composable(Screen.FilterRules.route) {
@@ -178,8 +181,7 @@ fun App(
                     "${Screen.PiHoleConnection.route}?id={id}", arguments = listOf(
                         navArgument("id") { nullable = true })
                 ) {
-                    val piHoleConnectionViewModel =
-                        hiltNavGraphViewModel<PiHoleConnectionViewModel>()
+                    val piHoleConnectionViewModel = hiltViewModel<PiHoleConnectionViewModel>()
                     val id = it.arguments?.getString("id")
 
                     PiHoleConnectionScreen(
@@ -189,7 +191,7 @@ fun App(
                     )
                 }
                 composable(Screen.TipJar.route) {
-                    TipJarScreen(viewModel = hiltNavGraphViewModel())
+                    TipJarScreen(viewModel = hiltViewModel())
                 }
             }
         }

@@ -5,7 +5,6 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.takeOrElse
 
 private val DarkColorPalette = darkColors(
     primary = Red700Light,
@@ -45,14 +44,13 @@ val Colors.warning: Color
 @Composable
 @ReadOnlyComposable
 fun contentColorFor(backGroundColor: Color) =
-    MaterialTheme.colors.contentColorFor(backGroundColor).takeOrElse {
-        return when (backGroundColor) {
+    MaterialTheme.colors.contentColorFor(backGroundColor).takeIf { it != Color.Unspecified }
+        ?: when (backGroundColor) {
             MaterialTheme.colors.info -> Color.White
             MaterialTheme.colors.success -> Color.White
             MaterialTheme.colors.warning -> Color.White
-            else -> LocalContentColor.current
+            else -> Color.Unspecified
         }
-    }
 
 @Composable
 fun PiHoleConnectTheme(

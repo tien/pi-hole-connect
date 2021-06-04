@@ -7,7 +7,10 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.*
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.FocusState
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -21,8 +24,6 @@ import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 import com.tien.piholeconnect.util.isNumericOrWhitespace
 import java.util.*
 import kotlin.time.Duration
-import kotlin.time.hours
-import kotlin.time.minutes
 
 enum class TimeTextFieldType { PRIMARY, SECONDARY }
 
@@ -123,7 +124,7 @@ fun DurationPicker(
                     LocalContentAlpha provides ContentAlpha.medium
                 ) {
                     Text(
-                        "Enter time".toUpperCase(Locale.getDefault()),
+                        "Enter time".uppercase(Locale.getDefault()),
                         style = MaterialTheme.typography.overline,
                     )
                 }
@@ -188,16 +189,18 @@ fun DurationPicker(
                 horizontalArrangement = Arrangement.End
             ) {
                 TextButton(onClick = onCancelClick) {
-                    Text(stringResource(android.R.string.cancel).toUpperCase(Locale.getDefault()))
+                    Text(stringResource(android.R.string.cancel).uppercase(Locale.getDefault()))
                 }
                 TextButton(
                     enabled = (hours.toIntOrNull() ?: 0) > 0 || (minutes.toIntOrNull() ?: 0) > 0,
                     onClick = {
                         onOkayClick(
-                            (hours.toIntOrNull() ?: 0).hours + (minutes.toIntOrNull() ?: 0).minutes
+                            Duration.hours(
+                                hours.toIntOrNull() ?: 0
+                            ) + Duration.minutes(minutes.toIntOrNull() ?: 0)
                         )
                     }) {
-                    Text(stringResource(android.R.string.ok).toUpperCase(Locale.getDefault()))
+                    Text(stringResource(android.R.string.ok).uppercase(Locale.getDefault()))
                 }
             }
         }
