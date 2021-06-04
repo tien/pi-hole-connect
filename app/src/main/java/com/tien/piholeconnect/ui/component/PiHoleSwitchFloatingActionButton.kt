@@ -23,8 +23,6 @@ import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 import com.tien.piholeconnect.ui.theme.success
 import java.util.*
 import kotlin.time.Duration
-import kotlin.time.minutes
-import kotlin.time.seconds
 
 @Composable
 fun PiHoleSwitchFloatingActionButton(
@@ -74,18 +72,18 @@ fun DisableAdsBlockingAlertDialog(
                 ) {
                     TextButton(onClick = { onDurationButtonClick(Duration.INFINITE) }) {
                         Text(
-                            stringResource(R.string.disable_dialog_button_permanent).toUpperCase(
+                            stringResource(R.string.disable_dialog_button_permanent).uppercase(
                                 Locale.getDefault()
                             )
                         )
                     }
-                    TextButton(onClick = { onDurationButtonClick(10.seconds) }) {
+                    TextButton(onClick = { onDurationButtonClick(Duration.seconds(10)) }) {
                         Text(stringResource(R.string.disable_dialog_button_10_seconds))
                     }
-                    TextButton(onClick = { onDurationButtonClick(30.seconds) }) {
+                    TextButton(onClick = { onDurationButtonClick(Duration.seconds(30)) }) {
                         Text(stringResource(R.string.disable_dialog_button_30_seconds))
                     }
-                    TextButton(onClick = { onDurationButtonClick(5.minutes) }) {
+                    TextButton(onClick = { onDurationButtonClick(Duration.seconds(5)) }) {
                         Text(stringResource(R.string.disable_dialog_button_5_minutes))
                     }
                     TextButton(onClick = {
@@ -93,7 +91,7 @@ fun DisableAdsBlockingAlertDialog(
                     }) { Text(stringResource(R.string.disable_dialog_button_custom_time)) }
                     TextButton(onClick = onDismissRequest) {
                         Text(
-                            stringResource(R.string.disable_dialog_button_cancel).toUpperCase(Locale.getDefault())
+                            stringResource(R.string.disable_dialog_button_cancel).uppercase(Locale.getDefault())
                         )
                     }
                 }
@@ -108,14 +106,14 @@ fun EnableAdsBlockingAlertDialog(onConfirmRequest: () -> Unit, onDismissRequest:
         confirmButton = {
             TextButton(onClick = onConfirmRequest) {
                 Text(
-                    stringResource(R.string.enable_dialog_button_confirm).toUpperCase(Locale.getDefault())
+                    stringResource(R.string.enable_dialog_button_confirm).uppercase(Locale.getDefault())
                 )
             }
         },
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
                 Text(
-                    stringResource(R.string.enable_dialog_button_dismiss).toUpperCase(Locale.getDefault())
+                    stringResource(R.string.enable_dialog_button_dismiss).uppercase(Locale.getDefault())
                 )
             }
         },

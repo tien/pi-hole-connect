@@ -19,7 +19,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
@@ -80,13 +79,13 @@ fun LogScreen(viewModel: LogViewModel = viewModel(), actions: @Composable RowSco
         backLayerBackgroundColor = MaterialTheme.colors.primaryVariant,
         appBar = {
             val focusRequester = remember { FocusRequester() }
-            var focusState by rememberSaveable { mutableStateOf(FocusState.Inactive) }
+            var isFocused by rememberSaveable { mutableStateOf(false) }
 
             TopAppBar(
                 elevation = 0.dp,
                 backgroundColor = Color.Transparent
             ) {
-                if (focusState == FocusState.Active || query.isNotEmpty()) {
+                if (isFocused || query.isNotEmpty()) {
                     LaunchedEffect(Unit) {
                         focusRequester.requestFocus()
                     }
@@ -107,7 +106,7 @@ fun LogScreen(viewModel: LogViewModel = viewModel(), actions: @Composable RowSco
                         textStyle = LocalTextStyle.current.copy(color = Color.White),
                         modifier = Modifier
                             .focusRequester(focusRequester)
-                            .onFocusChanged { focusState = it }
+                            .onFocusChanged { isFocused = it.isFocused }
                             .weight(1f))
                 } else {
                     Row(
@@ -126,7 +125,7 @@ fun LogScreen(viewModel: LogViewModel = viewModel(), actions: @Composable RowSco
                     IconButton(onClick = {
                         coroutineScope.launch {
                             scaffoldState.conceal()
-                            focusState = FocusState.Active
+                            isFocused = true
                         }
                     }) {
                         Icon(
