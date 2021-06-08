@@ -30,6 +30,7 @@ class HomeViewModel @Inject constructor(
         private set
     var blockedDomainListCount by mutableStateOf(0)
         private set
+    var uniqueClients by mutableStateOf(0)
 
     var queriesOverTime by mutableStateOf(mapOf<Int, Int>())
         private set
@@ -48,6 +49,7 @@ class HomeViewModel @Inject constructor(
             totalBlockedQueries = summary.adsBlockedToday
             queryBlockingPercentage = summary.adsPercentageToday
             blockedDomainListCount = summary.domainsBeingBlocked
+            uniqueClients = summary.uniqueClients
         }
         deferredOverTimeData.await().let { overTimeData ->
             queriesOverTime = overTimeData.domainsOverTime
