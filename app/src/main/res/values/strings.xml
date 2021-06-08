@@ -71,4 +71,9 @@
     <string name="log_screen_see_results">See %d results</string>
     <string name="log_screen_results">%d results</string>
     <string name="options_menu_bug_report">Report issue</string>
+    <string name="home_total_queries">Total Queries</string>
+    <string name="home_unique_clients">(%d clients)</string>
+    <string name="home_queries_blocked">Queries Blocked</string>
+    <string name="home_percent_blocked">Percent Blocked</string>
+    <string name="home_blocklist">Blocklist</string>
 </resources>
