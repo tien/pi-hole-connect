@@ -5,11 +5,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tien.piholeconnect.ui.theme.contentColorFor
@@ -18,7 +18,7 @@ import com.tien.piholeconnect.ui.theme.success
 @Composable
 fun StatsCard(
     modifier: Modifier = Modifier,
-    name: String,
+    name: @Composable () -> Unit,
     statistics: String,
     backGroundColor: Color
 ) {
@@ -27,13 +27,13 @@ fun StatsCard(
 
     Card(modifier, backgroundColor = backGroundColor) {
         Column(Modifier.padding(horizontal = 10.dp, vertical = 5.dp)) {
-            Text(
-                name,
-                color = contentColorFor(backGroundColor),
-                style = MaterialTheme.typography.subtitle1,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            ProvideTextStyle(
+                value = MaterialTheme.typography.subtitle1.copy(
+                    color = contentColorFor(backGroundColor)
+                )
+            ) {
+                name()
+            }
             Text(
                 statistics,
                 color = contentColorFor(backGroundColor),
@@ -56,7 +56,7 @@ fun StatsCard(
 fun StatsCardPreview() {
     StatsCard(
         Modifier.widthIn(max = 150.dp),
-        name = "Total Queries",
+        name = { Text("Total Queries") },
         statistics = "23,456,756,456",
         backGroundColor = MaterialTheme.colors.success
     )

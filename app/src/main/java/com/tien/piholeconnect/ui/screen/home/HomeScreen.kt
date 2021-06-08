@@ -14,7 +14,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.BaselineShift
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.mikephil.charting.formatter.ValueFormatter
@@ -144,7 +150,19 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                 Column {
                     Row {
                         StatsCard(
-                            name = "Total Queries",
+                            name = {
+                                Text(buildAnnotatedString {
+                                    append("Total Queries ")
+                                    withStyle(
+                                        SpanStyle(
+                                            fontSize = 9.sp,
+                                            baselineShift = BaselineShift.Superscript
+                                        )
+                                    ) {
+                                        append("(%d clients)".format(viewModel.uniqueClients))
+                                    }
+                                }, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            },
                             statistics = "%,d".format(totalQueries),
                             backGroundColor = MaterialTheme.colors.success,
                             modifier = Modifier
@@ -152,7 +170,13 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                                 .weight(1f)
                         )
                         StatsCard(
-                            name = "Queries Blocked",
+                            name = {
+                                Text(
+                                    "Queries Blocked",
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            },
                             statistics = "%,d".format(totalBlockedQueries),
                             backGroundColor = MaterialTheme.colors.info,
                             modifier = Modifier
@@ -162,7 +186,13 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                     }
                     Row(Modifier.padding(top = 5.dp)) {
                         StatsCard(
-                            name = "Percent Blocked",
+                            name = {
+                                Text(
+                                    "Percent Blocked",
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            },
                             statistics = "%.2f%%".format(queryBlockingPercentage),
                             backGroundColor = MaterialTheme.colors.warning,
                             modifier = Modifier
@@ -170,7 +200,13 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                                 .weight(1f)
                         )
                         StatsCard(
-                            name = "Blocklist",
+                            name = {
+                                Text(
+                                    "Blocklist",
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            },
                             statistics = "%,d".format(blockedDomainListCount),
                             backGroundColor = MaterialTheme.colors.error,
                             modifier = Modifier
