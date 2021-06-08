@@ -152,14 +152,19 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                         StatsCard(
                             name = {
                                 Text(buildAnnotatedString {
-                                    append("Total Queries ")
+                                    append(stringResource(R.string.home_total_queries))
+                                    append(" ")
                                     withStyle(
                                         SpanStyle(
                                             fontSize = 9.sp,
                                             baselineShift = BaselineShift.Superscript
                                         )
                                     ) {
-                                        append("(%d clients)".format(viewModel.uniqueClients))
+                                        append(
+                                            stringResource(R.string.home_unique_clients).format(
+                                                viewModel.uniqueClients
+                                            )
+                                        )
                                     }
                                 }, maxLines = 1, overflow = TextOverflow.Ellipsis)
                             },
@@ -172,7 +177,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                         StatsCard(
                             name = {
                                 Text(
-                                    "Queries Blocked",
+                                    stringResource(R.string.home_queries_blocked),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
                                 )
@@ -188,7 +193,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                         StatsCard(
                             name = {
                                 Text(
-                                    "Percent Blocked",
+                                    stringResource(R.string.home_percent_blocked),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
                                 )
@@ -202,7 +207,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                         StatsCard(
                             name = {
                                 Text(
-                                    "Blocklist",
+                                    stringResource(R.string.home_blocklist),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
                                 )
