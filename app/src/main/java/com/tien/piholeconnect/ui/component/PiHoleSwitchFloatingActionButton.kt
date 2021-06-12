@@ -83,7 +83,7 @@ fun DisableAdsBlockingAlertDialog(
                     TextButton(onClick = { onDurationButtonClick(Duration.seconds(30)) }) {
                         Text(stringResource(R.string.disable_dialog_button_30_seconds))
                     }
-                    TextButton(onClick = { onDurationButtonClick(Duration.seconds(5)) }) {
+                    TextButton(onClick = { onDurationButtonClick(Duration.minutes(5)) }) {
                         Text(stringResource(R.string.disable_dialog_button_5_minutes))
                     }
                     TextButton(onClick = {
