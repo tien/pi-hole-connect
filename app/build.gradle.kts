@@ -74,7 +74,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-swiperefresh:0.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha06")
-    implementation("androidx.activity:activity-compose:1.3.0-beta01")
+    implementation("androidx.activity:activity-compose:1.3.0-beta02")
     implementation("androidx.navigation:navigation-compose:2.4.0-alpha02")
     implementation("androidx.datastore:datastore:1.0.0-beta01")
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0-alpha02")
