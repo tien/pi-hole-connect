@@ -142,10 +142,10 @@ fun App(
                         onBottomTabItemClick = {
                             navController.navigate(it.screen.route) {
                                 popUpTo(navController.graph.startDestinationId) {
-                                    saveState = true
+                                    saveState = false
                                 }
                                 launchSingleTop = true
-                                restoreState = true
+                                restoreState = false
                             }
                         }
                     )
