@@ -6,9 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.R
-import com.tien.piholeconnect.model.AnswerCategory
-import com.tien.piholeconnect.model.PiHoleConnectionAwareViewModel
-import com.tien.piholeconnect.model.PiHoleLog
+import com.tien.piholeconnect.model.*
 import com.tien.piholeconnect.repository.PiHoleRepository
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,6 +39,10 @@ class LogViewModel @Inject constructor(
     }
 
     private var rawLogs = MutableStateFlow(listOf<PiHoleLog>())
+
+    var modifyFilterRuleState: Pair<RuleType?, AsyncState<ModifyFilterRuleResponse>> by mutableStateOf(
+        Pair(null, AsyncState.Idle)
+    )
 
     val query = MutableStateFlow("")
     val sortBy = MutableStateFlow(Sort.DATE_DESC)
@@ -75,6 +77,36 @@ class LogViewModel @Inject constructor(
     override suspend fun queueRefresh() {
         rawLogs.value = piHoleRepository.getLogs(limit).data
     }
+
+    fun addToWhiteList(domain: String) =
+        viewModelScope.launch {
+            modifyFilterRuleState = Pair(RuleType.WHITE, AsyncState.Pending)
+            modifyFilterRuleState =
+                Pair(
+                    RuleType.WHITE,
+                    AsyncState.Settled(kotlin.runCatching {
+                        piHoleRepository.addFilterRule(
+                            domain,
+                            RuleType.WHITE
+                        )
+                    })
+                )
+        }
+
+    fun addToBlacklist(domain: String) =
+        viewModelScope.launch {
+            modifyFilterRuleState = Pair(RuleType.BLACK, AsyncState.Pending)
+            modifyFilterRuleState =
+                Pair(
+                    RuleType.BLACK,
+                    AsyncState.Settled(kotlin.runCatching {
+                        piHoleRepository.addFilterRule(
+                            domain,
+                            RuleType.BLACK
+                        )
+                    })
+                )
+        }
 
     fun changeLimit(limit: Int) {
         viewModelScope.launch {

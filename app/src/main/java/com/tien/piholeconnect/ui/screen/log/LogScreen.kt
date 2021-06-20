@@ -1,5 +1,6 @@
 package com.tien.piholeconnect.ui.screen.log
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -30,13 +31,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.tien.piholeconnect.R
-import com.tien.piholeconnect.model.Screen
+import com.tien.piholeconnect.model.*
 import com.tien.piholeconnect.ui.component.LogItem
+import com.tien.piholeconnect.ui.component.QueryDetail
+import com.tien.piholeconnect.util.ChangedEffect
 import com.tien.piholeconnect.util.ConsumeAllNestedScroll
 import com.tien.piholeconnect.util.showGenericPiHoleConnectionError
 import kotlinx.coroutines.launch
@@ -54,11 +58,38 @@ fun LogScreen(viewModel: LogViewModel = viewModel(), actions: @Composable RowSco
     val enabledStatuses by viewModel.enabledStatuses.collectAsState()
     val sortBy by viewModel.sortBy.collectAsState()
 
+    var selectedLog: PiHoleLog? by remember { mutableStateOf(null) }
+
     viewModel.RefreshOnConnectionChangeEffect()
 
     LaunchedEffect(viewModel.error) {
         viewModel.error?.let {
             scaffoldState.snackbarHostState.showGenericPiHoleConnectionError(context, it)
+        }
+    }
+
+    ChangedEffect(viewModel.modifyFilterRuleState) {
+        (viewModel.modifyFilterRuleState.second as? AsyncState.Settled)?.let {
+            selectedLog = null
+        }
+    }
+
+    ChangedEffect(viewModel.modifyFilterRuleState) {
+        when (viewModel.modifyFilterRuleState.second) {
+            is AsyncState.Settled -> {
+                (viewModel.modifyFilterRuleState.second as? AsyncState.Settled<ModifyFilterRuleResponse>)?.let { asyncState ->
+                    when {
+                        asyncState.result.isSuccess -> asyncState.result.getOrNull()?.message?.let {
+                            scaffoldState.snackbarHostState.showSnackbar(it)
+                        }
+                        asyncState.result.isFailure -> asyncState.result.exceptionOrNull()?.localizedMessage?.let {
+                            scaffoldState.snackbarHostState.showSnackbar(it)
+                        }
+                        else -> Unit
+                    }
+                }
+            }
+            else -> Unit
         }
     }
 
@@ -72,6 +103,19 @@ fun LogScreen(viewModel: LogViewModel = viewModel(), actions: @Composable RowSco
 
     LaunchedEffect(logs) {
         lazyListState.scrollToItem(0)
+    }
+
+    selectedLog?.let { logQuery ->
+        Dialog(onDismissRequest = { selectedLog = null }) {
+            QueryDetail(
+                logQuery,
+                onWhitelistClick = { viewModel.addToWhiteList(logQuery.requestedDomain) },
+                onBlacklistClick = { viewModel.addToBlacklist(logQuery.requestedDomain) },
+                onDismissRequest = { selectedLog = null },
+                addToWhitelistLoading = viewModel.modifyFilterRuleState.first == RuleType.WHITE && viewModel.modifyFilterRuleState.second is AsyncState.Pending,
+                addToBlacklistLoading = viewModel.modifyFilterRuleState.first == RuleType.BLACK && viewModel.modifyFilterRuleState.second is AsyncState.Pending
+            )
+        }
     }
 
     BackdropScaffold(
@@ -260,7 +304,9 @@ fun LogScreen(viewModel: LogViewModel = viewModel(), actions: @Composable RowSco
                         if (viewModel.hasBeenLoaded) {
                             logs.forEachIndexed { index, log ->
                                 item(key = index) {
-                                    LogItem(log)
+                                    LogItem(
+                                        log,
+                                        modifier = Modifier.clickable { selectedLog = log })
                                 }
                             }
                         }

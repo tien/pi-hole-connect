@@ -76,4 +76,12 @@
     <string name="home_queries_blocked">Queries Blocked</string>
     <string name="home_percent_blocked">Percent Blocked</string>
     <string name="home_blocklist">Blocklist</string>
+    <string name="query_detail_timestamp">Timestamp</string>
+    <string name="query_detail_requested_domain">Requested domain</string>
+    <string name="query_detail_client">Client</string>
+    <string name="query_detail_dns_record_type">DNS record type</string>
+    <string name="query_detail_response_time">Response time</string>
+    <string name="query_detail_response_time_ms">%.1f ms</string>
+    <string name="query_detail_add_to_whitelist">Add to whitelist</string>
+    <string name="query_detail_add_to_blacklist">Add to blacklist</string>
 </resources>
