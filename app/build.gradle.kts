@@ -23,8 +23,8 @@ android {
         applicationId = "com.tien.piholeconnect"
         minSdk = 21
         targetSdk = 30
-        versionCode = 18
-        versionName = "7.1"
+        versionCode = 20
+        versionName = "8.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk {
             debugSymbolLevel = "FULL"
