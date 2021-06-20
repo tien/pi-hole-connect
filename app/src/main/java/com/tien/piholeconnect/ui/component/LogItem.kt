@@ -25,7 +25,7 @@ import java.text.DateFormat
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun LogItem(log: PiHoleLog) {
+fun LogItem(log: PiHoleLog, modifier: Modifier = Modifier) {
     val dateFormat = remember { DateFormat.getTimeInstance() }
     val (icon, tint) = when (log.answerType.category) {
         AnswerCategory.BLOCK -> Pair(
@@ -41,6 +41,7 @@ fun LogItem(log: PiHoleLog) {
     }
 
     ListItem(
+        modifier,
         icon = {
             Icon(
                 icon,
