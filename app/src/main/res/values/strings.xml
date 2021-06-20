@@ -26,8 +26,8 @@
     <string name="pi_hole_connection_desc_scanner">Scan QR code</string>
     <string name="pi_hole_connection_save">Save</string>
     <string name="pi_hole_connection_remove">Remove connection</string>
-    <string name="filter_rules_black_list">Black list</string>
-    <string name="filter_rules_white_list">White list</string>
+    <string name="filter_rules_blacklist">Blacklist</string>
+    <string name="filter_rules_whitelist">Whitelist</string>
     <string name="disable_dialog_title">Disable ads blocking?</string>
     <string name="disable_dialog_msg">This will disable Pi-hole ads blocking for the selected period. You can always re-enable ads blocking within the app.</string>
     <string name="disable_dialog_button_permanent">Permanently</string>
