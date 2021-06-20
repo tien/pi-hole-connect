@@ -97,7 +97,7 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = viewModel()) {
                     Tab(selected = viewModel.selectedTab == FilterRulesViewModel.Tab.BLACK,
                         onClick = { viewModel.selectedTab = FilterRulesViewModel.Tab.BLACK },
                         icon = { Icon(Icons.Default.Block, contentDescription = null) },
-                        text = { Text(stringResource(R.string.filter_rules_black_list)) })
+                        text = { Text(stringResource(R.string.filter_rules_blacklist)) })
                     Tab(selected = viewModel.selectedTab == FilterRulesViewModel.Tab.WHITE,
                         onClick = { viewModel.selectedTab = FilterRulesViewModel.Tab.WHITE },
                         icon = {
@@ -106,7 +106,7 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = viewModel()) {
                                 contentDescription = null
                             )
                         },
-                        text = { Text(stringResource(R.string.filter_rules_white_list)) })
+                        text = { Text(stringResource(R.string.filter_rules_whitelist)) })
                 }
 
                 if (viewModel.hasBeenLoaded) {
