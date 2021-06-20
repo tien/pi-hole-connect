@@ -35,7 +35,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: "11"
-          distribution: "adopt"
+          distribution: adopt
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -44,12 +44,17 @@ jobs:
       - name: Build AAB
         run: ./gradlew bundleRelease
 
-      - name: Generate changelog
-        id: generate-changelog
-        uses: TriPSs/conventional-changelog-action@v3.7.1
+      - name: Sign APK
+        id: sign_apk
+        uses: r0adkll/sign-android-release@v1.0.4
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          output-file: "false"
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "30.0.3"
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -60,5 +65,6 @@ jobs:
           files: |
             app/build/outputs/bundle/release/app-release.aab
             app/build/outputs/apk/release/app-release-unsigned.apk
+            ${{steps.sign_apk.outputs.signedReleaseFile}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
