@@ -78,8 +78,9 @@ abstract class PiHoleConnectModule {
             HttpClient(OkHttp) {
                 engine {
                     val trustManager = NaiveTrustManager()
-                    val sslContext = SSLContext.getInstance("SSL")
-                    sslContext.init(null, arrayOf(trustManager), null)
+                    val sslContext = SSLContext.getInstance("TLS").apply {
+                        init(null, arrayOf(trustManager), null)
+                    }
                     preconfigured = okHttpClient.newBuilder()
                         .sslSocketFactory(
                             sslSocketFactory = sslContext.socketFactory,
