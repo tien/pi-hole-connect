@@ -1,4 +1,4 @@
-package com.tien.piholeconnect.model
+package com.tien.piholeconnect.util
 
 import android.annotation.SuppressLint
 import java.security.cert.X509Certificate

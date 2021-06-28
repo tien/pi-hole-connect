@@ -8,7 +8,6 @@ import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.tien.piholeconnect.data.userPreferencesDataStore
-import com.tien.piholeconnect.model.NaiveTrustManager
 import com.tien.piholeconnect.model.UserPreferences
 import com.tien.piholeconnect.repository.PiHoleRepository
 import com.tien.piholeconnect.repository.PiHoleRepositoryImpl
@@ -16,6 +15,8 @@ import com.tien.piholeconnect.repository.UserPreferencesRepository
 import com.tien.piholeconnect.repository.UserPreferencesRepositoryImpl
 import com.tien.piholeconnect.service.InAppPurchase
 import com.tien.piholeconnect.service.InAppPurchaseImpl
+import com.tien.piholeconnect.util.Ipv4FirstDns
+import com.tien.piholeconnect.util.NaiveTrustManager
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -25,9 +26,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.*
-import io.ktor.client.engine.android.*
+import io.ktor.client.engine.okhttp.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
+import okhttp3.OkHttpClient
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier
 import javax.inject.Qualifier
 import javax.inject.Singleton
@@ -49,35 +51,47 @@ abstract class PiHoleConnectModule {
 
     companion object {
         @Provides
+        @Singleton
+        fun provideOkHttpClient(): OkHttpClient = OkHttpClient
+            .Builder()
+            .dns(Ipv4FirstDns())
+            .build()
+
+        @Provides
         @DefaultHttpClient
         @Singleton
-        fun provideDefaultHttpClient(): HttpClient {
-            return HttpClient(Android) {
+        fun provideDefaultHttpClient(okHttpClient: OkHttpClient): HttpClient =
+            HttpClient(OkHttp) {
+                engine {
+                    preconfigured = okHttpClient
+                }
                 install(JsonFeature) {
                     serializer = KotlinxSerializer()
                 }
             }
-        }
 
         @SuppressLint("AllowAllHostnameVerifier")
         @TrustAllCertificatesHttpClient
         @Provides
         @Singleton
-        fun provideAllowSelfSignedCertificateHttpClient(): HttpClient {
-            return HttpClient(Android) {
+        fun provideAllowSelfSignedCertificateHttpClient(okHttpClient: OkHttpClient): HttpClient =
+            HttpClient(OkHttp) {
                 engine {
-                    sslManager = { connection ->
-                        val sslContext = SSLContext.getInstance("SSL")
-                        sslContext.init(null, arrayOf(NaiveTrustManager()), null)
-                        connection.sslSocketFactory = sslContext.socketFactory
-                        connection.hostnameVerifier = AllowAllHostnameVerifier()
-                    }
+                    val trustManager = NaiveTrustManager()
+                    val sslContext = SSLContext.getInstance("SSL")
+                    sslContext.init(null, arrayOf(trustManager), null)
+                    preconfigured = okHttpClient.newBuilder()
+                        .sslSocketFactory(
+                            sslSocketFactory = sslContext.socketFactory,
+                            trustManager = trustManager
+                        )
+                        .hostnameVerifier(AllowAllHostnameVerifier())
+                        .build()
                 }
                 install(JsonFeature) {
                     serializer = KotlinxSerializer()
                 }
             }
-        }
 
         @Provides
         @Singleton
