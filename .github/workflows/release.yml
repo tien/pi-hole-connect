@@ -56,6 +56,9 @@ jobs:
         env:
           BUILD_TOOLS_VERSION: "30.0.3"
 
+      - name: Rename & move signed APK
+        run: mv ${{steps.sign_apk.outputs.signedReleaseFile}} app/build/outputs/apk/release/app-release.apk
+
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
@@ -64,7 +67,7 @@ jobs:
           body: ${{ steps.generate-changelog.outputs.clean_changelog }}
           files: |
             app/build/outputs/bundle/release/app-release.aab
+            app/build/outputs/apk/release/app-release.apk
             app/build/outputs/apk/release/app-release-unsigned.apk
-            ${{steps.sign_apk.outputs.signedReleaseFile}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
