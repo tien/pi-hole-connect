@@ -23,10 +23,10 @@ android {
 
     defaultConfig {
         applicationId = "com.tien.piholeconnect"
-        minSdk = 21
+        minSdk = 22
         targetSdk = 30
         versionCode = 20
-        versionName = "8.0"
+        versionName = "8.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
