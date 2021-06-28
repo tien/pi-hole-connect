@@ -1,3 +1,5 @@
+import com.google.protobuf.gradle.*
+
 val composeVersion: String by rootProject.extra
 val ktorVersion: String by rootProject.extra
 val protoBufVersion: String by rootProject.extra
@@ -25,9 +27,10 @@ android {
         targetSdk = 30
         versionCode = 20
         versionName = "8.0"
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        ndk {
-            debugSymbolLevel = "FULL"
+        vectorDrawables {
+            useSupportLibrary = true
         }
     }
 
@@ -38,6 +41,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
         }
     }
     compileOptions {
@@ -59,7 +65,21 @@ android {
     }
 }
 
-apply(from = "protobuf.gradle")
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:$protoBufJavaLiteVersion"
+    }
+
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                id("java") {
+                    option("lite")
+                }
+            }
+        }
+    }
+}
 
 dependencies {
     implementation(kotlin("stdlib"))
