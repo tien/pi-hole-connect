@@ -23,9 +23,9 @@ android {
 
     defaultConfig {
         applicationId = "com.tien.piholeconnect"
-        minSdk = 22
+        minSdk = 21
         targetSdk = 30
-        versionCode = 20
+        versionCode = 22
         versionName = "8.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
