@@ -1,17 +1,17 @@
 buildscript {
     val kotlinVersion: String by project
-    extra["composeVersion"] = "1.0.0-rc02"
-    extra["ktorVersion"] = "1.6.1"
+    extra["composeVersion"] = "1.1.0-beta02"
+    extra["ktorVersion"] = "1.6.5"
     extra["protoBufJavaLiteVersion"] = "3.17.3"
-    val hiltVersion by extra("2.37")
-    extra["lifecycleVersion"] = "2.3.1"
-    extra["cameraxVersion"] = "1.0.0"
+    val hiltVersion by extra("2.40.1")
+    extra["lifecycleVersion"] = "2.4.0"
+    extra["cameraxVersion"] = "1.0.2"
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:7.1.0-alpha03")
+        classpath("com.android.tools.build:gradle:7.0.3")
         classpath(kotlin("gradle-plugin", version = kotlinVersion))
         classpath("com.google.dagger:hilt-android-gradle-plugin:$hiltVersion")
     }
