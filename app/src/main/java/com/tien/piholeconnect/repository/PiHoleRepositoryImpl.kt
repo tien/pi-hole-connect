@@ -161,7 +161,7 @@ class PiHoleRepositoryImpl @Inject constructor(
             }
         }
 
-    override suspend fun disable(duration: Duration): PiHoleEnableStatus =
+    override suspend fun disable(duration: Duration): PiHoleStatusResponse =
         withContext(Dispatchers.IO) {
             baseRequestFlow.first().let { (httpClient, requestBuilder) ->
                 httpClient.get {
@@ -174,7 +174,7 @@ class PiHoleRepositoryImpl @Inject constructor(
             }
         }
 
-    override suspend fun enable(): PiHoleEnableStatus =
+    override suspend fun enable(): PiHoleStatusResponse =
         withContext(Dispatchers.IO) {
             baseRequestFlow.first().let { (httpClient, requestBuilder) ->
                 httpClient.get {

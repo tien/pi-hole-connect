@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.tien.piholeconnect.model.PiHoleConnectionAwareViewModel
+import com.tien.piholeconnect.model.PiHoleStatus
 import com.tien.piholeconnect.repository.PiHoleRepository
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -58,19 +59,26 @@ class HomeViewModel @Inject constructor(
     }
 
     suspend fun disable(duration: Duration) {
-        runCatching {
-            isPiHoleSwitchLoading = true
-            piHoleRepository.disable(duration)
-            refresh()
-        }.onFailure { error = it }
-        isPiHoleSwitchLoading = false
+        toggle(false, duration)
     }
 
     suspend fun enable() {
+        toggle(true, Duration.INFINITE)
+    }
+
+    private suspend fun toggle(state: Boolean, duration: Duration) {
         runCatching {
             isPiHoleSwitchLoading = true
-            piHoleRepository.enable()
-            refresh()
+            
+            val result =
+                if (state) piHoleRepository.enable()
+                else piHoleRepository.disable(duration)
+
+            isAdsBlockingEnabled = when (result.status) {
+                PiHoleStatus.ENABLED -> true
+                PiHoleStatus.DISABLED -> false
+                else -> isAdsBlockingEnabled
+            }
         }.onFailure { error = it }
         isPiHoleSwitchLoading = false
     }
