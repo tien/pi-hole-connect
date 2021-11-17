@@ -1,8 +1,7 @@
 package com.tien.piholeconnect.service
 
 import android.content.Context
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.LifecycleOwner
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClient.BillingResponseCode
 import com.android.billingclient.api.BillingClient.SkuType
@@ -19,8 +18,7 @@ class InAppPurchaseImpl @Inject constructor(
     override lateinit var billingClient: BillingClient
         private set
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    fun create() {
+    override fun onCreate(owner: LifecycleOwner) {
         billingClient =
             BillingClient.newBuilder(context).enablePendingPurchases().setListener(this).build()
 
@@ -29,13 +27,11 @@ class InAppPurchaseImpl @Inject constructor(
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    fun resume() {
+    override fun onResume(owner: LifecycleOwner) {
         consumeOutstandingPurchases()
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun destroy() {
+    override fun onDestroy(owner: LifecycleOwner) {
         if (billingClient.isReady) {
             billingClient.endConnection()
         }
