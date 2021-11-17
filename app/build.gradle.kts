@@ -91,7 +91,7 @@ dependencies {
     implementation("androidx.compose.material:material:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
     implementation("androidx.compose.ui:ui-tooling:$composeVersion")
-    implementation("com.google.accompanist:accompanist-swiperefresh:0.18.0")
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.20.2")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0")
     implementation("androidx.activity:activity-compose:1.4.0")
