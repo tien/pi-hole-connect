@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
@@ -64,20 +65,41 @@ fun PiHoleConnectionScreen(
     if (isLoading) return
 
     if (isScannerExpanded) {
-        AlertDialog(
-            onDismissRequest = { isScannerExpanded = false },
-            title = { Text(stringResource(R.string.pi_hole_connection_title_scanner)) },
-            text = { Text(stringResource(R.string.pi_hole_connection_hint_scanner)) },
-            buttons = {
-                Scanner(
-                    barcodeScanner = viewModel.barcodeScanner,
-                    onBarcodeScanSuccess = {
-                        it.firstOrNull()?.rawValue?.let { apiToken ->
-                            viewModel.apiToken = apiToken
-                            isScannerExpanded = false
+        Dialog(onDismissRequest = { isScannerExpanded = false }) {
+            Card {
+                Column {
+                    Box(Modifier.padding(start = 24.dp, end = 24.dp, top = 24.dp)) {
+                        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
+                            Text(
+                                stringResource(R.string.pi_hole_connection_title_scanner),
+                                style = MaterialTheme.typography.subtitle1
+                            )
                         }
-                    })
-            })
+                    }
+                    Box(Modifier.padding(start = 24.dp, end = 24.dp, bottom = 28.dp)) {
+                        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                            Text(
+                                stringResource(R.string.pi_hole_connection_hint_scanner),
+                                style = MaterialTheme.typography.body2
+                            )
+                        }
+                    }
+                    BoxWithConstraints {
+                        Scanner(
+                            Modifier
+                                .fillMaxWidth()
+                                .height(maxWidth),
+                            barcodeScanner = viewModel.barcodeScanner,
+                            onBarcodeScanSuccess = {
+                                it.firstOrNull()?.rawValue?.let { apiToken ->
+                                    viewModel.apiToken = apiToken
+                                    isScannerExpanded = false
+                                }
+                            })
+                    }
+                }
+            }
+        }
     }
 
     if (isDeleteAlertDialogExpanded) {

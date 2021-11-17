@@ -8,14 +8,10 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.DisposableEffectResult
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
 import com.google.mlkit.vision.barcode.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.common.InputImage
@@ -23,34 +19,14 @@ import com.google.mlkit.vision.common.InputImage
 @OptIn(ExperimentalGetImage::class)
 @Composable
 fun Scanner(
+    modifier: Modifier = Modifier,
     barcodeScanner: BarcodeScanner,
     onBarcodeScanSuccess: (Iterable<Barcode>) -> Unit
 ) {
-    val lifecycleOwner = remember {
-        object : LifecycleOwner {
-            val lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
-
-            init {
-                lifecycleRegistry.currentState = Lifecycle.State.STARTED
-            }
-
-            override fun getLifecycle() = lifecycleRegistry
-        }
-    }
-
-    DisposableEffect(Unit) {
-        object : DisposableEffectResult {
-            override fun dispose() {
-                lifecycleOwner.lifecycle.currentState = Lifecycle.State.DESTROYED
-            }
-        }
-    }
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     AndroidView(factory = { context ->
-        val viewfinder = PreviewView(context).apply {
-            implementationMode = PreviewView.ImplementationMode.COMPATIBLE
-        }
-
+        val viewfinder = PreviewView(context)
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
 
         cameraProviderFuture.addListener(
@@ -96,5 +72,5 @@ fun Scanner(
         )
 
         viewfinder
-    })
+    }, modifier = modifier)
 }
