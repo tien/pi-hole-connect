@@ -36,6 +36,6 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           FL_SET_GITHUB_RELEASE_REPOSITORY_NAME: ${{ github.repository }}
-          FL_GITHUB_RELEASE_API_TOKEN: ${{ github.token }}
+          FL_GITHUB_RELEASE_API_BEARER: ${{ github.token }}
           FL_SET_GITHUB_RELEASE_TAG_NAME: v${{ github.event.inputs.versionName }}
           VERSION_NAME: ${{ github.event.inputs.versionName }}
