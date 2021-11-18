@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -274,7 +275,11 @@ fun PiHoleConnectionScreen(
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
         )
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(stringResource(R.string.pi_hole_connection_label_show_advance_options))
             Switch(
                 checked = showAdvanceOptions,
@@ -282,7 +287,11 @@ fun PiHoleConnectionScreen(
             )
         }
         if (showAdvanceOptions) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(stringResource(R.string.pi_hole_connection_label_use_https))
                 Switch(
                     checked = viewModel.protocol == URLProtocol.HTTPS,
@@ -297,7 +306,11 @@ fun PiHoleConnectionScreen(
                     }
                 )
             }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(stringResource(R.string.pi_hole_connection_label_trust_all_certificates))
                 Switch(
                     checked = viewModel.trustAllCertificates,
