@@ -4,11 +4,11 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Scaffold
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.*
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -17,8 +17,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.compose.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.*
 import com.tien.piholeconnect.ui.component.BottomTab
@@ -53,6 +57,13 @@ fun App(
 
     val scaffoldState = rememberScaffoldState()
     val navController = rememberNavController()
+    val systemUiController = rememberSystemUiController()
+
+    val isDarkTheme = when (userPreferences!!.theme) {
+        Theme.DARK -> true
+        Theme.LIGHT -> false
+        else -> isSystemInDarkTheme()
+    }
 
     val optionsMenuItems =
         setOf(
@@ -112,13 +123,25 @@ fun App(
         )
     }
 
-    PiHoleConnectTheme(
-        darkTheme = when (userPreferences!!.theme) {
-            Theme.DARK -> true
-            Theme.LIGHT -> false
-            else -> isSystemInDarkTheme()
+    PiHoleConnectTheme(darkTheme = isDarkTheme) {
+        val themeColors = MaterialTheme.colors
+        val elevationOverlay = LocalElevationOverlay.current
+        val topAppBarColor = elevationOverlay?.apply(
+            color = themeColors.primarySurface,
+            elevation = AppBarDefaults.TopAppBarElevation
+        ) ?: themeColors.primarySurface
+        val bottomNavigationBackgroundColor = elevationOverlay?.apply(
+            color = themeColors.primarySurface,
+            elevation = BottomNavigationDefaults.Elevation
+        ) ?: themeColors.primarySurface
+
+        SideEffect {
+            systemUiController.apply {
+                setSystemBarsColor(color = topAppBarColor)
+                setNavigationBarColor(color = bottomNavigationBackgroundColor)
+            }
         }
-    ) {
+
         Scaffold(
             scaffoldState = scaffoldState,
             topBar = {

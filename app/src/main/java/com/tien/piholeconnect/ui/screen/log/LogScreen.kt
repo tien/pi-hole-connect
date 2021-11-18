@@ -36,6 +36,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.*
 import com.tien.piholeconnect.ui.component.LogItem
@@ -50,6 +51,9 @@ import kotlinx.coroutines.launch
 fun LogScreen(viewModel: LogViewModel = viewModel(), actions: @Composable RowScope.() -> Unit) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    val systemUiController = rememberSystemUiController()
+    val themeColors = MaterialTheme.colors
+
     val lazyListState = rememberLazyListState()
     val focusManager = LocalFocusManager.current
     val scaffoldState = rememberBackdropScaffoldState(BackdropValue.Concealed)
@@ -116,6 +120,10 @@ fun LogScreen(viewModel: LogViewModel = viewModel(), actions: @Composable RowSco
                 addToBlacklistLoading = viewModel.modifyFilterRuleState.first == RuleType.BLACK && viewModel.modifyFilterRuleState.second is AsyncState.Pending
             )
         }
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        systemUiController.setStatusBarColor(color = themeColors.primaryVariant)
     }
 
     BackdropScaffold(
