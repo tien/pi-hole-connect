@@ -1,73 +1,41 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - "v[0-9]+.[0-9]+"
   workflow_dispatch:
     inputs:
-      tag:
-        description: Git Tag (Optional)
-        required: false
+      versionName:
+        description: Version Name
+        required: true
 
 jobs:
-  release:
+  create-release:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
-        if: ${{ github.event.inputs.tag == '' }}
-      - uses: actions/checkout@v2
-        if: ${{ github.event.inputs.tag != '' }}
-        with:
-          ref: ${{ format('refs/tags/{0}', github.event.inputs.tag) }}
 
-      - uses: actions/cache@v2
+      - uses: actions/setup-java@v2
         with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+          distribution: temurin
+          java-version: 11
+          cache: gradle
 
-      - name: set up JDK 11
-        uses: actions/setup-java@v2
+      - uses: ruby/setup-ruby@v1
         with:
-          java-version: "11"
-          distribution: adopt
+          ruby-version: 3.0.2
+          bundler-cache: true
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-      - name: Build APK
-        run: ./gradlew assembleRelease
-      - name: Build AAB
-        run: ./gradlew bundleRelease
+      - name: Write keystore to file
+        run: echo ${{ secrets.KEYSTORE_BASE64 }} | base64 --decode > $GITHUB_WORKSPACE/keystore.jks
 
-      - name: Sign APK
-        id: sign_apk
-        uses: r0adkll/sign-android-release@v1.0.4
-        with:
-          releaseDirectory: app/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
-          alias: ${{ secrets.KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
-          keyPassword: ${{ secrets.KEY_PASSWORD }}
+      - run: bundle exec fastlane release
         env:
-          BUILD_TOOLS_VERSION: "30.0.3"
-
-      - name: Rename & move signed APK
-        run: mv ${{steps.sign_apk.outputs.signedReleaseFile}} app/build/outputs/apk/release/app-release.apk
-
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          draft: true
-          tag_name: ${{ github.event.inputs.tag }}
-          body: ${{ steps.generate-changelog.outputs.clean_changelog }}
-          files: |
-            app/build/outputs/bundle/release/app-release.aab
-            app/build/outputs/apk/release/app-release.apk
-            app/build/outputs/apk/release/app-release-unsigned.apk
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SUPPLY_JSON_KEY_DATA: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS }}
+          KEYSTORE_FILE: ${{ github.workspace }}/keystore.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          FL_SET_GITHUB_RELEASE_REPOSITORY_NAME: ${{ github.repository }}
+          FL_GITHUB_RELEASE_API_TOKEN: ${{ github.token }}
+          FL_SET_GITHUB_RELEASE_TAG_NAME: v${{ github.event.inputs.versionName }}
+          VERSION_NAME: ${{ github.event.inputs.versionName }}
