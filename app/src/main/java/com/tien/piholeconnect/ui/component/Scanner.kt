@@ -26,7 +26,10 @@ fun Scanner(
     val lifecycleOwner = LocalLifecycleOwner.current
 
     AndroidView(factory = { context ->
-        val viewfinder = PreviewView(context)
+        val viewfinder = PreviewView(context).apply {
+            implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+        }
+        
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
 
         cameraProviderFuture.addListener(
