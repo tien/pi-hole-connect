@@ -30,6 +30,6 @@ platform :android do
     upload_to_play_store(track: "internal")
 
     gradle(task: "clean assembleRelease", properties: properties)
-    set_github_release(upload_assets: [lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]])
+    set_github_release(is_draft: true, upload_assets: [lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]])
   end
 end
