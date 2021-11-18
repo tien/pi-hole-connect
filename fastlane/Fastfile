@@ -1,0 +1,35 @@
+default_platform(:android)
+
+platform :android do
+  lane :development do
+    gradle(
+      task: "clean bundleRelease",
+      properties: {
+        "android.injected.version.code" => ENV["VERSION_CODE"],
+        "android.injected.version.name" => ENV["VERSION_NAME"],
+        "android.injected.signing.store.file" => ENV["KEYSTORE_FILE"],
+        "android.injected.signing.store.password" => ENV["KEYSTORE_PASSWORD"],
+        "android.injected.signing.key.alias" => ENV["KEY_ALIAS"],
+        "android.injected.signing.key.password" => ENV["KEY_PASSWORD"],
+      },
+    )
+    firebase_app_distribution(android_artifact_type: "AAB")
+  end
+
+  lane :release do
+    properties = {
+      "android.injected.version.code" => google_play_track_version_codes(track: "internal").max + 1,
+      "android.injected.version.name" => ENV["VERSION_NAME"],
+      "android.injected.signing.store.file" => ENV["KEYSTORE_FILE"],
+      "android.injected.signing.store.password" => ENV["KEYSTORE_PASSWORD"],
+      "android.injected.signing.key.alias" => ENV["KEY_ALIAS"],
+      "android.injected.signing.key.password" => ENV["KEY_PASSWORD"],
+    }
+
+    gradle(task: "clean bundleRelease", properties: properties)
+    upload_to_play_store(track: "internal")
+
+    gradle(task: "clean assembleRelease", properties: properties)
+    set_github_release(upload_assets: [lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]])
+  end
+end

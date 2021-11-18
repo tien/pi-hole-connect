@@ -1,0 +1,48 @@
+name: Development
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  create-test-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: temurin
+          java-version: 11
+          cache: gradle
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.0.2
+          bundler-cache: true
+
+      - name: Write keystore & credentials to files
+        run: |
+          echo ${{ secrets.KEYSTORE_BASE64 }} | base64 --decode > $GITHUB_WORKSPACE/keystore.jks
+          echo "$FIREBASE_SERVICE_ACCOUNT_CREDENTIALS" > $GITHUB_WORKSPACE/firebase-service-account-credentials.json
+        env:
+          FIREBASE_SERVICE_ACCOUNT_CREDENTIALS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CREDENTIALS }}
+
+      - run: bundle exec fastlane development
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/firebase-service-account-credentials.json
+          KEYSTORE_FILE: ${{ github.workspace }}/keystore.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          VERSION_CODE: ${{ github.run_number }}
+          VERSION_NAME: SNAPSHOT-${{ github.sha }}
+          FIREBASEAPPDISTRO_APP: ${{ secrets.FIREBASE_APP }}
+          FIREBASEAPPDISTRO_TESTERS: ${{ secrets.FIREBASE_TESTERS }}
+          FIREBASEAPPDISTRO_RELEASE_NOTES: |
+            ${{ github.event.commits[0].message }}
+
+            ${{ github.sha }}
