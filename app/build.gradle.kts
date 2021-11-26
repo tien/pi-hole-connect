@@ -20,12 +20,11 @@ plugins {
 
 android {
     compileSdk = 31
-    buildToolsVersion = "30.0.3"
 
     defaultConfig {
         applicationId = "com.tien.piholeconnect"
         minSdk = 21
-        targetSdk = 30
+        targetSdk = 31
         versionCode = 1
         versionName = "SNAPSHOT"
 
