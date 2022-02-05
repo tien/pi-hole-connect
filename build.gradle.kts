@@ -6,7 +6,7 @@ buildscript {
     val hiltVersion by extra("2.40.1")
     extra["lifecycleVersion"] = "2.4.0"
     extra["cameraxVersion"] = "1.0.2"
-    extra["accompanistVersion"] = "0.20.2"
+    extra["accompanistVersion"] = "0.20.3"
     repositories {
         google()
         mavenCentral()
