@@ -3,10 +3,10 @@ package com.tien.piholeconnect.di
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.datastore.core.DataStore
-import com.google.mlkit.vision.barcode.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScanner
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.barcode.common.Barcode
 import com.tien.piholeconnect.data.userPreferencesDataStore
 import com.tien.piholeconnect.model.UserPreferences
 import com.tien.piholeconnect.repository.PiHoleRepository
