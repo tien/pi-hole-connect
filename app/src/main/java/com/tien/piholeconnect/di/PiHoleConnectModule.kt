@@ -28,8 +28,8 @@ import dagger.hilt.android.scopes.ActivityRetainedScoped
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.serialization.kotlinx.json.*
 import okhttp3.OkHttpClient
 import org.apache.http.conn.ssl.AllowAllHostnameVerifier
 import javax.inject.Qualifier
@@ -66,8 +66,8 @@ abstract class PiHoleConnectModule {
                 engine {
                     preconfigured = okHttpClient
                 }
-                install(JsonFeature) {
-                    serializer = KotlinxSerializer(PiHoleSerializer.DefaultJson)
+                install(ContentNegotiation) {
+                    json(PiHoleSerializer.DefaultJson)
                 }
             }
 
@@ -90,8 +90,8 @@ abstract class PiHoleConnectModule {
                         .hostnameVerifier(AllowAllHostnameVerifier())
                         .build()
                 }
-                install(JsonFeature) {
-                    serializer = KotlinxSerializer(PiHoleSerializer.DefaultJson)
+                install(ContentNegotiation) {
+                    json(PiHoleSerializer.DefaultJson)
                 }
             }
 

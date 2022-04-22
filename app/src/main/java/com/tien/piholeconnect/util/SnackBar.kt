@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHostState
 import com.tien.piholeconnect.R
-import io.ktor.client.features.*
+import io.ktor.client.plugins.*
 import io.ktor.utils.io.errors.*
 import java.util.concurrent.CancellationException
 

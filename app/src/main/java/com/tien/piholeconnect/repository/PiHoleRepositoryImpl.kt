@@ -6,8 +6,10 @@ import com.tien.piholeconnect.di.TrustAllCertificatesHttpClient
 import com.tien.piholeconnect.model.*
 import com.tien.piholeconnect.util.toKtorURLProtocol
 import io.ktor.client.*
-import io.ktor.client.features.auth.providers.*
+import io.ktor.client.call.*
+import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.request.*
+import io.ktor.http.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -51,7 +53,7 @@ class PiHoleRepositoryImpl @Inject constructor(
                                 password = piHoleConnection.basicAuthPassword
                             )
                         },
-                        realm = if (piHoleConnection.basicAuthRealm.isBlank()) null else piHoleConnection.basicAuthRealm,
+                        realm = piHoleConnection.basicAuthRealm.ifBlank { null },
                         sendWithoutRequestCallback = { true }
                     )
                     let {
@@ -75,7 +77,7 @@ class PiHoleRepositoryImpl @Inject constructor(
                     url {
                         parameters["summaryRaw"] = true.toString()
                     }
-                }
+                }.body()
             }
         }
 
@@ -87,7 +89,7 @@ class PiHoleRepositoryImpl @Inject constructor(
                     url {
                         parameters["overTimeData10mins"] = true.toString()
                     }
-                }
+                }.body()
             }
         }
 
@@ -101,7 +103,7 @@ class PiHoleRepositoryImpl @Inject constructor(
                         parameters["topItems"] = true.toString()
                         parameters["topClients"] = true.toString()
                     }
-                }
+                }.body()
             }
         }
 
@@ -113,7 +115,7 @@ class PiHoleRepositoryImpl @Inject constructor(
                     url {
                         parameters["getAllQueries"] = limit.toString()
                     }
-                }
+                }.body()
             }
         }
 
@@ -125,7 +127,7 @@ class PiHoleRepositoryImpl @Inject constructor(
                     url {
                         parameters["list"] = ruleType.toString().lowercase(Locale.ENGLISH)
                     }
-                }
+                }.body()
             }
         }
 
@@ -141,7 +143,7 @@ class PiHoleRepositoryImpl @Inject constructor(
                         parameters["list"] = ruleType.toString().lowercase(Locale.ENGLISH)
                         parameters["add"] = rule
                     }
-                }
+                }.body()
             }
         }
 
@@ -157,7 +159,7 @@ class PiHoleRepositoryImpl @Inject constructor(
                         parameters["list"] = ruleType.toString().lowercase(Locale.ENGLISH)
                         parameters["sub"] = rule
                     }
-                }
+                }.body()
             }
         }
 
@@ -170,7 +172,7 @@ class PiHoleRepositoryImpl @Inject constructor(
                         parameters["disable"] =
                             if (duration.isInfinite()) 0.toString() else duration.inWholeSeconds.toString()
                     }
-                }
+                }.body()
             }
         }
 
@@ -182,7 +184,7 @@ class PiHoleRepositoryImpl @Inject constructor(
                     url {
                         parameters["enable"] = true.toString()
                     }
-                }
+                }.body()
             }
         }
 }
