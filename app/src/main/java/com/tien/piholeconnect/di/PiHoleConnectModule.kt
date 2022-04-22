@@ -8,6 +8,7 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.tien.piholeconnect.data.userPreferencesDataStore
+import com.tien.piholeconnect.model.PiHoleSerializer
 import com.tien.piholeconnect.model.UserPreferences
 import com.tien.piholeconnect.repository.PiHoleRepository
 import com.tien.piholeconnect.repository.PiHoleRepositoryImpl
@@ -66,7 +67,7 @@ abstract class PiHoleConnectModule {
                     preconfigured = okHttpClient
                 }
                 install(JsonFeature) {
-                    serializer = KotlinxSerializer()
+                    serializer = KotlinxSerializer(PiHoleSerializer.DefaultJson)
                 }
             }
 
@@ -90,7 +91,7 @@ abstract class PiHoleConnectModule {
                         .build()
                 }
                 install(JsonFeature) {
-                    serializer = KotlinxSerializer()
+                    serializer = KotlinxSerializer(PiHoleSerializer.DefaultJson)
                 }
             }
 
