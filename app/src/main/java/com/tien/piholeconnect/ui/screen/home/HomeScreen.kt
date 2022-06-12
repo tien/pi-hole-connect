@@ -1,7 +1,6 @@
 package com.tien.piholeconnect.ui.screen.home
 
 import android.view.MotionEvent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.layout.*
@@ -39,7 +38,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.DateFormat.getTimeInstance
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     val context = LocalContext.current
