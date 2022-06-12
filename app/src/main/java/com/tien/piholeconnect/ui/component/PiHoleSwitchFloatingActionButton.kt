@@ -23,6 +23,8 @@ import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 import com.tien.piholeconnect.ui.theme.success
 import java.util.*
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun PiHoleSwitchFloatingActionButton(
@@ -77,13 +79,13 @@ fun DisableAdsBlockingAlertDialog(
                             )
                         )
                     }
-                    TextButton(onClick = { onDurationButtonClick(Duration.seconds(10)) }) {
+                    TextButton(onClick = { onDurationButtonClick(10.seconds) }) {
                         Text(stringResource(R.string.disable_dialog_button_10_seconds))
                     }
-                    TextButton(onClick = { onDurationButtonClick(Duration.seconds(30)) }) {
+                    TextButton(onClick = { onDurationButtonClick(30.seconds) }) {
                         Text(stringResource(R.string.disable_dialog_button_30_seconds))
                     }
-                    TextButton(onClick = { onDurationButtonClick(Duration.minutes(5)) }) {
+                    TextButton(onClick = { onDurationButtonClick(5.minutes) }) {
                         Text(stringResource(R.string.disable_dialog_button_5_minutes))
                     }
                     TextButton(onClick = {

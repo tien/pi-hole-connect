@@ -24,6 +24,8 @@ import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 import com.tien.piholeconnect.util.isNumericOrWhitespace
 import java.util.*
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 enum class TimeTextFieldType { PRIMARY, SECONDARY }
 
@@ -195,9 +197,7 @@ fun DurationPicker(
                     enabled = (hours.toIntOrNull() ?: 0) > 0 || (minutes.toIntOrNull() ?: 0) > 0,
                     onClick = {
                         onOkayClick(
-                            Duration.hours(
-                                hours.toIntOrNull() ?: 0
-                            ) + Duration.minutes(minutes.toIntOrNull() ?: 0)
+                            (hours.toIntOrNull() ?: 0).hours + (minutes.toIntOrNull() ?: 0).minutes
                         )
                     }) {
                     Text(stringResource(android.R.string.ok).uppercase())
