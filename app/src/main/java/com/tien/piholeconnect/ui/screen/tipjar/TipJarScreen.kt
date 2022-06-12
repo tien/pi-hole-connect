@@ -39,7 +39,7 @@ fun TipJarScreen(viewModel: TipJarViewModel) {
                     Text(tipOption.title.slice(IntRange(0, tipOption.title.indexOf(" ("))))
                 },
                 secondaryText = { Text(tipOption.description) },
-                trailing = { Text(tipOption.price) })
+                trailing = { Text(tipOption.oneTimePurchaseOfferDetails?.formattedPrice ?: "") })
         }
     }
 }

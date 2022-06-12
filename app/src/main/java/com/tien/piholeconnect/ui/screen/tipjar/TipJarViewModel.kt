@@ -4,11 +4,7 @@ import android.app.Activity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.android.billingclient.api.BillingClient.SkuType.INAPP
-import com.android.billingclient.api.BillingFlowParams
-import com.android.billingclient.api.SkuDetails
-import com.android.billingclient.api.SkuDetailsParams
-import com.android.billingclient.api.querySkuDetails
+import com.android.billingclient.api.*
 import com.tien.piholeconnect.model.RefreshableViewModel
 import com.tien.piholeconnect.service.InAppPurchase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,21 +15,35 @@ class TipJarViewModel @Inject constructor(
     private val inAppPurchase: InAppPurchase
 ) :
     RefreshableViewModel() {
-    private val skuLists =
-        listOf("coffee", "beer", "dinner").map { "com.tien.piholeconnect.tip.$it" }
+    private val productList =
+        listOf("coffee", "beer", "dinner")
+            .map { "com.tien.piholeconnect.tip.$it" }
+            .map {
+                QueryProductDetailsParams.Product
+                    .newBuilder()
+                    .setProductType(BillingClient.ProductType.INAPP)
+                    .setProductId(it)
+                    .build()
+            }
 
-    var tipOptions by mutableStateOf(listOf<SkuDetails>())
+    var tipOptions by mutableStateOf(listOf<ProductDetails>())
         private set
 
     override suspend fun queueRefresh() {
-        val params = SkuDetailsParams.newBuilder().setType(INAPP).setSkusList(skuLists).build()
-        inAppPurchase.billingClient.querySkuDetails(params).skuDetailsList?.also { options ->
-            tipOptions = options.sortedBy { it.priceAmountMicros }
-        }
+        val params = QueryProductDetailsParams.newBuilder().setProductList(productList).build()
+        tipOptions = inAppPurchase.billingClient
+            .queryProductDetails(params).productDetailsList
+            ?.sortedBy { it.oneTimePurchaseOfferDetails?.priceAmountMicros }
+            ?: listOf()
     }
 
-    fun launchBillingFlow(activity: Activity, skuDetails: SkuDetails) {
-        val params = BillingFlowParams.newBuilder().setSkuDetails(skuDetails).build()
+    fun launchBillingFlow(activity: Activity, productDetails: ProductDetails) {
+        val params = BillingFlowParams.newBuilder().setProductDetailsParamsList(
+            listOf(
+                BillingFlowParams.ProductDetailsParams.newBuilder()
+                    .setProductDetails(productDetails).build()
+            )
+        ).build()
         inAppPurchase.billingClient.launchBillingFlow(activity, params)
     }
 }
