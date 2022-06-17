@@ -123,7 +123,7 @@ fun PiHoleConnectionScreen(
             dismissButton = {
                 TextButton(onClick = {
                     isDeleteAlertDialogExpanded = false
-                }) { Text(stringResource(android.R.string.cancel).uppercase(Locale.getDefault())) }
+                }) { Text(stringResource(android.R.string.cancel).uppercase()) }
             },
             onDismissRequest = { isDeleteAlertDialogExpanded = false })
     }

@@ -91,7 +91,7 @@ fun DisableAdsBlockingAlertDialog(
                     }) { Text(stringResource(R.string.disable_dialog_button_custom_time)) }
                     TextButton(onClick = onDismissRequest) {
                         Text(
-                            stringResource(R.string.disable_dialog_button_cancel).uppercase(Locale.getDefault())
+                            stringResource(R.string.disable_dialog_button_cancel).uppercase()
                         )
                     }
                 }
@@ -106,14 +106,14 @@ fun EnableAdsBlockingAlertDialog(onConfirmRequest: () -> Unit, onDismissRequest:
         confirmButton = {
             TextButton(onClick = onConfirmRequest) {
                 Text(
-                    stringResource(R.string.enable_dialog_button_confirm).uppercase(Locale.getDefault())
+                    stringResource(R.string.enable_dialog_button_confirm).uppercase()
                 )
             }
         },
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
                 Text(
-                    stringResource(R.string.enable_dialog_button_dismiss).uppercase(Locale.getDefault())
+                    stringResource(R.string.enable_dialog_button_dismiss).uppercase()
                 )
             }
         },
