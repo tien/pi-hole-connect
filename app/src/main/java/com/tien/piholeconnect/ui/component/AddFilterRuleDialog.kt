@@ -98,7 +98,7 @@ fun AddFilterRuleCard(
                 horizontalArrangement = Arrangement.End
             ) {
                 TextButton(onClick = onCancelClick) { Text(stringResource(android.R.string.cancel).uppercase()) }
-                TextButton(onClick = onConfirmClick) { Text(stringResource(R.string.add_filter_rules_dialog_add)) }
+                TextButton(onClick = onConfirmClick) { Text(stringResource(R.string.add_filter_rules_dialog_add).uppercase()) }
             }
         }
     }
