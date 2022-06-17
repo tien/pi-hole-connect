@@ -241,13 +241,17 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                                 style = MaterialTheme.typography.h6
                             )
                             Column(Modifier.alpha(if (permittedQueriesCount != null && blockedQueriesCount != null) 1f else 0f)) {
-                                Text(
-                                    "${stringResource(R.string.home_queries_chart_time_info_1)} $formattedStartTime ${
-                                        stringResource(
-                                            R.string.home_queries_chart_time_info_2
-                                        )
-                                    } $formattedEndTime", style = MaterialTheme.typography.caption
-                                )
+                                if (formattedStartTime != null && formattedEndTime != null) {
+                                    Text(
+                                        String.format(
+                                            stringResource(
+                                                R.string.home_queries_chart_time_info,
+                                                formattedStartTime,
+                                                formattedEndTime
+                                            )
+                                        ), style = MaterialTheme.typography.caption
+                                    )
+                                }
                                 Text(
                                     "%s: %d".format(
                                         stringResource(R.string.home_queries_chart_permitted_queries_label),
