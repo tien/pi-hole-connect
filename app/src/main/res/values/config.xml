@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="bug_report_url"><![CDATA[https://github.com/tien/pi-hole-connect/issues]]></string>
+    <string name="bug_report_url" translatable="false"><![CDATA[https://github.com/tien/pi-hole-connect/issues]]></string>
 </resources>
