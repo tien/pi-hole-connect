@@ -17,8 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.capitalize
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,7 +26,6 @@ import com.tien.piholeconnect.model.Screen
 import com.tien.piholeconnect.model.Theme
 import com.tien.piholeconnect.model.UserPreferences
 import kotlinx.coroutines.launch
-import androidx.compose.ui.text.intl.Locale.Companion as Locale
 
 private val PreferenceItemModifier = Modifier
     .fillMaxWidth()
@@ -103,8 +100,7 @@ fun PreferencesScreen(
                             onClick = null
                         )
                         Text(
-                            text = theme.name.toLowerCase(Locale.current)
-                                .capitalize(Locale.current)
+                            text = theme.name.lowercase().replaceFirstChar { it.titlecase() }
                         )
                     }
                 }
