@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Pi-hole Connect</string>
+    <string name="app_name" translatable="false">Pi-hole Connect</string>
     <string name="title_activity_home">Home</string>
     <string name="label_home">Home</string>
     <string name="label_statistics">Statistics</string>
@@ -52,10 +52,10 @@
     <string name="pi_hole_connection_label_trust_all_certificates">Trust all certificates</string>
     <string name="pi_hole_connection_remove_dialog_title">Remove connection?</string>
     <string name="pi_hole_connection_remove_dialog_button_remove">Remove</string>
-    <string name="disable_dialog_button_custom_time">CUSTOM TIME</string>
-    <string name="disable_dialog_button_5_minutes">5 MINUTES</string>
-    <string name="disable_dialog_button_30_seconds">30 SECONDS</string>
-    <string name="disable_dialog_button_10_seconds">10 SECONDS</string>
+    <string name="disable_dialog_button_custom_time">Custom time</string>
+    <string name="disable_dialog_button_5_minutes">5 minutes</string>
+    <string name="disable_dialog_button_30_seconds">30 seconds</string>
+    <string name="disable_dialog_button_10_seconds">10 seconds</string>
     <string name="duration_picker_dialog_hours">Hours</string>
     <string name="duration_picker_dialog_minutes">Minutes</string>
     <string name="log_screen_label_allowed">Allowed</string>
@@ -93,6 +93,6 @@
     <string name="add_filter_rules_dialog_add_rule">Add rule</string>
     <string name="add_filter_rules_dialog_domain">Domain</string>
     <string name="add_filter_rules_dialog_add_as_wildcard">Add as wildcard</string>
-    <string name="add_filter_rules_dialog_add">ADD</string>
+    <string name="add_filter_rules_dialog_add">Add</string>
     <string name="filter_rules_reg_exr">RegExr</string>
 </resources>
