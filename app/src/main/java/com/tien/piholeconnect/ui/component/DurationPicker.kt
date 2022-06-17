@@ -189,7 +189,7 @@ fun DurationPicker(
                 horizontalArrangement = Arrangement.End
             ) {
                 TextButton(onClick = onCancelClick) {
-                    Text(stringResource(android.R.string.cancel).uppercase(Locale.getDefault()))
+                    Text(stringResource(android.R.string.cancel).uppercase())
                 }
                 TextButton(
                     enabled = (hours.toIntOrNull() ?: 0) > 0 || (minutes.toIntOrNull() ?: 0) > 0,
@@ -200,7 +200,7 @@ fun DurationPicker(
                             ) + Duration.minutes(minutes.toIntOrNull() ?: 0)
                         )
                     }) {
-                    Text(stringResource(android.R.string.ok).uppercase(Locale.getDefault()))
+                    Text(stringResource(android.R.string.ok).uppercase())
                 }
             }
         }
