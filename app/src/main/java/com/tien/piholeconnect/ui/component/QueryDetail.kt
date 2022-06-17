@@ -126,7 +126,7 @@ fun QueryDetail(
                         CircularProgressIndicator(Modifier.size(30.dp))
                     }
                 }
-                TextButton(onClick = onDismissRequest) { Text("Done".uppercase()) }
+                TextButton(onClick = onDismissRequest) { Text(stringResource(R.string.query_detail_done).uppercase()) }
             }
         }
     }

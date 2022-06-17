@@ -163,7 +163,9 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = viewModel()) {
                                             }
                                             .background(MaterialTheme.colors.background),
                                         overlineText = when (rule.type) {
-                                            RuleType.REGEX_BLACK, RuleType.REGEX_WHITE -> ({ Text("RegExr") })
+                                            RuleType.REGEX_BLACK, RuleType.REGEX_WHITE -> ({ Text(
+                                                                                            stringResource(R.string.filter_rules_reg_exr)
+                                                                                        ) })
                                             else -> null
                                         },
                                         text = { Text(rule.domain) },

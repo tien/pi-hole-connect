@@ -124,7 +124,7 @@ fun DurationPicker(
                     LocalContentAlpha provides ContentAlpha.medium
                 ) {
                     Text(
-                        "Enter time".uppercase(Locale.getDefault()),
+                        stringResource(R.string.duration_picker_enter_time).uppercase(),
                         style = MaterialTheme.typography.overline,
                     )
                 }
