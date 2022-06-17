@@ -7,10 +7,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.WILDCARD_REGEX_PREFIX
 import com.tien.piholeconnect.model.WILDCARD_REGEX_SUFFIX
 
@@ -60,13 +62,16 @@ fun AddFilterRuleCard(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
-                    Text("Add rule", style = MaterialTheme.typography.subtitle1)
+                    Text(
+                        stringResource(R.string.add_filter_rules_dialog_add_rule),
+                        style = MaterialTheme.typography.subtitle1
+                    )
                 }
                 OutlinedTextField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .focusRequester(focusRequester),
-                    label = { Text("Domain") },
+                    label = { Text(stringResource(R.string.add_filter_rules_dialog_domain)) },
                     leadingIcon = if (isWildcardChecked) {
                         { Text(WILDCARD_REGEX_PREFIX) }
                     } else null,
@@ -78,7 +83,7 @@ fun AddFilterRuleCard(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri)
                 )
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Add as wildcard")
+                    Text(stringResource(R.string.add_filter_rules_dialog_add_as_wildcard))
                     Switch(
                         checked = isWildcardChecked,
                         onCheckedChange = onIsWildcardCheckedChanged
@@ -92,8 +97,8 @@ fun AddFilterRuleCard(
                     .padding(8.dp),
                 horizontalArrangement = Arrangement.End
             ) {
-                TextButton(onClick = onCancelClick) { Text("CANCEL") }
-                TextButton(onClick = onConfirmClick) { Text("ADD") }
+                TextButton(onClick = onCancelClick) { Text(stringResource(android.R.string.cancel).uppercase()) }
+                TextButton(onClick = onConfirmClick) { Text(stringResource(R.string.add_filter_rules_dialog_add)) }
             }
         }
     }

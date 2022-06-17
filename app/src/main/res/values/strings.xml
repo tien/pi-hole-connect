@@ -84,4 +84,16 @@
     <string name="query_detail_response_time_ms">%.1f ms</string>
     <string name="query_detail_add_to_whitelist">Add to whitelist</string>
     <string name="query_detail_add_to_blacklist">Add to blacklist</string>
+    <string name="query_detail_done">Done</string>
+    <string name="duration_picker_enter_time">Enter time</string>
+    <string name="home_queries_over_time">Queries over time</string>
+    <string name="home_ads_over_time">Ads over time</string>
+    <string name="statistics_top_permitted">Top permitted</string>
+    <string name="statistics_top_blocked">Top blocked</string>
+    <string name="statistics_top_client">Top client</string>
+    <string name="add_filter_rules_dialog_add_rule">Add rule</string>
+    <string name="add_filter_rules_dialog_domain">Domain</string>
+    <string name="add_filter_rules_dialog_add_as_wildcard">Add as wildcard</string>
+    <string name="add_filter_rules_dialog_add">ADD</string>
+    <string name="filter_rules_reg_exr">RegExr</string>
 </resources>

@@ -56,18 +56,20 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     val successColorInt = MaterialTheme.colors.success.toColorInt()
     val errorColorInt = MaterialTheme.colors.error.toColorInt()
 
+    val queriesOverTimeLabel = stringResource(R.string.home_queries_over_time)
     val queriesOverTimeData = remember(viewModel.queriesOverTime) {
         LineChartData(
-            label = "Queries over time",
+            label = queriesOverTimeLabel,
             viewModel.queriesOverTime.map { Pair(it.key.toFloat() * 1000L, it.value.toFloat()) }) {
             color = successColorInt
             fillColor = successColorInt
         }
     }
 
+    val adsOverTimeLabel = stringResource(R.string.home_ads_over_time)
     val adsOverTimeData = remember(viewModel.adsOverTime) {
         LineChartData(
-            label = "Ads over time",
+            label = adsOverTimeLabel,
             viewModel.adsOverTime.map { Pair(it.key.toFloat() * 1000L, it.value.toFloat()) }) {
             color = errorColorInt
             fillColor = errorColorInt

@@ -17,11 +17,13 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.tien.piholeconnect.R
 import com.tien.piholeconnect.ui.component.RankedListCard
 import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
 import com.tien.piholeconnect.ui.theme.info
@@ -66,7 +68,7 @@ fun StatisticsScreen(viewModel: StatisticsViewModel = viewModel(), scaffoldState
             verticalArrangement = Arrangement.spacedBy(15.dp)
         ) {
             RankedListCard(
-                title = { Text("Top permitted") },
+                title = { Text(stringResource(R.string.statistics_top_permitted)) },
                 icon = {
                     Icon(
                         Icons.Default.GppGood,
@@ -77,7 +79,7 @@ fun StatisticsScreen(viewModel: StatisticsViewModel = viewModel(), scaffoldState
                 valueMap = viewModel.statistics.topQueries
             )
             RankedListCard(
-                title = { Text("Top blocked") },
+                title = { Text(stringResource(R.string.statistics_top_blocked)) },
                 icon = {
                     Icon(
                         Icons.Default.GppBad,
@@ -88,7 +90,7 @@ fun StatisticsScreen(viewModel: StatisticsViewModel = viewModel(), scaffoldState
                 valueMap = viewModel.statistics.topAds
             )
             RankedListCard(
-                title = { Text("Top client") },
+                title = { Text(stringResource(R.string.statistics_top_client)) },
                 icon = {
                     Icon(
                         Icons.Default.Devices,
