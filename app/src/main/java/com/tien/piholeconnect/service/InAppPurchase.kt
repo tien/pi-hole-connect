@@ -1,12 +1,13 @@
 package com.tien.piholeconnect.service
 
 import androidx.lifecycle.DefaultLifecycleObserver
-import com.android.billingclient.api.BillingClient
-import com.android.billingclient.api.BillingClientStateListener
-import com.android.billingclient.api.ConsumeResponseListener
-import com.android.billingclient.api.PurchasesUpdatedListener
+import com.android.billingclient.api.*
 
-interface InAppPurchase : DefaultLifecycleObserver, BillingClientStateListener, PurchasesUpdatedListener,
+interface InAppPurchase :
+    DefaultLifecycleObserver,
+    BillingClientStateListener,
+    PurchasesUpdatedListener,
+    PurchasesResponseListener,
     ConsumeResponseListener {
     val billingClient: BillingClient
 }
