@@ -2,12 +2,8 @@ package com.tien.piholeconnect.service
 
 import android.content.Context
 import androidx.lifecycle.LifecycleOwner
-import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.*
 import com.android.billingclient.api.BillingClient.BillingResponseCode
-import com.android.billingclient.api.BillingClient.SkuType
-import com.android.billingclient.api.BillingResult
-import com.android.billingclient.api.ConsumeParams
-import com.android.billingclient.api.Purchase
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -51,21 +47,34 @@ class InAppPurchaseImpl @Inject constructor(
         purchases: MutableList<Purchase>?
     ) {
         if (billingResult.responseCode == BillingResponseCode.OK) {
-            purchases?.apply(this::handlePurchases)
+            purchases?.apply(this::consumePurchases)
         }
     }
 
     override fun onConsumeResponse(billingResult: BillingResult, token: String) {
     }
 
-    private fun consumeOutstandingPurchases() {
-        billingClient.queryPurchasesAsync(SkuType.INAPP) { _, purchases ->
-            handlePurchases(purchases)
+    override fun onQueryPurchasesResponse(
+        billingResult: BillingResult,
+        purchases: MutableList<Purchase>
+    ) {
+        if (billingResult.responseCode == BillingResponseCode.OK) {
+            this.consumePurchases(purchases)
         }
     }
 
-    private fun handlePurchases(purchases: Iterable<Purchase>) {
-        purchases.map { purchase ->
+    private fun consumeOutstandingPurchases() {
+        billingClient.queryPurchasesAsync(
+            QueryPurchasesParams
+                .newBuilder()
+                .setProductType(BillingClient.ProductType.INAPP)
+                .build(),
+            this
+        )
+    }
+
+    private fun consumePurchases(purchases: Iterable<Purchase>) {
+        purchases.forEach { purchase ->
             ConsumeParams.newBuilder()
                 .setPurchaseToken(purchase.purchaseToken)
                 .build().let {
