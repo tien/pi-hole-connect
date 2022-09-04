@@ -144,6 +144,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                     .fillMaxHeight()
                     .verticalScroll(rememberScrollState(), enabled = isScrollEnabled)
                     .heightIn(min = 500.dp)
+                    .padding(it)
                     .padding(start = 15.dp, top = 15.dp, end = 15.dp, bottom = 80.dp),
                 verticalArrangement = Arrangement.spacedBy(15.dp)
             ) {
