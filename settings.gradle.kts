@@ -1,17 +1,16 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
         maven("https://jitpack.io")
-        maven("https://kotlin.bintray.com/kotlinx")
-    }
-}
-pluginManagement {
-    val kotlinVersion: String by settings
-    plugins {
-        id("com.google.protobuf") version "0.8.19"
-        kotlin("plugin.serialization") version kotlinVersion
     }
 }
 rootProject.name = "Pi-hole Connect"
