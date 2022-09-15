@@ -2,11 +2,17 @@ default_platform(:android)
 
 platform :android do
   lane :development do
+    android_set_version_code(
+      version_code: ENV["VERSION_CODE"],
+      gradle_file: "app/build.gradle.kts"
+    )
+    android_set_version_name(
+      version_name: ENV["VERSION_NAME"],
+      gradle_file: "app/build.gradle.kts"
+    )
     gradle(
       task: "clean bundleRelease",
       properties: {
-        "android.injected.version.code" => ENV["VERSION_CODE"],
-        "android.injected.version.name" => ENV["VERSION_NAME"],
         "android.injected.signing.store.file" => ENV["KEYSTORE_FILE"],
         "android.injected.signing.store.password" => ENV["KEYSTORE_PASSWORD"],
         "android.injected.signing.key.alias" => ENV["KEY_ALIAS"],
@@ -17,9 +23,16 @@ platform :android do
   end
 
   lane :release do
+    android_set_version_code(
+      version_code: google_play_track_version_codes(track: "internal").max + 1,
+      gradle_file: "app/build.gradle.kts"
+    )
+    android_set_version_name(
+      version_name: ENV["VERSION_NAME"],
+      gradle_file: "app/build.gradle.kts"
+    )
+
     properties = {
-      "android.injected.version.code" => google_play_track_version_codes(track: "internal").max + 1,
-      "android.injected.version.name" => ENV["VERSION_NAME"],
       "android.injected.signing.store.file" => ENV["KEYSTORE_FILE"],
       "android.injected.signing.store.password" => ENV["KEYSTORE_PASSWORD"],
       "android.injected.signing.key.alias" => ENV["KEY_ALIAS"],
