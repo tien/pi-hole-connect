@@ -53,8 +53,8 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
         freeCompilerArgs = freeCompilerArgs + listOf(
-            "-Xopt-in=kotlin.RequiresOptIn",
-            "-Xopt-in=kotlin.time.ExperimentalTime"
+            "-opt-in=kotlin.RequiresOptIn",
+            "-opt-in=kotlin.time.ExperimentalTime"
         )
     }
     buildFeatures {
