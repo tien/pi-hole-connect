@@ -19,6 +19,8 @@ plugins {
 }
 
 android {
+    namespace = "com.tien.piholeconnect"
+
     compileSdk = 33
 
     defaultConfig {
@@ -38,8 +40,7 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
             ndk {
                 debugSymbolLevel = "FULL"
@@ -53,8 +54,7 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
         freeCompilerArgs = freeCompilerArgs + listOf(
-            "-opt-in=kotlin.RequiresOptIn",
-            "-opt-in=kotlin.time.ExperimentalTime"
+            "-opt-in=kotlin.RequiresOptIn", "-opt-in=kotlin.time.ExperimentalTime"
         )
     }
     buildFeatures {
