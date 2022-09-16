@@ -12,7 +12,8 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">@android:color/transparent</item>
         <!-- Customize your theme here. -->
-        <item name="android:navigationBarColor" tools:targetApi="l">@android:color/transparent</item>
+        <item name="android:navigationBarColor" tools:targetApi="l">@android:color/transparent
+        </item>
     </style>
 
     <style name="Theme.PiHoleConnect.NoActionBar">

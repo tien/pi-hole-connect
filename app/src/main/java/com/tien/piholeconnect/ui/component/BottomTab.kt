@@ -5,7 +5,10 @@ import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.twotone.*
+import androidx.compose.material.icons.twotone.Analytics
+import androidx.compose.material.icons.twotone.Home
+import androidx.compose.material.icons.twotone.Insights
+import androidx.compose.material.icons.twotone.Shield
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview

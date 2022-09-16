@@ -69,7 +69,7 @@ class HomeViewModel @Inject constructor(
     private suspend fun toggle(state: Boolean, duration: Duration) {
         runCatching {
             isPiHoleSwitchLoading = true
-            
+
             val result =
                 if (state) piHoleRepository.enable()
                 else piHoleRepository.disable(duration)
