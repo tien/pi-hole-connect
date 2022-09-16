@@ -3,11 +3,17 @@ package com.tien.piholeconnect.repository
 import androidx.datastore.core.DataStore
 import com.tien.piholeconnect.model.UserPreferences
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 class UserPreferencesRepositoryImpl constructor(private val dataStore: DataStore<UserPreferences>) :
     UserPreferencesRepository {
     override val userPreferencesFlow = dataStore.data
+
+    override val selectedPiHoleFlow = dataStore.data.map { userPreferences ->
+        userPreferences.piHoleConnectionsList.firstOrNull { it.id == userPreferences.selectedPiHoleConnectionId }
+            ?: userPreferences.getPiHoleConnections(0)
+    }
 
     override suspend fun updateUserPreferences(transform: (UserPreferences) -> UserPreferences): Unit =
         withContext(Dispatchers.IO) {

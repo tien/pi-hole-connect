@@ -1,6 +1,5 @@
 package com.tien.piholeconnect.repository
 
-import androidx.datastore.core.DataStore
 import com.tien.piholeconnect.di.DefaultHttpClient
 import com.tien.piholeconnect.di.TrustAllCertificatesHttpClient
 import com.tien.piholeconnect.model.*
@@ -23,15 +22,10 @@ import kotlin.time.Duration
 class PiHoleRepositoryImpl @Inject constructor(
     @DefaultHttpClient private val defaultHttpClient: HttpClient,
     @TrustAllCertificatesHttpClient trustAllCertificatesHttpClient: HttpClient,
-    userPreferencesDataStore: DataStore<UserPreferences>
+    userPreferencesRepository: UserPreferencesRepository
 ) : PiHoleRepository {
-    private val currentSelectedPiHoleFlow = userPreferencesDataStore.data.map { userPreferences ->
-        userPreferences.piHoleConnectionsList.firstOrNull { it.id == userPreferences.selectedPiHoleConnectionId }
-            ?: userPreferences.getPiHoleConnections(0)
-    }
-
     private val baseRequestFlow: Flow<Pair<HttpClient, HttpRequestBuilder.() -> Unit>> =
-        currentSelectedPiHoleFlow.map { piHoleConnection ->
+        userPreferencesRepository.selectedPiHoleFlow.map { piHoleConnection ->
             val httpClient =
                 if (piHoleConnection.trustAllCertificates) trustAllCertificatesHttpClient else defaultHttpClient
 
@@ -46,20 +40,17 @@ class PiHoleRepositoryImpl @Inject constructor(
                     }
                 }
                 if (piHoleConnection.basicAuthUsername.isNotBlank() || piHoleConnection.basicAuthPassword.isNotBlank()) {
-                    val basicAuthProvider = BasicAuthProvider(
-                        credentials = {
-                            BasicAuthCredentials(
-                                username = piHoleConnection.basicAuthUsername,
-                                password = piHoleConnection.basicAuthPassword
-                            )
-                        },
+                    val basicAuthProvider = BasicAuthProvider(credentials = {
+                        BasicAuthCredentials(
+                            username = piHoleConnection.basicAuthUsername,
+                            password = piHoleConnection.basicAuthPassword
+                        )
+                    },
                         realm = piHoleConnection.basicAuthRealm.ifBlank { null },
-                        sendWithoutRequestCallback = { true }
-                    )
+                        sendWithoutRequestCallback = { true })
                     let {
                         // We know that BasicAuthProvider addRequestHeaders is synchronous, it's only a suspend function to conform to the AuthProvider Interface
-                        @Suppress("BlockingMethodInNonBlockingContext")
-                        runBlocking {
+                        @Suppress("BlockingMethodInNonBlockingContext") runBlocking {
                             basicAuthProvider.addRequestHeaders(it)
                         }
                     }
@@ -69,17 +60,16 @@ class PiHoleRepositoryImpl @Inject constructor(
             Pair(httpClient, requestBuilder)
         }
 
-    override suspend fun getStatusSummary(): PiHoleSummary =
-        withContext(Dispatchers.IO) {
-            baseRequestFlow.first().let { (httpClient, requestBuilder) ->
-                httpClient.get {
-                    requestBuilder(this)
-                    url {
-                        parameters["summaryRaw"] = true.toString()
-                    }
-                }.body()
-            }
+    override suspend fun getStatusSummary(): PiHoleSummary = withContext(Dispatchers.IO) {
+        baseRequestFlow.first().let { (httpClient, requestBuilder) ->
+            httpClient.get {
+                requestBuilder(this)
+                url {
+                    parameters["summaryRaw"] = true.toString()
+                }
+            }.body()
         }
+    }
 
     override suspend fun getOverTimeData10Minutes(): PiHoleOverTimeData =
         withContext(Dispatchers.IO) {
@@ -93,31 +83,29 @@ class PiHoleRepositoryImpl @Inject constructor(
             }
         }
 
-    override suspend fun getStatistics(): PiHoleStatistics =
-        withContext(Dispatchers.IO) {
-            baseRequestFlow.first().let { (httpClient, requestBuilder) ->
-                httpClient.get {
-                    requestBuilder(this)
-                    url {
-                        parameters["getQueryTypes"] = true.toString()
-                        parameters["topItems"] = true.toString()
-                        parameters["topClients"] = true.toString()
-                    }
-                }.body()
-            }
+    override suspend fun getStatistics(): PiHoleStatistics = withContext(Dispatchers.IO) {
+        baseRequestFlow.first().let { (httpClient, requestBuilder) ->
+            httpClient.get {
+                requestBuilder(this)
+                url {
+                    parameters["getQueryTypes"] = true.toString()
+                    parameters["topItems"] = true.toString()
+                    parameters["topClients"] = true.toString()
+                }
+            }.body()
         }
+    }
 
-    override suspend fun getLogs(limit: Int): PiHoleLogs =
-        withContext(Dispatchers.IO) {
-            baseRequestFlow.first().let { (httpClient, requestBuilder) ->
-                httpClient.get {
-                    requestBuilder(this)
-                    url {
-                        parameters["getAllQueries"] = limit.toString()
-                    }
-                }.body()
-            }
+    override suspend fun getLogs(limit: Int): PiHoleLogs = withContext(Dispatchers.IO) {
+        baseRequestFlow.first().let { (httpClient, requestBuilder) ->
+            httpClient.get {
+                requestBuilder(this)
+                url {
+                    parameters["getAllQueries"] = limit.toString()
+                }
+            }.body()
         }
+    }
 
     override suspend fun getFilterRules(ruleType: RuleType): PiHoleFilterRules =
         withContext(Dispatchers.IO) {
@@ -132,36 +120,32 @@ class PiHoleRepositoryImpl @Inject constructor(
         }
 
     override suspend fun addFilterRule(
-        rule: String,
-        ruleType: RuleType
-    ): ModifyFilterRuleResponse =
-        withContext(Dispatchers.IO) {
-            baseRequestFlow.first().let { (httpClient, requestBuilder) ->
-                httpClient.get {
-                    requestBuilder(this)
-                    url {
-                        parameters["list"] = ruleType.toString().lowercase(Locale.ENGLISH)
-                        parameters["add"] = rule
-                    }
-                }.body()
-            }
+        rule: String, ruleType: RuleType
+    ): ModifyFilterRuleResponse = withContext(Dispatchers.IO) {
+        baseRequestFlow.first().let { (httpClient, requestBuilder) ->
+            httpClient.get {
+                requestBuilder(this)
+                url {
+                    parameters["list"] = ruleType.toString().lowercase(Locale.ENGLISH)
+                    parameters["add"] = rule
+                }
+            }.body()
         }
+    }
 
     override suspend fun removeFilterRule(
-        rule: String,
-        ruleType: RuleType
-    ): ModifyFilterRuleResponse =
-        withContext(Dispatchers.IO) {
-            baseRequestFlow.first().let { (httpClient, requestBuilder) ->
-                httpClient.get {
-                    requestBuilder(this)
-                    url {
-                        parameters["list"] = ruleType.toString().lowercase(Locale.ENGLISH)
-                        parameters["sub"] = rule
-                    }
-                }.body()
-            }
+        rule: String, ruleType: RuleType
+    ): ModifyFilterRuleResponse = withContext(Dispatchers.IO) {
+        baseRequestFlow.first().let { (httpClient, requestBuilder) ->
+            httpClient.get {
+                requestBuilder(this)
+                url {
+                    parameters["list"] = ruleType.toString().lowercase(Locale.ENGLISH)
+                    parameters["sub"] = rule
+                }
+            }.body()
         }
+    }
 
     override suspend fun disable(duration: Duration): PiHoleStatusResponse =
         withContext(Dispatchers.IO) {
@@ -176,15 +160,14 @@ class PiHoleRepositoryImpl @Inject constructor(
             }
         }
 
-    override suspend fun enable(): PiHoleStatusResponse =
-        withContext(Dispatchers.IO) {
-            baseRequestFlow.first().let { (httpClient, requestBuilder) ->
-                httpClient.get {
-                    requestBuilder(this)
-                    url {
-                        parameters["enable"] = true.toString()
-                    }
-                }.body()
-            }
+    override suspend fun enable(): PiHoleStatusResponse = withContext(Dispatchers.IO) {
+        baseRequestFlow.first().let { (httpClient, requestBuilder) ->
+            httpClient.get {
+                requestBuilder(this)
+                url {
+                    parameters["enable"] = true.toString()
+                }
+            }.body()
         }
+    }
 }

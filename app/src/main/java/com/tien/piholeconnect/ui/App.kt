@@ -55,6 +55,8 @@ fun App(
 ) {
     val context = LocalContext.current
     val userPreferences by preferencesViewModel.userPreferencesFlow.collectAsState(initial = null)
+    val selectedPiHole by preferencesViewModel.selectedPiHoleFlow.collectAsState(initial = null)
+
     if (userPreferences == null) return
 
     val scaffoldState = rememberScaffoldState()
@@ -73,10 +75,7 @@ fun App(
         )
     )
 
-    val selectedPiHoleConnection =
-        userPreferences?.piHoleConnectionsList?.firstOrNull { it.id == userPreferences?.selectedPiHoleConnectionId }
-            ?: userPreferences?.piHoleConnectionsList?.get(0)
-    selectedPiHoleConnection?.let {
+    selectedPiHole?.let {
         optionsMenuItems.add(
             TopBarOptionsMenuItem(
                 URLBuilder(

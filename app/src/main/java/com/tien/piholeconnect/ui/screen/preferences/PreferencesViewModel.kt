@@ -8,9 +8,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PreferencesViewModel @Inject constructor(private val userPreferencesRepository: UserPreferencesRepository) :
     ViewModel() {
-    var userPreferencesFlow = userPreferencesRepository.userPreferencesFlow
-        private set
-
-    var updateUserPreferences = userPreferencesRepository::updateUserPreferences
-        private set
+    val selectedPiHoleFlow = userPreferencesRepository.selectedPiHoleFlow
+    val userPreferencesFlow = userPreferencesRepository.userPreferencesFlow
+    val updateUserPreferences = userPreferencesRepository::updateUserPreferences
 }
