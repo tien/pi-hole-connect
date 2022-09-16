@@ -95,4 +95,5 @@
     <string name="add_filter_rules_dialog_add_as_wildcard">Fügen Sie als Wildcard</string>
     <string name="add_filter_rules_dialog_add">Hinzufügen</string>
     <string name="filter_rules_reg_exr">RegExr</string>
+    <string name="options_menu_web_dashboard">Web-Dashboard</string>
 </resources>

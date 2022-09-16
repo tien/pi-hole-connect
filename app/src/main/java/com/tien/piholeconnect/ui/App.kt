@@ -41,6 +41,8 @@ import com.tien.piholeconnect.ui.screen.statistics.StatisticsScreen
 import com.tien.piholeconnect.ui.screen.statistics.StatisticsViewModel
 import com.tien.piholeconnect.ui.screen.tipjar.TipJarScreen
 import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
+import com.tien.piholeconnect.util.toKtorURLProtocol
+import io.ktor.http.*
 import kotlinx.coroutines.launch
 
 
@@ -65,25 +67,43 @@ fun App(
         else -> isSystemInDarkTheme()
     }
 
-    val optionsMenuItems =
-        setOf(
+    val optionsMenuItems = mutableSetOf(
+        TopBarOptionsMenuItem(
+            Screen.Preferences.route, Screen.Preferences.labelResourceId, Icons.TwoTone.Settings
+        )
+    )
+
+    val selectedPiHoleConnection =
+        userPreferences?.piHoleConnectionsList?.firstOrNull { it.id == userPreferences?.selectedPiHoleConnectionId }
+            ?: userPreferences?.piHoleConnectionsList?.get(0)
+    selectedPiHoleConnection?.let {
+        optionsMenuItems.add(
             TopBarOptionsMenuItem(
-                Screen.Preferences.route,
-                Screen.Preferences.labelResourceId,
-                Icons.TwoTone.Settings
-            ),
-            TopBarOptionsMenuItem(
-                Screen.TipJar.route,
-                Screen.TipJar.labelResourceId,
-                Icons.TwoTone.Paid
-            ),
-            TopBarOptionsMenuItem(
-                stringResource(R.string.bug_report_url),
-                R.string.options_menu_bug_report,
-                Icons.TwoTone.BugReport,
+                URLBuilder(
+                    protocol = it.protocol.toKtorURLProtocol(),
+                    host = it.host,
+                    user = it.basicAuthUsername,
+                    password = it.basicAuthPassword
+                ).buildString(),
+                R.string.options_menu_web_dashboard,
+                Icons.TwoTone.OpenInNew,
                 isExternalLink = true
             )
         )
+    }
+    optionsMenuItems.add(
+        TopBarOptionsMenuItem(
+            Screen.TipJar.route, Screen.TipJar.labelResourceId, Icons.TwoTone.Paid
+        )
+    )
+    optionsMenuItems.add(
+        TopBarOptionsMenuItem(
+            stringResource(R.string.bug_report_url),
+            R.string.options_menu_bug_report,
+            Icons.TwoTone.BugReport,
+            isExternalLink = true
+        )
+    )
 
     val tabItems = listOf(
         BottomTabItem(Screen.Home, Icons.TwoTone.Home),
@@ -114,9 +134,7 @@ fun App(
             onPiHoleConnectionClick = { piHoleConnection ->
                 preferencesViewModel.viewModelScope.launch {
                     preferencesViewModel.updateUserPreferences {
-                        it.toBuilder()
-                            .setSelectedPiHoleConnectionId(piHoleConnection.id)
-                            .build()
+                        it.toBuilder().setSelectedPiHoleConnectionId(piHoleConnection.id).build()
                     }
                 }
             },
@@ -127,12 +145,10 @@ fun App(
         val themeColors = MaterialTheme.colors
         val elevationOverlay = LocalElevationOverlay.current
         val topAppBarColor = elevationOverlay?.apply(
-            color = themeColors.primarySurface,
-            elevation = AppBarDefaults.TopAppBarElevation
+            color = themeColors.primarySurface, elevation = AppBarDefaults.TopAppBarElevation
         ) ?: themeColors.primarySurface
         val bottomNavigationBackgroundColor = elevationOverlay?.apply(
-            color = themeColors.primarySurface,
-            elevation = BottomNavigationDefaults.Elevation
+            color = themeColors.primarySurface, elevation = BottomNavigationDefaults.Elevation
         ) ?: themeColors.primarySurface
 
         SideEffect {
@@ -142,40 +158,32 @@ fun App(
             }
         }
 
-        Scaffold(
-            scaffoldState = scaffoldState,
-            topBar = {
-                if (currentScreen?.options?.showTopAppBar != false) {
-                    TopBar(
-                        title = title,
-                        isBackButtonEnabled = currentScreen?.options?.showBackButton ?: false,
-                        onBackButtonClick = { navController.navigateUp() },
-                        actions = {
-                            if (currentScreen?.options?.showMenus != false) {
-                                defaultOptionsMenu()
-                            }
+        Scaffold(scaffoldState = scaffoldState, topBar = {
+            if (currentScreen?.options?.showTopAppBar != false) {
+                TopBar(title = title,
+                    isBackButtonEnabled = currentScreen?.options?.showBackButton ?: false,
+                    onBackButtonClick = { navController.navigateUp() },
+                    actions = {
+                        if (currentScreen?.options?.showMenus != false) {
+                            defaultOptionsMenu()
                         }
-                    )
-                }
-            },
-            bottomBar = {
-                if (currentScreen?.options?.showTab != false) {
-                    BottomTab(
-                        items = tabItems,
-                        currentRoute = currentRoute ?: Screen.Home.route,
-                        onBottomTabItemClick = {
-                            navController.navigate(it.screen.route) {
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = false
-                                }
-                                launchSingleTop = true
-                                restoreState = false
-                            }
-                        }
-                    )
-                }
+                    })
             }
-        ) { padding ->
+        }, bottomBar = {
+            if (currentScreen?.options?.showTab != false) {
+                BottomTab(items = tabItems,
+                    currentRoute = currentRoute ?: Screen.Home.route,
+                    onBottomTabItemClick = {
+                        navController.navigate(it.screen.route) {
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = false
+                            }
+                            launchSingleTop = true
+                            restoreState = false
+                        }
+                    })
+            }
+        }) { padding ->
             NavHost(
                 navController = navController,
                 startDestination = Screen.Home.route,
@@ -188,22 +196,19 @@ fun App(
                     StatisticsScreen(viewModel = statisticsViewModel, scaffoldState = scaffoldState)
                 }
                 composable(Screen.Log.route) {
-                    LogScreen(
-                        viewModel = hiltViewModel(),
-                        actions = { defaultOptionsMenu() })
+                    LogScreen(viewModel = hiltViewModel(), actions = { defaultOptionsMenu() })
                 }
                 composable(Screen.FilterRules.route) {
                     FilterRulesScreen(viewModel = filterRulesViewModel)
                 }
                 composable(Screen.Preferences.route) {
                     PreferencesScreen(
-                        viewModel = preferencesViewModel,
-                        navController = navController
+                        viewModel = preferencesViewModel, navController = navController
                     )
                 }
                 composable(
-                    "${Screen.PiHoleConnection.route}?id={id}", arguments = listOf(
-                        navArgument("id") { nullable = true })
+                    "${Screen.PiHoleConnection.route}?id={id}",
+                    arguments = listOf(navArgument("id") { nullable = true })
                 ) {
                     val piHoleConnectionViewModel = hiltViewModel<PiHoleConnectionViewModel>()
                     val id = it.arguments?.getString("id")
