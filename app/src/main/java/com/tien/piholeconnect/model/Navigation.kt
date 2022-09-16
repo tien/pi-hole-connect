@@ -29,7 +29,7 @@ sealed class Screen(
     object PiHoleConnection :
         Screen("piHoleConnection", R.string.label_pi_hole_connection, DefaultScreenOptions)
 
-    object TipJar : Screen("tipJar", R.string.label_tip_jat, DefaultScreenOptions)
+    object TipJar : Screen("tipJar", R.string.label_tip_jar, DefaultScreenOptions)
 }
 
 fun screenForRoute(route: String) =
