@@ -5,7 +5,7 @@ buildscript {
     extra["hiltVersion"] = "2.43.2"
     extra["lifecycleVersion"] = "2.5.1"
     extra["cameraxVersion"] = "1.2.0-beta01"
-    extra["accompanistVersion"] = "0.23.1"
+    extra["accompanistVersion"] = "0.25.1"
 }
 
 plugins {
