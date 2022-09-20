@@ -81,8 +81,9 @@ fun App(
                 URLBuilder(
                     protocol = it.protocol.toKtorURLProtocol(),
                     host = it.host,
-                    user = it.basicAuthUsername,
-                    password = it.basicAuthPassword
+                    port = it.port,
+                    user = it.basicAuthUsername.ifBlank { null },
+                    password = it.basicAuthPassword.ifBlank { null }
                 ).buildString(),
                 R.string.options_menu_web_dashboard,
                 Icons.TwoTone.OpenInNew,
