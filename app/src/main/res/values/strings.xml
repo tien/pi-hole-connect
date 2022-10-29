@@ -33,7 +33,7 @@
     <string name="disable_dialog_button_cancel">No thanks</string>
     <string name="enable_dialog_title">Enable ads blocking?</string>
     <string name="enable_dialog_button_confirm">Enable</string>
-    <string name="enable_dialog_button_dismiss">@android:string/cancel</string>
+    <string name="enable_dialog_button_dismiss" translatable="false">@android:string/cancel</string>
     <string name="error_pi_hole_connection_generic">Please check your internet connection or whether the API key has been set.</string>
     <string name="label_tip_jar">Toss a coin</string>
     <string name="tip_jar_msg">If you like what you are seeing. Then great, please also leave a tip and some feedback as it would greatly help me on developing this app further. Here\'s some confetti as a thank you (ﾉ´ヮ`)ﾉ*: ･ﾟ</string>

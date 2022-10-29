@@ -33,7 +33,6 @@
     <string name="disable_dialog_button_cancel">Nein Danke</string>
     <string name="enable_dialog_title">Anzeigenblockierung aktivieren?</string>
     <string name="enable_dialog_button_confirm">Ermöglichen</string>
-    <string name="enable_dialog_button_dismiss">\@android:string/cancel</string>
     <string name="error_pi_hole_connection_generic">Bitte überprüfen Sie Ihre Internetverbindung oder ob der API -Schlüssel festgelegt wurde.</string>
     <string name="label_tip_jar">Trinkgeld geben</string>
     <string name="tip_jar_msg">Wenn Sie mögen, was Sie sehen. Dann großartig, bitte hinterlassen Sie auch einen Tipp und ein Feedback, da es mir sehr helfen würde, diese App weiter zu entwickeln. Hier ist ein Konfetti als Dankeschön (ﾉ´ヮ`)ﾉ*: ･ﾟ</string>
