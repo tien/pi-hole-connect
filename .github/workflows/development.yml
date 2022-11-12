@@ -26,9 +26,10 @@ jobs:
 
       - name: Write keystore & credentials to files
         run: |
-          echo ${{ secrets.KEYSTORE_BASE64 }} | base64 --decode > $GITHUB_WORKSPACE/keystore.jks
+          echo "$KEYSTORE_BASE64" | base64 --decode > $GITHUB_WORKSPACE/keystore.jks
           echo "$FIREBASE_SERVICE_ACCOUNT_CREDENTIALS" > $GITHUB_WORKSPACE/firebase-service-account-credentials.json
         env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           FIREBASE_SERVICE_ACCOUNT_CREDENTIALS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_CREDENTIALS }}
 
       - run: bundle exec fastlane development
