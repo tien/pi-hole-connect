@@ -26,6 +26,8 @@ class PiHoleRepositoryImpl @Inject constructor(
 ) : PiHoleRepository {
     private val baseRequestFlow: Flow<Pair<HttpClient, HttpRequestBuilder.() -> Unit>> =
         userPreferencesRepository.selectedPiHoleFlow.map { piHoleConnection ->
+            piHoleConnection ?: throw Exception("Pi-hole connection hasn't been setup")
+
             val httpClient =
                 if (piHoleConnection.trustAllCertificates) trustAllCertificatesHttpClient else defaultHttpClient
 

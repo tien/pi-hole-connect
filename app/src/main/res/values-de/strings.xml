@@ -4,6 +4,7 @@
     <string name="add_filter_rules_dialog_add_as_wildcard">Fügen Sie als Wildcard</string>
     <string name="add_filter_rules_dialog_add_rule">Netzwerkfilterregel hinzufügen</string>
     <string name="add_filter_rules_dialog_domain">Domäne</string>
+    <string name="add_pi_hole_button">Pi-Hole hinzufügen</string>
     <string name="back_button_label">Zurück</string>
     <string name="disable_dialog_button_10_seconds">10 Sekunden</string>
     <string name="disable_dialog_button_30_seconds">30 Sekunden</string>

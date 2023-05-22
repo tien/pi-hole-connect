@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface UserPreferencesRepository {
     val userPreferencesFlow: Flow<UserPreferences>
-    val selectedPiHoleFlow: Flow<PiHoleConnection>
+    val selectedPiHoleFlow: Flow<PiHoleConnection?>
     suspend fun updateUserPreferences(transform: (UserPreferences) -> UserPreferences)
     suspend fun removePiHoleConnection(id: String)
 }

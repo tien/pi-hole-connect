@@ -12,7 +12,7 @@ class UserPreferencesRepositoryImpl constructor(private val dataStore: DataStore
 
     override val selectedPiHoleFlow = dataStore.data.map { userPreferences ->
         userPreferences.piHoleConnectionsList.firstOrNull { it.id == userPreferences.selectedPiHoleConnectionId }
-            ?: userPreferences.getPiHoleConnections(0)
+            ?: userPreferences.piHoleConnectionsList.firstOrNull()
     }
 
     override suspend fun updateUserPreferences(transform: (UserPreferences) -> UserPreferences): Unit =

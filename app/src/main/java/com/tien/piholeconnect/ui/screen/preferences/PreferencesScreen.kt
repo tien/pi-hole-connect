@@ -39,8 +39,6 @@ fun PreferencesScreen(
 ) {
     val userPreferences by viewModel.userPreferencesFlow.collectAsState(initial = UserPreferences.getDefaultInstance())
 
-    if (userPreferences === UserPreferences.getDefaultInstance()) return
-
     Column(
         Modifier
             .verticalScroll(rememberScrollState())

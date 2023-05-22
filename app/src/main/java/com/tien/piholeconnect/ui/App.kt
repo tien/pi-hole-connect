@@ -3,17 +3,20 @@ package com.tien.piholeconnect.ui
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.twotone.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -78,13 +81,11 @@ fun App(
     selectedPiHole?.let {
         optionsMenuItems.add(
             TopBarOptionsMenuItem(
-                URLBuilder(
-                    protocol = it.protocol.toKtorURLProtocol(),
+                URLBuilder(protocol = it.protocol.toKtorURLProtocol(),
                     host = it.host,
                     port = it.port,
                     user = it.basicAuthUsername.ifBlank { null },
-                    password = it.basicAuthPassword.ifBlank { null }
-                ).buildString(),
+                    password = it.basicAuthPassword.ifBlank { null }).buildString(),
                 R.string.options_menu_web_dashboard,
                 Icons.TwoTone.OpenInNew,
                 isExternalLink = true
@@ -141,6 +142,35 @@ fun App(
         )
     }
 
+    @Composable
+    fun ConnectionGuard(content: @Composable () -> Unit) {
+        if (selectedPiHole == null) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .padding(24.dp), contentAlignment = Alignment.Center
+            ) {
+                Button(
+                    onClick = { navController.navigate(Screen.PiHoleConnection.route) },
+                    Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        Icons.Default.AddCircleOutline,
+                        null,
+                        Modifier.size(ButtonDefaults.IconSize * 2)
+                    )
+                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                    Text(
+                        stringResource(R.string.add_pi_hole_button),
+                        style = MaterialTheme.typography.button.copy(fontSize = MaterialTheme.typography.button.fontSize * 2)
+                    )
+                }
+            }
+        } else {
+            content()
+        }
+    }
+
     PiHoleConnectTheme(darkTheme = isDarkTheme) {
         val themeColors = MaterialTheme.colors
         val elevationOverlay = LocalElevationOverlay.current
@@ -190,16 +220,26 @@ fun App(
                 modifier = Modifier.padding(padding)
             ) {
                 composable(Screen.Home.route) {
-                    HomeScreen(viewModel = homeViewModel)
+                    ConnectionGuard {
+                        HomeScreen(viewModel = homeViewModel)
+                    }
                 }
                 composable(Screen.Statistics.route) {
-                    StatisticsScreen(viewModel = statisticsViewModel, scaffoldState = scaffoldState)
+                    ConnectionGuard {
+                        StatisticsScreen(
+                            viewModel = statisticsViewModel, scaffoldState = scaffoldState
+                        )
+                    }
                 }
                 composable(Screen.Log.route) {
-                    LogScreen(viewModel = hiltViewModel(), actions = { defaultOptionsMenu() })
+                    ConnectionGuard {
+                        LogScreen(viewModel = hiltViewModel(), actions = { defaultOptionsMenu() })
+                    }
                 }
                 composable(Screen.FilterRules.route) {
-                    FilterRulesScreen(viewModel = filterRulesViewModel)
+                    ConnectionGuard {
+                        FilterRulesScreen(viewModel = filterRulesViewModel)
+                    }
                 }
                 composable(Screen.Preferences.route) {
                     PreferencesScreen(
