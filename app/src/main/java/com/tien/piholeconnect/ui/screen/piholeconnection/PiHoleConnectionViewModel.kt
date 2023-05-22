@@ -58,7 +58,7 @@ class PiHoleConnectionViewModel @Inject constructor(
             basicAuthPassword = connection.basicAuthPassword
             basicAuthRealm = connection.basicAuthRealm
             trustAllCertificates = connection.trustAllCertificates
-            shouldShowDeleteButton = preferences.piHoleConnectionsCount > 1
+            shouldShowDeleteButton = true
         }
     }
 

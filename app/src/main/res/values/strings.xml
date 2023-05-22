@@ -4,6 +4,7 @@
     <string name="add_filter_rules_dialog_add_as_wildcard">Add as wildcard</string>
     <string name="add_filter_rules_dialog_add_rule">Add rule</string>
     <string name="add_filter_rules_dialog_domain">Domain</string>
+    <string name="add_pi_hole_button">Add Pi-hole</string>
     <string name="app_name" translatable="false">Pi-hole Connect</string>
     <string name="back_button_label">Go back</string>
     <string name="disable_dialog_button_10_seconds">10 seconds</string>

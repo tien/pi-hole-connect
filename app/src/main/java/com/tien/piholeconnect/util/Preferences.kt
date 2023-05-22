@@ -8,16 +8,10 @@ import com.tien.piholeconnect.model.UserPreferences
 import io.ktor.http.URLProtocol.Companion.HTTP
 import java.util.*
 
-fun Builder.populateDefaultValues(): Builder = newBuilder()
-    .setId(UUID.randomUUID().toString())
-    .setName("My Pi-hole")
-    .setProtocol(URLProtocol.HTTP)
-    .setHost("pi.hole")
-    .setApiPath("/admin/api.php")
-    .setPort(HTTP.defaultPort)
+fun Builder.populateDefaultValues(): Builder =
+    newBuilder().setId(UUID.randomUUID().toString()).setName("My Pi-hole")
+        .setProtocol(URLProtocol.HTTP).setHost("pi.hole").setApiPath("/admin/api.php")
+        .setPort(HTTP.defaultPort)
 
 fun UserPreferences.Builder.populateDefaultValues(): UserPreferences.Builder =
     UserPreferences.newBuilder()
-        .addPiHoleConnections(
-            getDefaultInstance().newBuilderForType().populateDefaultValues()
-        )
