@@ -31,15 +31,14 @@ fun TopBar(
     onBackButtonClick: () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {}
 ) {
-    TopAppBar(
-        title = { Text(title) }, navigationIcon = if (!isBackButtonEnabled) null else ({
-            IconButton(onClick = onBackButtonClick) {
-                Icon(
-                    Icons.Default.ArrowBack,
-                    contentDescription = stringResource(R.string.back_button_label)
-                )
-            }
-        }), actions = actions
+    TopAppBar(title = { Text(title) }, navigationIcon = if (!isBackButtonEnabled) null else ({
+        IconButton(onClick = onBackButtonClick) {
+            Icon(
+                Icons.Default.ArrowBack,
+                contentDescription = stringResource(R.string.back_button_label)
+            )
+        }
+    }), actions = actions
     )
 }
 
@@ -61,19 +60,14 @@ fun OptionsMenu(
                 )
             )
         }
-        DropdownMenu(
-            expanded = isOptionsMenuExpanded,
-            modifier = Modifier.composed {
-                if (piHoleConnections.count() > 1) {
-                    fillMaxWidth()
-                } else {
-                    this
-                }
-            },
-            onDismissRequest = { isOptionsMenuExpanded = false }
-        ) {
-            Menu(
-                piHoleConnections = piHoleConnections,
+        DropdownMenu(expanded = isOptionsMenuExpanded, modifier = Modifier.composed {
+            if (piHoleConnections.count() > 1) {
+                fillMaxWidth()
+            } else {
+                this
+            }
+        }, onDismissRequest = { isOptionsMenuExpanded = false }) {
+            Menu(piHoleConnections = piHoleConnections,
                 selectedPiHoleConnectionId = selectedPiHoleConnectionId,
                 optionsMenuItems = optionsMenuItems,
                 onOptionsMenuItemClick = {
@@ -97,29 +91,23 @@ private fun Menu(
     onOptionsMenuItemClick: (TopBarOptionsMenuItem) -> Unit,
     onPiHoleConnectionClick: (PiHoleConnection) -> Unit
 ) {
-    val selectedId =
-        if (selectedPiHoleConnectionId.isBlank()) piHoleConnections.firstOrNull()?.id else selectedPiHoleConnectionId
+    val selectedId = selectedPiHoleConnectionId.ifBlank { piHoleConnections.firstOrNull()?.id }
 
     if (piHoleConnections.count() > 1) {
         piHoleConnections.forEach { connection ->
             DropdownMenuItem(onClick = { onPiHoleConnectionClick(connection) }) {
-                ListItem(
-                    icon = {
-                        RadioButton(
-                            selected = connection.id == selectedId,
-                            onClick = null
-                        )
-                    },
-                    text = { Text(connection.name) },
-                    secondaryText = { Text(connection.host) })
+                ListItem(icon = {
+                    RadioButton(
+                        selected = connection.id == selectedId, onClick = null
+                    )
+                }, text = { Text(connection.name) }, secondaryText = { Text(connection.host) })
             }
         }
         Divider()
     }
     optionsMenuItems.forEach {
         DropdownMenuItem(onClick = { onOptionsMenuItemClick(it) }) {
-            ListItem(
-                icon = { Icon(imageVector = it.icon, contentDescription = null) },
+            ListItem(icon = { Icon(imageVector = it.icon, contentDescription = null) },
                 text = { Text(stringResource(it.labelResourceId)) })
         }
     }
@@ -134,8 +122,7 @@ fun TopBarProgressIndicator(visible: Boolean) {
         exit = slideOutVertically()
     ) {
         LinearProgressIndicator(
-            Modifier.fillMaxWidth(),
-            color = MaterialTheme.colors.secondary
+            Modifier.fillMaxWidth(), color = MaterialTheme.colors.secondary
         )
     }
 }
@@ -144,8 +131,7 @@ fun TopBarProgressIndicator(visible: Boolean) {
 @Composable
 fun TopBarPreview() {
     TopBar(
-        title = "Pi-Hole Connect",
-        isBackButtonEnabled = true
+        title = "Pi-Hole Connect", isBackButtonEnabled = true
     )
 }
 
@@ -156,8 +142,7 @@ fun MenuPreview() {
         val piHoleConnections = listOf((0..4)).flatten().map {
             PiHoleConnection.newBuilder().populateDefaultValues().build()
         }
-        Menu(
-            piHoleConnections = piHoleConnections,
+        Menu(piHoleConnections = piHoleConnections,
             selectedPiHoleConnectionId = piHoleConnections.first().id,
             optionsMenuItems = listOf(
                 TopBarOptionsMenuItem(

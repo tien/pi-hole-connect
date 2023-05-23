@@ -2,20 +2,29 @@ package com.tien.piholeconnect.repository
 
 import com.tien.piholeconnect.di.DefaultHttpClient
 import com.tien.piholeconnect.di.TrustAllCertificatesHttpClient
-import com.tien.piholeconnect.model.*
+import com.tien.piholeconnect.model.ModifyFilterRuleResponse
+import com.tien.piholeconnect.model.PiHoleFilterRules
+import com.tien.piholeconnect.model.PiHoleLogs
+import com.tien.piholeconnect.model.PiHoleOverTimeData
+import com.tien.piholeconnect.model.PiHoleStatistics
+import com.tien.piholeconnect.model.PiHoleStatusResponse
+import com.tien.piholeconnect.model.PiHoleSummary
+import com.tien.piholeconnect.model.RuleType
 import com.tien.piholeconnect.util.toKtorURLProtocol
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.plugins.auth.providers.*
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.plugins.auth.providers.BasicAuthCredentials
+import io.ktor.client.plugins.auth.providers.BasicAuthProvider
+import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.get
+import io.ktor.http.encodedPath
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.time.Duration
 
@@ -51,8 +60,7 @@ class PiHoleRepositoryImpl @Inject constructor(
                         realm = piHoleConnection.basicAuthRealm.ifBlank { null },
                         sendWithoutRequestCallback = { true })
                     let {
-                        // We know that BasicAuthProvider addRequestHeaders is synchronous, it's only a suspend function to conform to the AuthProvider Interface
-                        @Suppress("BlockingMethodInNonBlockingContext") runBlocking {
+                        runBlocking {
                             basicAuthProvider.addRequestHeaders(it)
                         }
                     }
