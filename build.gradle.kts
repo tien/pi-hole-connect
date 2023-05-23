@@ -1,7 +1,7 @@
 buildscript {
     extra["composeVersion"] = "1.2.0"
     extra["ktorVersion"] = "2.3.0"
-    extra["protoBufJavaLiteVersion"] = "3.21.2"
+    extra["protoBufJavaLiteVersion"] = "3.23.1"
     extra["hiltVersion"] = "2.46.1"
     extra["lifecycleVersion"] = "2.6.1"
     extra["cameraxVersion"] = "1.2.2"
