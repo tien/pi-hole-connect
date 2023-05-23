@@ -3,11 +3,33 @@ package com.tien.piholeconnect.ui
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.AppBarDefaults
+import androidx.compose.material.BottomNavigationDefaults
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.LocalElevationOverlay
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircleOutline
-import androidx.compose.material.icons.twotone.*
+import androidx.compose.material.icons.twotone.Analytics
+import androidx.compose.material.icons.twotone.BugReport
+import androidx.compose.material.icons.twotone.Home
+import androidx.compose.material.icons.twotone.Insights
+import androidx.compose.material.icons.twotone.OpenInNew
+import androidx.compose.material.icons.twotone.Paid
+import androidx.compose.material.icons.twotone.Settings
+import androidx.compose.material.icons.twotone.Shield
+import androidx.compose.material.primarySurface
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
@@ -27,7 +49,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.tien.piholeconnect.R
-import com.tien.piholeconnect.model.*
+import com.tien.piholeconnect.model.BottomTabItem
+import com.tien.piholeconnect.model.Screen
+import com.tien.piholeconnect.model.Theme
+import com.tien.piholeconnect.model.TopBarOptionsMenuItem
+import com.tien.piholeconnect.model.screenForRoute
 import com.tien.piholeconnect.ui.component.BottomTab
 import com.tien.piholeconnect.ui.component.OptionsMenu
 import com.tien.piholeconnect.ui.component.TopBar
@@ -45,7 +71,7 @@ import com.tien.piholeconnect.ui.screen.statistics.StatisticsViewModel
 import com.tien.piholeconnect.ui.screen.tipjar.TipJarScreen
 import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 import com.tien.piholeconnect.util.toKtorURLProtocol
-import io.ktor.http.*
+import io.ktor.http.URLBuilder
 import kotlinx.coroutines.launch
 
 
@@ -85,7 +111,9 @@ fun App(
                     host = it.host,
                     port = it.port,
                     user = it.basicAuthUsername.ifBlank { null },
-                    password = it.basicAuthPassword.ifBlank { null }).buildString(),
+                    password = it.basicAuthPassword.ifBlank { null },
+                    pathSegments = listOf("admin")
+                ).buildString(),
                 R.string.options_menu_web_dashboard,
                 Icons.TwoTone.OpenInNew,
                 isExternalLink = true
