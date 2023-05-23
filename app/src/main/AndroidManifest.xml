@@ -16,7 +16,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PiHoleConnect"
         android:usesCleartextTraffic="true"
-        tools:targetApi="m">
+        android:localeConfig="@xml/locales_config"
+        tools:targetApi="tiramisu">
         <activity
             android:name=".MainActivity"
             android:exported="true"
