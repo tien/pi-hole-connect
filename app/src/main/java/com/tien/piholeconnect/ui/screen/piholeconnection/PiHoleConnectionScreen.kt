@@ -3,18 +3,43 @@ package com.tien.piholeconnect.ui.screen.piholeconnection
 import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults.buttonColors
+import androidx.compose.material.Card
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Switch
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.QrCode
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
@@ -37,7 +62,7 @@ import com.tien.piholeconnect.util.toKtorURLProtocol
 import io.ktor.http.URLProtocol.Companion.HTTP
 import io.ktor.http.URLProtocol.Companion.HTTPS
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.Locale
 
 @Composable
 fun PiHoleConnectionScreen(
@@ -69,34 +94,36 @@ fun PiHoleConnectionScreen(
         Dialog(onDismissRequest = { isScannerExpanded = false }) {
             Card {
                 Column {
-                    Box(Modifier.padding(start = 24.dp, end = 24.dp, top = 24.dp)) {
-                        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
-                            Text(
-                                stringResource(R.string.pi_hole_connection_title_scanner),
-                                style = MaterialTheme.typography.subtitle1
-                            )
-                        }
+                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
+                        Text(
+                            stringResource(R.string.pi_hole_connection_title_scanner),
+                            style = MaterialTheme.typography.subtitle1,
+                            modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 24.dp)
+                        )
                     }
-                    Box(Modifier.padding(start = 24.dp, end = 24.dp, bottom = 28.dp)) {
-                        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                            Text(
-                                stringResource(R.string.pi_hole_connection_hint_scanner),
-                                style = MaterialTheme.typography.body2
-                            )
-                        }
+                    CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                        Text(
+                            stringResource(R.string.pi_hole_connection_hint_scanner),
+                            style = MaterialTheme.typography.body2,
+                            modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 28.dp)
+                        )
                     }
-                    BoxWithConstraints {
-                        Scanner(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(maxWidth),
-                            barcodeScanner = viewModel.barcodeScanner,
-                            onBarcodeScanSuccess = {
-                                it.firstOrNull()?.rawValue?.let { apiToken ->
-                                    viewModel.apiToken = apiToken
-                                    isScannerExpanded = false
-                                }
-                            })
+                    Scanner(
+                        Modifier
+                            .aspectRatio(1f)
+                            .fillMaxWidth()
+                            .clipToBounds(),
+                        barcodeScanner = viewModel.barcodeScanner,
+                        onBarcodeScanSuccess = {
+                            it.firstOrNull()?.rawValue?.let { apiToken ->
+                                viewModel.apiToken = apiToken
+                                isScannerExpanded = false
+                            }
+                        })
+                    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
+                        TextButton(onClick = { isScannerExpanded = false }) {
+                            Text(stringResource(android.R.string.cancel).uppercase())
+                        }
                     }
                 }
             }
