@@ -14,7 +14,7 @@ open class EnumIntSerializer<T : Enum<T>>(private val kClass: KClass<T>, private
 
     override fun deserialize(decoder: Decoder): T {
         val ordinal = decoder.decodeInt()
-        return kClass.java.enumConstants.firstOrNull { it.ordinal == ordinal } ?: fallback
+        return kClass.java.enumConstants?.firstOrNull { it.ordinal == ordinal } ?: fallback
     }
 
     override fun serialize(encoder: Encoder, value: T) {

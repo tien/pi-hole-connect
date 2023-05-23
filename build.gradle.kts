@@ -9,9 +9,9 @@ buildscript {
 }
 
 plugins {
-    id("com.android.application") version "7.3.1" apply false
-    id("com.android.library") version "7.3.1" apply false
-    id("com.google.protobuf") version "0.8.19" apply false
+    id("com.android.application") version "8.0.1" apply false
+    id("com.android.library") version "8.0.1" apply false
+    id("com.google.protobuf") version "0.9.0" apply false
     id("org.jetbrains.kotlin.android") version "1.7.0" apply false
     id("com.google.dagger.hilt.android") version "2.43.2" apply false
     kotlin("plugin.serialization") version "1.7.0" apply false
