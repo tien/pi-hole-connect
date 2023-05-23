@@ -1,4 +1,4 @@
-import com.google.protobuf.gradle.*
+import com.google.protobuf.gradle.id
 
 val composeVersion: String by rootProject.extra
 val ktorVersion: String by rootProject.extra
@@ -89,9 +89,9 @@ protobuf {
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
-    implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.appcompat:appcompat:1.5.1")
-    implementation("com.google.android.material:material:1.6.1")
+    implementation("androidx.core:core-ktx:1.10.1")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.9.0")
     implementation("androidx.compose.ui:ui:$composeVersion")
     implementation("androidx.compose.material:material:$composeVersion")
     implementation("androidx.compose.material:material-icons-extended:$composeVersion")
@@ -114,15 +114,15 @@ dependencies {
     implementation("io.ktor:ktor-client-auth:$ktorVersion")
     implementation("com.google.protobuf:protobuf-javalite:$protoBufJavaLiteVersion")
     implementation("com.google.dagger:hilt-android:$hiltVersion")
-    implementation("com.google.mlkit:barcode-scanning:17.0.2")
+    implementation("com.google.mlkit:barcode-scanning:17.1.0")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
-    implementation("com.android.billingclient:billing-ktx:5.0.0")
+    implementation("com.android.billingclient:billing-ktx:6.0.0")
 
     kapt("com.google.dagger:hilt-compiler:$hiltVersion")
 
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 }
 
 kapt {
