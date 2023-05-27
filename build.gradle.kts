@@ -14,7 +14,7 @@ plugins {
     id("com.google.protobuf") version "0.9.0" apply false
     id("org.jetbrains.kotlin.android") version "1.7.0" apply false
     id("com.google.dagger.hilt.android") version "2.46.1" apply false
-    kotlin("plugin.serialization") version "1.7.0" apply false
+    kotlin("plugin.serialization") version "1.8.21" apply false
 }
 
 task<Delete>("clean") {
