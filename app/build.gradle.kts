@@ -1,21 +1,12 @@
 import com.google.protobuf.gradle.id
 
-val composeVersion: String by rootProject.extra
-val ktorVersion: String by rootProject.extra
-val protoBufVersion: String by rootProject.extra
-val protoBufJavaLiteVersion: String by rootProject.extra
-val hiltVersion: String by rootProject.extra
-val lifecycleVersion: String by rootProject.extra
-val cameraxVersion: String by rootProject.extra
-val accompanistVersion: String by rootProject.extra
-
 plugins {
-    id("com.android.application")
-    id("com.google.protobuf")
-    id("dagger.hilt.android.plugin")
-    kotlin("android")
-    kotlin("plugin.serialization")
-    kotlin("kapt")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.kapt)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.protobuf)
 }
 
 android {
@@ -62,7 +53,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = composeVersion
+        kotlinCompilerExtensionVersion = libs.versions.compose.get()
     }
     packagingOptions {
         resources {
@@ -73,7 +64,7 @@ android {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:$protoBufJavaLiteVersion"
+        artifact = "com.google.protobuf:protoc:${libs.versions.protoBufJavaLite.get()}"
     }
 
     generateProtoTasks {
@@ -88,42 +79,30 @@ protobuf {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
-    implementation(kotlin("reflect"))
-    implementation("androidx.core:core-ktx:1.10.1")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.9.0")
-    implementation("androidx.compose.ui:ui:$composeVersion")
-    implementation("androidx.compose.material:material:$composeVersion")
-    implementation("androidx.compose.material:material-icons-extended:$composeVersion")
-    implementation("androidx.compose.ui:ui-tooling:$composeVersion")
-    implementation("com.google.accompanist:accompanist-swiperefresh:$accompanistVersion")
-    implementation("com.google.accompanist:accompanist-systemuicontroller:$accompanistVersion")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1")
-    implementation("androidx.activity:activity-compose:1.5.1")
-    implementation("androidx.navigation:navigation-compose:2.5.2")
-    implementation("androidx.datastore:datastore:1.0.0")
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    implementation("androidx.camera:camera-camera2:$cameraxVersion")
-    implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
-    implementation("androidx.camera:camera-view:$cameraxVersion")
-    implementation("io.ktor:ktor-client-core:$ktorVersion")
-    implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
-    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
-    implementation("io.ktor:ktor-client-auth:$ktorVersion")
-    implementation("com.google.protobuf:protobuf-javalite:$protoBufJavaLiteVersion")
-    implementation("com.google.dagger:hilt-android:$hiltVersion")
-    implementation("com.google.mlkit:barcode-scanning:17.1.0")
-    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
-    implementation("com.android.billingclient:billing-ktx:6.0.0")
+    implementation(libs.android.billingclient.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.datastore)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.lifecycle.runtime)
+    implementation(libs.androidx.lifecycle.viewModelCompose)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.bundles.accompanist)
+    implementation(libs.bundles.camerax)
+    implementation(libs.bundles.compose)
+    implementation(libs.bundles.kotlin)
+    implementation(libs.bundles.ktor)
+    implementation(libs.google.android.material)
+    implementation(libs.google.dagger.hilt)
+    implementation(libs.google.protobuf.javalite)
+    implementation(libs.google.mlkit.barcodeScanning)
+    implementation(libs.philJay.mpAndroidChart)
 
-    kapt("com.google.dagger:hilt-compiler:$hiltVersion")
+    kapt(libs.google.dagger.hilt.compiler)
 
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    testImplementation(libs.junit.junit)
+    androidTestImplementation(libs.bundles.androidTest)
 }
 
 kapt {
