@@ -3,7 +3,6 @@ package com.tien.piholeconnect.ui.screen.preferences
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,7 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -52,17 +50,17 @@ fun PreferencesScreen(
             .padding(vertical = 15.dp),
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
-        Text(
-            stringResource(R.string.preferences_my_pi_hole),
-            modifier = Modifier.padding(horizontal = 15.dp),
-            style = MaterialTheme.typography.bodySmall
-        )
+        ListItem(leadingContent = {
+            Text(
+                stringResource(R.string.preferences_my_pi_hole),
+                style = MaterialTheme.typography.bodySmall
+            )
+        }, headlineContent = {})
         userPreferences.piHoleConnectionsList.forEach {
             ListItem(modifier = Modifier.clickable { navController.navigate("${Screen.PiHoleConnection.route}?id=${it.id}") },
                 leadingContent = {
                     Icon(
-                        Icons.Default.Router,
-                        contentDescription = "Pi-hole ${it.name}"
+                        Icons.Default.Router, contentDescription = "Pi-hole ${it.name}"
                     )
                 },
                 headlineContent = { Text(it.name) },
@@ -72,41 +70,37 @@ fun PreferencesScreen(
             ListItem(modifier = Modifier.clickable { navController.navigate(Screen.PiHoleConnection.route) },
                 leadingContent = {
                     Icon(
-                        Icons.Default.AddCircleOutline,
-                        contentDescription = null
+                        Icons.Default.AddCircleOutline, contentDescription = null
                     )
                 },
                 headlineContent = { Text(stringResource(R.string.preferences_add_pi_hole)) })
         }
         Column(
-            Modifier
-                .padding(horizontal = 15.dp)
-                .selectableGroup()
+            Modifier.selectableGroup()
         ) {
-            Text(
-                stringResource(R.string.preferences_theme),
-                style = MaterialTheme.typography.bodySmall
-            )
+            ListItem(leadingContent = {
+                Text(
+                    stringResource(R.string.preferences_theme),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }, headlineContent = {})
             Theme.values().filter { it != Theme.UNRECOGNIZED }.forEach { theme ->
-                    Row(
-                        PreferenceItemModifier.selectable(
-                                selected = theme == userPreferences.theme, onClick = {
-                                    viewModel.viewModelScope.launch {
-                                        viewModel.updateUserPreferences {
-                                            it.toBuilder().setTheme(theme).build()
-                                        }
-                                    }
-                                }, role = Role.RadioButton
-                            ), verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        RadioButton(
-                            modifier = Modifier.padding(end = 32.dp),
-                            selected = theme == userPreferences.theme,
-                            onClick = null
-                        )
-                        Text(text = theme.name.lowercase().replaceFirstChar { it.titlecase() })
-                    }
-                }
+                ListItem(modifier = PreferenceItemModifier.selectable(
+                    selected = theme == userPreferences.theme, onClick = {
+                        viewModel.viewModelScope.launch {
+                            viewModel.updateUserPreferences {
+                                it.toBuilder().setTheme(theme).build()
+                            }
+                        }
+                    }, role = Role.RadioButton
+                ), leadingContent = {
+                    RadioButton(
+                        selected = theme == userPreferences.theme, onClick = null
+                    )
+                }, headlineContent = {
+                    Text(text = theme.name.lowercase().replaceFirstChar { it.titlecase() })
+                })
+            }
         }
 //        Column(
 //            Modifier
