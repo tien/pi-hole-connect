@@ -24,7 +24,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -54,10 +53,11 @@ import com.tien.piholeconnect.ui.component.PiHoleSwitchFloatingActionButton
 import com.tien.piholeconnect.ui.component.SelectedValue
 import com.tien.piholeconnect.ui.component.StatsCard
 import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
-import com.tien.piholeconnect.ui.theme.info
+import com.tien.piholeconnect.ui.theme.infoContainer
 import com.tien.piholeconnect.ui.theme.success
+import com.tien.piholeconnect.ui.theme.successContainer
 import com.tien.piholeconnect.ui.theme.toColorInt
-import com.tien.piholeconnect.ui.theme.warning
+import com.tien.piholeconnect.ui.theme.warningContainer
 import com.tien.piholeconnect.util.showGenericPiHoleConnectionError
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -68,7 +68,6 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     val context = LocalContext.current
 
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
 
     var isRefreshing by rememberSaveable { mutableStateOf(false) }
     var isDisableDialogVisible by rememberSaveable { mutableStateOf(false) }
@@ -101,9 +100,11 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
 
     viewModel.RefreshOnConnectionChangeEffect()
 
-    LaunchedEffect(viewModel.error) {
-        viewModel.error?.let {
-            scope.launch { snackbarHostState.showGenericPiHoleConnectionError(context, it) }
+    if (viewModel.error != null) {
+        LaunchedEffect(snackbarHostState) {
+            viewModel.error?.let {
+                snackbarHostState.showGenericPiHoleConnectionError(context, it)
+            }
         }
     }
 
@@ -188,7 +189,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                                 }, maxLines = 1, overflow = TextOverflow.Ellipsis)
                             },
                             statistics = "%,d".format(totalQueries),
-                            backGroundColor = MaterialTheme.colorScheme.success,
+                            backGroundColor = MaterialTheme.colorScheme.successContainer,
                             modifier = Modifier
                                 .padding(end = 2.5.dp)
                                 .weight(1f)
@@ -202,7 +203,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                                 )
                             },
                             statistics = "%,d".format(totalBlockedQueries),
-                            backGroundColor = MaterialTheme.colorScheme.info,
+                            backGroundColor = MaterialTheme.colorScheme.infoContainer,
                             modifier = Modifier
                                 .padding(start = 2.5.dp)
                                 .weight(1f)
@@ -218,7 +219,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                                 )
                             },
                             statistics = "%.2f%%".format(queryBlockingPercentage),
-                            backGroundColor = MaterialTheme.colorScheme.warning,
+                            backGroundColor = MaterialTheme.colorScheme.warningContainer,
                             modifier = Modifier
                                 .padding(end = 2.5.dp)
                                 .weight(1f)
@@ -232,7 +233,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                                 )
                             },
                             statistics = "%,d".format(blockedDomainListCount),
-                            backGroundColor = MaterialTheme.colorScheme.error,
+                            backGroundColor = MaterialTheme.colorScheme.errorContainer,
                             modifier = Modifier
                                 .padding(start = 2.5.dp)
                                 .weight(1f)

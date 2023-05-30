@@ -28,7 +28,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
-import com.tien.piholeconnect.ui.theme.success
+import com.tien.piholeconnect.ui.theme.contentColorFor
+import com.tien.piholeconnect.ui.theme.successContainer
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -37,16 +38,18 @@ import kotlin.time.Duration.Companion.seconds
 fun PiHoleSwitchFloatingActionButton(
     isAdsBlockingEnabled: Boolean, isLoading: Boolean, onClick: () -> Unit
 ) {
+    val containerColor =
+        if (isAdsBlockingEnabled) MaterialTheme.colorScheme.successContainer else MaterialTheme.colorScheme.errorContainer
     FloatingActionButton(
-        containerColor = if (isAdsBlockingEnabled) MaterialTheme.colorScheme.success else MaterialTheme.colorScheme.error,
-        onClick = onClick
+        containerColor = containerColor, onClick = onClick
     ) {
         if (isLoading) {
             CircularProgressIndicator(color = LocalContentColor.current)
         } else {
             Icon(
-                imageVector = if (isAdsBlockingEnabled) Icons.Default.GppGood else Icons.Default.GppBad,
-                contentDescription = stringResource(if (isAdsBlockingEnabled) R.string.label_disable_blocking else R.string.label_enable_blocking)
+                if (isAdsBlockingEnabled) Icons.Default.GppGood else Icons.Default.GppBad,
+                contentDescription = stringResource(if (isAdsBlockingEnabled) R.string.label_disable_blocking else R.string.label_enable_blocking),
+                tint = MaterialTheme.colorScheme.contentColorFor(containerColor)
             )
         }
     }
@@ -149,8 +152,7 @@ fun DisableAdsBlockingAlertDialogPreview() {
 @Composable
 fun PiHoleSwitchFloatingActionButtonDisablePreview() {
     PiHoleConnectTheme {
-        PiHoleSwitchFloatingActionButton(
-            isAdsBlockingEnabled = false,
+        PiHoleSwitchFloatingActionButton(isAdsBlockingEnabled = false,
             isLoading = false,
             onClick = {})
     }
@@ -161,8 +163,7 @@ fun PiHoleSwitchFloatingActionButtonDisablePreview() {
 @Composable
 fun PiHoleSwitchFloatingActionButtonEnablePreview() {
     PiHoleConnectTheme {
-        PiHoleSwitchFloatingActionButton(
-            isAdsBlockingEnabled = true,
+        PiHoleSwitchFloatingActionButton(isAdsBlockingEnabled = true,
             isLoading = false,
             onClick = {})
     }
@@ -173,8 +174,7 @@ fun PiHoleSwitchFloatingActionButtonEnablePreview() {
 @Composable
 fun PiHoleSwitchFloatingActionButtonEnableLoadingPreview() {
     PiHoleConnectTheme {
-        PiHoleSwitchFloatingActionButton(
-            isAdsBlockingEnabled = true,
+        PiHoleSwitchFloatingActionButton(isAdsBlockingEnabled = true,
             isLoading = true,
             onClick = {})
     }
@@ -185,8 +185,7 @@ fun PiHoleSwitchFloatingActionButtonEnableLoadingPreview() {
 @Composable
 fun PiHoleSwitchFloatingActionButtonDisableLoadingPreview() {
     PiHoleConnectTheme {
-        PiHoleSwitchFloatingActionButton(
-            isAdsBlockingEnabled = false,
+        PiHoleSwitchFloatingActionButton(isAdsBlockingEnabled = false,
             isLoading = true,
             onClick = {})
     }

@@ -1,14 +1,18 @@
 package com.tien.piholeconnect.ui.theme
 
+import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -75,43 +79,67 @@ private val DarkColors = darkColorScheme(
     scrim = md_theme_dark_scrim,
 )
 
-@get:Composable
-@get:ReadOnlyComposable
-val ColorScheme.info: Color
-    get() = if (this == DarkColors) dark_Info else light_Info
+val ColorScheme.isDark get() = this.toString() == DarkColors.toString()
 
 @get:Composable
 @get:ReadOnlyComposable
-val ColorScheme.success: Color
-    get() = if (this == DarkColors) dark_Success else light_Success
+val ColorScheme.info get() = if (this.isDark) dark_Info else light_Info
 
 @get:Composable
 @get:ReadOnlyComposable
-val ColorScheme.warning: Color
-    get() = if (this == DarkColors) dark_Warning else light_Warning
+val ColorScheme.infoContainer get() = if (this.isDark) dark_InfoContainer else light_InfoContainer
+
+@get:Composable
+@get:ReadOnlyComposable
+val ColorScheme.success get() = if (this.isDark) dark_Success else light_Success
+
+@get:Composable
+@get:ReadOnlyComposable
+val ColorScheme.successContainer get() = if (this.isDark) dark_SuccessContainer else light_SuccessContainer
+
+@get:Composable
+@get:ReadOnlyComposable
+val ColorScheme.warning get() = if (this.isDark) dark_Warning else light_Warning
+
+@get:Composable
+@get:ReadOnlyComposable
+val ColorScheme.warningContainer get() = if (this.isDark) dark_WarningContainer else light_WarningContainer
 
 @Composable
 @ReadOnlyComposable
 fun ColorScheme.contentColorFor(backGroundColor: Color) =
     MaterialTheme.colorScheme.contentColorFor(backGroundColor).takeIf { it != Color.Unspecified }
         ?: when (backGroundColor) {
-            MaterialTheme.colorScheme.info -> Color.White
-            MaterialTheme.colorScheme.success -> Color.White
-            MaterialTheme.colorScheme.warning -> Color.White
+            MaterialTheme.colorScheme.info -> if (this.isDark) dark_onInfo else light_onInfo
+            MaterialTheme.colorScheme.infoContainer -> if (this.isDark) dark_onInfoContainer else light_onInfoContainer
+            MaterialTheme.colorScheme.success -> if (this.isDark) dark_onSuccess else light_onSuccess
+            MaterialTheme.colorScheme.successContainer -> if (this.isDark) dark_onSuccessContainer else light_onSuccessContainer
+            MaterialTheme.colorScheme.warning -> if (this.isDark) dark_onWarning else light_onWarning
+            MaterialTheme.colorScheme.warningContainer -> if (this.isDark) dark_onWarningContainer else light_onWarningContainer
             else -> Color.Unspecified
         }
 
 @Composable
 fun PiHoleConnectTheme(
-    useDarkTheme: Boolean = isSystemInDarkTheme(), content: @Composable() () -> Unit
+    useDarkTheme: Boolean = isSystemInDarkTheme(),
+    useDynamicColor: Boolean = false,
+    content: @Composable() () -> Unit
 ) {
-    val colors = if (!useDarkTheme) {
-        LightColors
-    } else {
-        DarkColors
+    val dynamicColor = useDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    val colorScheme = when {
+        dynamicColor && useDarkTheme -> {
+            dynamicDarkColorScheme(LocalContext.current)
+        }
+
+        dynamicColor && !useDarkTheme -> {
+            dynamicLightColorScheme(LocalContext.current)
+        }
+
+        useDarkTheme -> DarkColors
+        else -> LightColors
     }
 
     MaterialTheme(
-        colorScheme = colors, content = content
+        colorScheme = colorScheme, content = content
     )
 }

@@ -41,8 +41,6 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = viewModel()) {
     val context = LocalContext.current
 
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-
 
     val dateTimeInstance = remember { DateFormat.getDateInstance() }
     val whiteListTabRules = rememberSaveable { listOf(RuleType.WHITE, RuleType.REGEX_WHITE) }
@@ -52,9 +50,9 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = viewModel()) {
 
     viewModel.RefreshOnConnectionChangeEffect()
 
-    LaunchedEffect(viewModel.error) {
-        viewModel.error?.let {
-            scope.launch {
+    if (viewModel.error != null) {
+        LaunchedEffect(snackbarHostState) {
+            viewModel.error?.let {
                 snackbarHostState.showGenericPiHoleConnectionError(context, it)
             }
         }
