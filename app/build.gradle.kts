@@ -98,6 +98,7 @@ dependencies {
     implementation(libs.google.protobuf.javalite)
     implementation(libs.google.mlkit.barcodeScanning)
     implementation(libs.philJay.mpAndroidChart)
+    implementation("androidx.compose.material3:material3:1.0.0-alpha08")
 
     kapt(libs.google.dagger.hilt.compiler)
 

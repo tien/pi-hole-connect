@@ -2,7 +2,7 @@ package com.tien.piholeconnect.ui.component
 
 import android.graphics.Color
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.LocalContentColor
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier

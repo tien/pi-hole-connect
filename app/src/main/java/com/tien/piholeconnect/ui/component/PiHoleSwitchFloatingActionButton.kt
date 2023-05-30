@@ -1,13 +1,21 @@
 package com.tien.piholeconnect.ui.component
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.GppBad
 import androidx.compose.material.icons.filled.GppGood
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,12 +35,10 @@ import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun PiHoleSwitchFloatingActionButton(
-    isAdsBlockingEnabled: Boolean,
-    isLoading: Boolean,
-    onClick: () -> Unit
+    isAdsBlockingEnabled: Boolean, isLoading: Boolean, onClick: () -> Unit
 ) {
     FloatingActionButton(
-        backgroundColor = if (isAdsBlockingEnabled) MaterialTheme.colors.success else MaterialTheme.colors.error,
+        containerColor = if (isAdsBlockingEnabled) MaterialTheme.colorScheme.success else MaterialTheme.colorScheme.error,
         onClick = onClick
     ) {
         if (isLoading) {
@@ -48,22 +54,20 @@ fun PiHoleSwitchFloatingActionButton(
 
 @Composable
 fun DisableAdsBlockingAlertDialog(
-    onDismissRequest: () -> Unit,
-    onDurationButtonClick: (Duration) -> Unit
+    onDismissRequest: () -> Unit, onDurationButtonClick: (Duration) -> Unit
 ) {
     var isDurationPickerVisible by rememberSaveable { mutableStateOf(false) }
 
     if (isDurationPickerVisible) {
         DurationPickerDialog(
-            onDurationConfirm = onDurationButtonClick,
-            onDismissRequest = onDismissRequest
+            onDurationConfirm = onDurationButtonClick, onDismissRequest = onDismissRequest
         )
     } else {
-        AlertDialog(
-            onDismissRequest = onDismissRequest,
+        AlertDialog(onDismissRequest = onDismissRequest,
+            icon = { Icon(Icons.Default.GppBad, null) },
             title = { Text(stringResource(R.string.disable_dialog_title)) },
             text = { Text(stringResource(R.string.disable_dialog_msg)) },
-            buttons = {
+            confirmButton = {
                 Column(
                     Modifier
                         .fillMaxWidth()
@@ -101,7 +105,9 @@ fun DisableAdsBlockingAlertDialog(
 @Composable
 fun EnableAdsBlockingAlertDialog(onConfirmRequest: () -> Unit, onDismissRequest: () -> Unit) {
     AlertDialog(
-        text = { Text(stringResource(R.string.enable_dialog_title)) },
+        icon = { Icon(Icons.Default.GppGood, null) },
+        title = { Text(stringResource(R.string.enable_dialog_title)) },
+        text = { Text(stringResource(R.string.enable_dialog_msg)) },
         confirmButton = {
             TextButton(onClick = onConfirmRequest) {
                 Text(
@@ -121,18 +127,25 @@ fun EnableAdsBlockingAlertDialog(onConfirmRequest: () -> Unit, onDismissRequest:
 }
 
 @Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun EnableAdsBlockingAlertDialogPreview() {
-    EnableAdsBlockingAlertDialog(onConfirmRequest = {}, onDismissRequest = {})
+    PiHoleConnectTheme {
+        EnableAdsBlockingAlertDialog(onConfirmRequest = {}, onDismissRequest = {})
+    }
 }
 
 @Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun DisableAdsBlockingAlertDialogPreview() {
-    DisableAdsBlockingAlertDialog(onDismissRequest = {}, onDurationButtonClick = {})
+    PiHoleConnectTheme {
+        DisableAdsBlockingAlertDialog(onDismissRequest = {}, onDurationButtonClick = {})
+    }
 }
 
 @Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun PiHoleSwitchFloatingActionButtonDisablePreview() {
     PiHoleConnectTheme {
@@ -144,6 +157,7 @@ fun PiHoleSwitchFloatingActionButtonDisablePreview() {
 }
 
 @Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun PiHoleSwitchFloatingActionButtonEnablePreview() {
     PiHoleConnectTheme {
@@ -155,6 +169,7 @@ fun PiHoleSwitchFloatingActionButtonEnablePreview() {
 }
 
 @Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun PiHoleSwitchFloatingActionButtonEnableLoadingPreview() {
     PiHoleConnectTheme {
@@ -166,11 +181,12 @@ fun PiHoleSwitchFloatingActionButtonEnableLoadingPreview() {
 }
 
 @Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun PiHoleSwitchFloatingActionButtonDisableLoadingPreview() {
     PiHoleConnectTheme {
         PiHoleSwitchFloatingActionButton(
-            isAdsBlockingEnabled = true,
+            isAdsBlockingEnabled = false,
             isLoading = true,
             onClick = {})
     }

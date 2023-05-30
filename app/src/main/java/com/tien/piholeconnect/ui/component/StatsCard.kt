@@ -3,11 +3,16 @@ package com.tien.piholeconnect.ui.component
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ProvideTextStyle
-import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,21 +28,20 @@ fun StatsCard(
     backGroundColor: Color
 ) {
     val defaultSize = MaterialTheme.typography
-    var fontSize by remember { mutableStateOf(defaultSize.h4.fontSize) }
+    var fontSize by remember { mutableStateOf(defaultSize.headlineMedium.fontSize) }
 
-    Card(modifier, backgroundColor = backGroundColor) {
+    Card(modifier, colors = CardDefaults.cardColors(containerColor = backGroundColor)) {
         Column(Modifier.padding(horizontal = 10.dp, vertical = 5.dp)) {
             ProvideTextStyle(
-                value = MaterialTheme.typography.subtitle1.copy(
-                    color = contentColorFor(backGroundColor)
+                value = MaterialTheme.typography.titleMedium.copy(
+                    color = MaterialTheme.colorScheme.contentColorFor(backGroundColor)
                 )
             ) {
                 name()
             }
-            Text(
-                statistics,
-                color = contentColorFor(backGroundColor),
-                style = MaterialTheme.typography.h4,
+            Text(statistics,
+                color = MaterialTheme.colorScheme.contentColorFor(backGroundColor),
+                style = MaterialTheme.typography.headlineMedium,
                 fontSize = fontSize,
                 maxLines = 1,
                 softWrap = false,
@@ -45,8 +49,7 @@ fun StatsCard(
                     if (it.didOverflowWidth) {
                         fontSize *= 0.9
                     }
-                }
-            )
+                })
         }
     }
 }
@@ -58,6 +61,6 @@ fun StatsCardPreview() {
         Modifier.widthIn(max = 150.dp),
         name = { Text("Total Queries") },
         statistics = "23,456,756,456",
-        backGroundColor = MaterialTheme.colors.success
+        backGroundColor = MaterialTheme.colorScheme.success
     )
 }

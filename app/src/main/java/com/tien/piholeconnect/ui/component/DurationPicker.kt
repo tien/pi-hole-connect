@@ -1,10 +1,31 @@
 package com.tien.piholeconnect.ui.component
 
-import androidx.compose.foundation.layout.*
+import android.content.res.Configuration
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.paddingFromBaseline
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.surfaceColorAtElevation
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -38,14 +59,30 @@ fun TimeTextField(
     var focusState: FocusState? by rememberSaveable { mutableStateOf(null) }
 
     val colors = when (type) {
-        TimeTextFieldType.PRIMARY -> TextFieldDefaults.outlinedTextFieldColors(
-            backgroundColor = MaterialTheme.colors.primary.copy(TextFieldDefaults.BackgroundOpacity),
-            textColor = MaterialTheme.colors.primary.copy(),
-            focusedBorderColor = Color.Transparent,
-            unfocusedBorderColor = Color.Transparent
-        )
-        TimeTextFieldType.SECONDARY -> TextFieldDefaults.outlinedTextFieldColors(
-            backgroundColor = MaterialTheme.colors.onSurface.copy(TextFieldDefaults.BackgroundOpacity),
+        TimeTextFieldType.PRIMARY -> {
+            OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                errorContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                focusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                unfocusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                disabledTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                errorTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                focusedBorderColor = Color.Transparent,
+                unfocusedBorderColor = Color.Transparent
+            )
+        }
+
+        TimeTextFieldType.SECONDARY -> OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
+            errorContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
+            focusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            errorTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
             focusedBorderColor = Color.Transparent,
             unfocusedBorderColor = Color.Transparent
         )
@@ -58,13 +95,13 @@ fun TimeTextField(
                 Text(
                     "00",
                     modifier = Modifier.fillMaxWidth(),
-                    style = MaterialTheme.typography.h4.copy(textAlign = TextAlign.Center)
+                    style = MaterialTheme.typography.headlineMedium.copy(textAlign = TextAlign.Center)
                 )
             }
         },
         maxLines = 1,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        textStyle = MaterialTheme.typography.h4.copy(textAlign = TextAlign.Center),
+        textStyle = MaterialTheme.typography.headlineMedium.copy(textAlign = TextAlign.Center),
         onValueChange = {
             if (it.length <= 2) {
                 onValueChange(it)
@@ -121,14 +158,11 @@ fun DurationPicker(
                     .paddingFromBaseline(top = 28.dp)
                     .padding(top = 0.dp, end = 24.dp, bottom = 24.dp, start = 24.dp)
             ) {
-                CompositionLocalProvider(
-                    LocalContentAlpha provides ContentAlpha.medium
-                ) {
-                    Text(
-                        stringResource(R.string.duration_picker_enter_time).uppercase(),
-                        style = MaterialTheme.typography.overline,
-                    )
-                }
+                Text(
+                    stringResource(R.string.duration_picker_enter_time).uppercase(),
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Normal
+                )
                 Row(Modifier.padding(top = 24.dp), verticalAlignment = Alignment.CenterVertically) {
                     TimeTextField(
                         value = hours,
@@ -144,7 +178,7 @@ fun DurationPicker(
                         Text(
                             ":",
                             modifier = Modifier.align(Alignment.Center),
-                            style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.Bold)
+                            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
                         )
                     }
                     TimeTextField(
@@ -158,29 +192,23 @@ fun DurationPicker(
                     )
                 }
                 Row {
-                    CompositionLocalProvider(
-                        LocalContentAlpha provides ContentAlpha.medium
-                    ) {
-                        Text(
-                            stringResource(R.string.duration_picker_dialog_hours),
-                            style = MaterialTheme.typography.overline,
-                            modifier = Modifier
-                                .weight(1f)
-                                .paddingFromBaseline(top = 20.dp)
-                        )
-                    }
+                    Text(
+                        stringResource(R.string.duration_picker_dialog_hours),
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier
+                            .weight(1f)
+                            .paddingFromBaseline(top = 20.dp),
+                        fontWeight = FontWeight.Normal
+                    )
                     Spacer(Modifier.width(24.dp))
-                    CompositionLocalProvider(
-                        LocalContentAlpha provides ContentAlpha.medium
-                    ) {
-                        Text(
-                            stringResource(R.string.duration_picker_dialog_minutes),
-                            style = MaterialTheme.typography.overline,
-                            modifier = Modifier
-                                .weight(1f)
-                                .paddingFromBaseline(top = 20.dp)
-                        )
-                    }
+                    Text(
+                        stringResource(R.string.duration_picker_dialog_minutes),
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier
+                            .weight(1f)
+                            .paddingFromBaseline(top = 20.dp),
+                        fontWeight = FontWeight.Normal
+                    )
                 }
             }
             Row(
@@ -207,6 +235,7 @@ fun DurationPicker(
 }
 
 @Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun DurationPickerPreview() {
     var hours by remember { mutableStateOf("") }

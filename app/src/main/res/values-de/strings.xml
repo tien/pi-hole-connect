@@ -18,6 +18,7 @@
     <string name="duration_picker_dialog_minutes">Minuten</string>
     <string name="duration_picker_enter_time">Zeit eingeben</string>
     <string name="enable_dialog_button_confirm">Ermöglichen</string>
+    <string name="enable_dialog_msg">Dadurch wird das Blockieren von Pi-Hole-Anzeigen aktiviert.</string>
     <string name="enable_dialog_title">Anzeigenblockierung aktivieren?</string>
     <string name="error_pi_hole_connection_generic">Bitte überprüfen Sie Ihre Internetverbindung oder ob der API -Schlüssel festgelegt wurde.</string>
     <string name="error_pi_hole_connection_generic_error_prefix">Ein Fehler ist aufgetreten</string>

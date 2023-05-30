@@ -21,6 +21,7 @@ androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", versi
 androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "camerax" }
 androidx-compose-iconsExtended = { module = "androidx.compose.material:material-icons-extended", version.ref = "compose" }
 androidx-compose-material = { module = "androidx.compose.material:material", version.ref = "compose" }
+androidx-compose-material3 = { module = "androidx.compose.material3:material3", version = "1.1.0" }
 androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version = "1.10.1" }
@@ -50,7 +51,7 @@ philJay-mpAndroidChart = { module = "com.github.PhilJay:MPAndroidChart", version
 accompanist = ["accompanist-swiperefresh", "accompanist-systemuicontroller"]
 androidTest = ["androidx-test-espresso-core", "androidx-test-ext-junit"]
 camerax = ["androidx-camera-camera2", "androidx-camera-lifecycle", "androidx-camera-view"]
-compose = ["androidx-compose-iconsExtended", "androidx-compose-material", "androidx-compose-ui", "androidx-compose-ui-tooling"]
+compose = ["androidx-compose-iconsExtended", "androidx-compose-material", "androidx-compose-material3", "androidx-compose-ui", "androidx-compose-ui-tooling"]
 kotlin = ["kotlin-reflect", "kotlin-serialization"]
 ktor = ["ktor-client-auth", "ktor-client-contentNegotiation", "ktor-client-core", "ktor-client-okhttp", "ktor-serialization-json"]
 

@@ -4,12 +4,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.*
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.rememberSwipeableState
+import androidx.compose.material.swipeable
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -36,7 +39,10 @@ import kotlin.math.roundToInt
 @Composable
 fun FilterRulesScreen(viewModel: FilterRulesViewModel = viewModel()) {
     val context = LocalContext.current
-    val scaffoldState = rememberScaffoldState()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
 
     val dateTimeInstance = remember { DateFormat.getDateInstance() }
     val whiteListTabRules = rememberSaveable { listOf(RuleType.WHITE, RuleType.REGEX_WHITE) }
@@ -48,7 +54,9 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = viewModel()) {
 
     LaunchedEffect(viewModel.error) {
         viewModel.error?.let {
-            scaffoldState.snackbarHostState.showGenericPiHoleConnectionError(context, it)
+            scope.launch {
+                snackbarHostState.showGenericPiHoleConnectionError(context, it)
+            }
         }
     }
 
@@ -59,8 +67,7 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = viewModel()) {
     TopBarProgressIndicator(visible = !viewModel.hasBeenLoaded && viewModel.isRefreshing)
 
     if (isAddDialogVisible) {
-        AddFilterRuleDialog(
-            value = viewModel.addRuleInputValue,
+        AddFilterRuleDialog(value = viewModel.addRuleInputValue,
             onValueChange = { viewModel.addRuleInputValue = it },
             isWildcardChecked = viewModel.addRuleIsWildcardChecked,
             onIsWildcardCheckedChanged = { viewModel.addRuleIsWildcardChecked = it },
@@ -75,7 +82,7 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = viewModel()) {
             })
     }
 
-    Scaffold(scaffoldState = scaffoldState, floatingActionButton = {
+    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, floatingActionButton = {
         FloatingActionButton(onClick = { isAddDialogVisible = true }) {
             Icon(
                 Icons.Default.Add,
@@ -83,15 +90,13 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = viewModel()) {
             )
         }
     }) {
-        SwipeRefresh(
-            state = rememberSwipeRefreshState(isRefreshing),
-            onRefresh = {
-                viewModel.viewModelScope.launch {
-                    isRefreshing = true
-                    viewModel.refresh()
-                    isRefreshing = false
-                }
-            }) {
+        SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing), onRefresh = {
+            viewModel.viewModelScope.launch {
+                isRefreshing = true
+                viewModel.refresh()
+                isRefreshing = false
+            }
+        }) {
             Column(Modifier.padding(it)) {
                 TabRow(selectedTabIndex = viewModel.selectedTab.ordinal) {
                     Tab(selected = viewModel.selectedTab == FilterRulesViewModel.Tab.BLACK,
@@ -102,8 +107,7 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = viewModel()) {
                         onClick = { viewModel.selectedTab = FilterRulesViewModel.Tab.WHITE },
                         icon = {
                             Icon(
-                                Icons.Default.CheckCircleOutline,
-                                contentDescription = null
+                                Icons.Default.CheckCircleOutline, contentDescription = null
                             )
                         },
                         text = { Text(stringResource(R.string.filter_rules_whitelist)) })
@@ -132,47 +136,46 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = viewModel()) {
                                         Row(
                                             Modifier
                                                 .fillMaxSize()
-                                                .background(MaterialTheme.colors.error),
+                                                .background(MaterialTheme.colorScheme.error),
                                             horizontalArrangement = Arrangement.End,
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
-                                            IconButton(modifier = Modifier.fillMaxHeight(),
+                                            IconButton(
+                                                modifier = Modifier.fillMaxHeight(),
                                                 onClick = {
                                                     viewModel.viewModelScope.launch {
                                                         viewModel.removeRule(
-                                                            rule.domain,
-                                                            ruleType = rule.type
+                                                            rule.domain, ruleType = rule.type
                                                         )
                                                     }
                                                 }) {
                                                 Icon(
                                                     Icons.Default.Delete,
                                                     contentDescription = stringResource(R.string.filter_rules_desc_delete_filter),
-                                                    tint = contentColorFor(MaterialTheme.colors.error)
+                                                    tint = contentColorFor(MaterialTheme.colorScheme.error)
                                                 )
                                             }
                                         }
                                     }
-                                    ListItem(
-                                        Modifier
-                                            .offset {
-                                                IntOffset(
-                                                    swipeableState.offset.value.roundToInt(),
-                                                    0
-                                                )
-                                            }
-                                            .background(MaterialTheme.colors.background),
-                                        overlineText = when (rule.type) {
+                                    ListItem(modifier = Modifier
+                                        .offset {
+                                            IntOffset(
+                                                swipeableState.offset.value.roundToInt(), 0
+                                            )
+                                        }
+                                        .background(MaterialTheme.colorScheme.background),
+                                        overlineContent = when (rule.type) {
                                             RuleType.REGEX_BLACK, RuleType.REGEX_WHITE -> ({
                                                 Text(
                                                     stringResource(R.string.filter_rules_reg_exr)
                                                 )
                                             })
+
                                             else -> null
                                         },
-                                        text = { Text(rule.domain) },
-                                        secondaryText = rule.comment?.let { { Text(it) } },
-                                        trailing = {
+                                        headlineContent = { Text(rule.domain) },
+                                        supportingContent = rule.comment?.let { { Text(it) } },
+                                        trailingContent = {
                                             Text(
                                                 text = dateTimeInstance.format(rule.dateAdded * 1000L)
                                             )
