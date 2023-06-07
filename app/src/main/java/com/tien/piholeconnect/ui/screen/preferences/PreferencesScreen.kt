@@ -1,5 +1,6 @@
 package com.tien.piholeconnect.ui.screen.preferences
 
+import android.os.Build
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,11 +13,13 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircleOutline
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Router
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -102,47 +105,23 @@ fun PreferencesScreen(
                 })
             }
         }
-//        Column(
-//            Modifier
-//                .padding(horizontal = 15.dp)
-//                .selectableGroup()
-//        ) {
-//            Text(
-//                stringResource(R.string.preferences_temperature),
-//                style = MaterialTheme.typography.caption
-//            )
-//            TemperatureUnit.values()
-//                .filter { it != TemperatureUnit.UNRECOGNIZED }
-//                .forEach { temperatureUnit ->
-//                    Row(
-//                        PreferenceItemModifier
-//                            .selectable(
-//                                selected = temperatureUnit == userPreferences.temperatureUnit,
-//                                onClick = {
-//                                    viewModel.viewModelScope.launch {
-//                                        viewModel.updateUserPreferences {
-//                                            it
-//                                                .toBuilder()
-//                                                .setTemperatureUnit(temperatureUnit)
-//                                                .build()
-//                                        }
-//                                    }
-//                                },
-//                                role = Role.RadioButton
-//                            ),
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        RadioButton(
-//                            modifier = Modifier.padding(end = 32.dp),
-//                            selected = temperatureUnit == userPreferences.temperatureUnit,
-//                            onClick = null
-//                        )
-//                        Text(
-//                            text = temperatureUnit.name.toLowerCase(Locale.current)
-//                                .capitalize(Locale.current)
-//                        )
-//                    }
-//                }
-//        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            ListItem(modifier = PreferenceItemModifier.selectable(
+                selected = userPreferences.useDynamicColor, onClick = {
+                    viewModel.viewModelScope.launch {
+                        viewModel.updateUserPreferences {
+                            it.toBuilder().setUseDynamicColor(!it.useDynamicColor).build()
+                        }
+                    }
+                }, role = Role.Switch
+            ),
+                leadingContent = { Icon(Icons.Default.Palette, contentDescription = null) },
+                trailingContent = {
+                    Switch(checked = userPreferences.useDynamicColor, onCheckedChange = null)
+                },
+                headlineContent = {
+                    Text(stringResource(R.string.preferences_dynamic_color))
+                })
+        }
     }
 }

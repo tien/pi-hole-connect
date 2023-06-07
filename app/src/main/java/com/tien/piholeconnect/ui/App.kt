@@ -200,7 +200,10 @@ fun App(
         }
     }
 
-    PiHoleConnectTheme(useDarkTheme = isDarkTheme) {
+    PiHoleConnectTheme(
+        useDarkTheme = isDarkTheme,
+        useDynamicColor = userPreferences?.useDynamicColor ?: false
+    ) {
         val themeColors = MaterialTheme.colorScheme
 
         SideEffect {
