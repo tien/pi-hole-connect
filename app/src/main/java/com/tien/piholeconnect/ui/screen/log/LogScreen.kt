@@ -3,6 +3,7 @@ package com.tien.piholeconnect.ui.screen.log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.BottomSheetScaffoldDefaults
@@ -111,9 +112,9 @@ fun LogScreen(viewModel: LogViewModel = viewModel(), actions: @Composable () -> 
         )
     }
 
-
-    val logList = @Composable {
-        LazyColumn(state = lazyListState) {
+    @Composable
+    fun LogList(state: LazyListState = rememberLazyListState()) {
+        LazyColumn(state = state) {
             if (viewModel.hasBeenLoaded) {
                 logs.forEachIndexed { index, log ->
                     item(key = index) {
@@ -161,7 +162,7 @@ fun LogScreen(viewModel: LogViewModel = viewModel(), actions: @Composable () -> 
                             actions()
                         }
                     }) {
-                    logList()
+                    LogList()
                 }
             }
         },
@@ -250,7 +251,7 @@ fun LogScreen(viewModel: LogViewModel = viewModel(), actions: @Composable () -> 
                         }
                     }
                     Divider()
-                    logList()
+                    LogList(state = lazyListState)
                 }
             }
         })
