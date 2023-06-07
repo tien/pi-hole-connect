@@ -36,11 +36,13 @@ fun TopBar(
     actions: @Composable RowScope.() -> Unit = {}
 ) {
     TopAppBar(title = { Text(title) }, navigationIcon = {
-        if (!isBackButtonEnabled) null else IconButton(onClick = onBackButtonClick) {
-            Icon(
-                Icons.Default.ArrowBack,
-                contentDescription = stringResource(R.string.back_button_label)
-            )
+        if (isBackButtonEnabled) {
+            IconButton(onClick = onBackButtonClick) {
+                Icon(
+                    Icons.Default.ArrowBack,
+                    contentDescription = stringResource(R.string.back_button_label)
+                )
+            }
         }
     }, actions = actions
     )
@@ -107,9 +109,8 @@ private fun Menu(
                 Text("${connection.name}@${connection.host}")
             }, onClick = { onPiHoleConnectionClick(connection) })
         }
+        Divider()
     }
-
-    Divider()
 
     optionsMenuItems.forEach {
         DropdownMenuItem(leadingIcon = { Icon(imageVector = it.icon, contentDescription = null) },
