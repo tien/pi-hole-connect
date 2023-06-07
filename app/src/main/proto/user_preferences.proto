@@ -37,9 +37,9 @@ message PiHoleConnection {
 
 message UserPreferences {
   reserved 3;
-  Theme theme = 1;
-  bool useDynamicColor = 6;
-  TemperatureUnit temperatureUnit = 2;
+  optional Theme theme = 1;
+  optional bool useDynamicColor = 6;
+  optional TemperatureUnit temperatureUnit = 2;
   repeated PiHoleConnection piHoleConnections = 4;
   optional string selectedPiHoleConnectionId = 5;
 }
