@@ -3,12 +3,29 @@ package com.tien.piholeconnect.ui.screen.home
 import android.view.MotionEvent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
@@ -28,11 +45,19 @@ import com.github.mikephil.charting.listener.OnChartGestureListener
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.tien.piholeconnect.R
-import com.tien.piholeconnect.ui.component.*
-import com.tien.piholeconnect.ui.theme.info
+import com.tien.piholeconnect.ui.component.DisableAdsBlockingAlertDialog
+import com.tien.piholeconnect.ui.component.EnableAdsBlockingAlertDialog
+import com.tien.piholeconnect.ui.component.LineChart
+import com.tien.piholeconnect.ui.component.LineChartData
+import com.tien.piholeconnect.ui.component.PiHoleSwitchFloatingActionButton
+import com.tien.piholeconnect.ui.component.SelectedValue
+import com.tien.piholeconnect.ui.component.StatsCard
+import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
+import com.tien.piholeconnect.ui.theme.infoContainer
 import com.tien.piholeconnect.ui.theme.success
+import com.tien.piholeconnect.ui.theme.successContainer
 import com.tien.piholeconnect.ui.theme.toColorInt
-import com.tien.piholeconnect.ui.theme.warning
+import com.tien.piholeconnect.ui.theme.warningContainer
 import com.tien.piholeconnect.util.showGenericPiHoleConnectionError
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -41,7 +66,8 @@ import java.text.DateFormat.getTimeInstance
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     val context = LocalContext.current
-    val scaffoldState = rememberScaffoldState()
+
+    val snackbarHostState = remember { SnackbarHostState() }
 
     var isRefreshing by rememberSaveable { mutableStateOf(false) }
     var isDisableDialogVisible by rememberSaveable { mutableStateOf(false) }
@@ -51,13 +77,12 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     val queryBlockingPercentage: Float by animateFloatAsState(viewModel.queryBlockingPercentage.toFloat())
     val blockedDomainListCount: Int by animateIntAsState(viewModel.blockedDomainListCount)
 
-    val successColorInt = MaterialTheme.colors.success.toColorInt()
-    val errorColorInt = MaterialTheme.colors.error.toColorInt()
+    val successColorInt = MaterialTheme.colorScheme.success.toColorInt()
+    val errorColorInt = MaterialTheme.colorScheme.error.toColorInt()
 
     val queriesOverTimeLabel = stringResource(R.string.home_queries_over_time)
     val queriesOverTimeData = remember(viewModel.queriesOverTime) {
-        LineChartData(
-            label = queriesOverTimeLabel,
+        LineChartData(label = queriesOverTimeLabel,
             viewModel.queriesOverTime.map { Pair(it.key.toFloat() * 1000L, it.value.toFloat()) }) {
             color = successColorInt
             fillColor = successColorInt
@@ -66,8 +91,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
 
     val adsOverTimeLabel = stringResource(R.string.home_ads_over_time)
     val adsOverTimeData = remember(viewModel.adsOverTime) {
-        LineChartData(
-            label = adsOverTimeLabel,
+        LineChartData(label = adsOverTimeLabel,
             viewModel.adsOverTime.map { Pair(it.key.toFloat() * 1000L, it.value.toFloat()) }) {
             color = errorColorInt
             fillColor = errorColorInt
@@ -76,9 +100,11 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
 
     viewModel.RefreshOnConnectionChangeEffect()
 
-    LaunchedEffect(viewModel.error) {
-        viewModel.error?.let {
-            scaffoldState.snackbarHostState.showGenericPiHoleConnectionError(context, it)
+    if (viewModel.error != null) {
+        LaunchedEffect(snackbarHostState) {
+            viewModel.error?.let {
+                snackbarHostState.showGenericPiHoleConnectionError(context, it)
+            }
         }
     }
 
@@ -99,8 +125,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
 
     if (isDisableDialogVisible) {
         if (viewModel.isAdsBlockingEnabled) {
-            DisableAdsBlockingAlertDialog(
-                onDismissRequest = { isDisableDialogVisible = false },
+            DisableAdsBlockingAlertDialog(onDismissRequest = { isDisableDialogVisible = false },
                 onDurationButtonClick = {
                     viewModel.viewModelScope.launch {
                         isDisableDialogVisible = false
@@ -108,8 +133,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                     }
                 })
         } else {
-            EnableAdsBlockingAlertDialog(
-                onDismissRequest = { isDisableDialogVisible = false },
+            EnableAdsBlockingAlertDialog(onDismissRequest = { isDisableDialogVisible = false },
                 onConfirmRequest = {
                     viewModel.viewModelScope.launch {
                         isDisableDialogVisible = false
@@ -119,26 +143,21 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
         }
     }
 
-    Scaffold(
-        Modifier.fillMaxHeight(),
-        scaffoldState = scaffoldState,
+    Scaffold(Modifier.fillMaxHeight(),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
-            PiHoleSwitchFloatingActionButton(
-                isAdsBlockingEnabled = viewModel.isAdsBlockingEnabled,
+            PiHoleSwitchFloatingActionButton(isAdsBlockingEnabled = viewModel.isAdsBlockingEnabled,
                 isLoading = viewModel.isPiHoleSwitchLoading,
-                onClick = { isDisableDialogVisible = true }
-            )
+                onClick = { isDisableDialogVisible = true })
         }) {
         var isScrollEnabled by remember { mutableStateOf(true) }
-        SwipeRefresh(
-            state = rememberSwipeRefreshState(isRefreshing),
-            onRefresh = {
-                viewModel.viewModelScope.launch {
-                    isRefreshing = true
-                    viewModel.refresh()
-                    isRefreshing = false
-                }
-            }) {
+        SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing), onRefresh = {
+            viewModel.viewModelScope.launch {
+                isRefreshing = true
+                viewModel.refresh()
+                isRefreshing = false
+            }
+        }) {
             Column(
                 Modifier
                     .fillMaxHeight()
@@ -170,7 +189,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                                 }, maxLines = 1, overflow = TextOverflow.Ellipsis)
                             },
                             statistics = "%,d".format(totalQueries),
-                            backGroundColor = MaterialTheme.colors.success,
+                            backGroundColor = MaterialTheme.colorScheme.successContainer,
                             modifier = Modifier
                                 .padding(end = 2.5.dp)
                                 .weight(1f)
@@ -184,7 +203,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                                 )
                             },
                             statistics = "%,d".format(totalBlockedQueries),
-                            backGroundColor = MaterialTheme.colors.info,
+                            backGroundColor = MaterialTheme.colorScheme.infoContainer,
                             modifier = Modifier
                                 .padding(start = 2.5.dp)
                                 .weight(1f)
@@ -200,7 +219,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                                 )
                             },
                             statistics = "%.2f%%".format(queryBlockingPercentage),
-                            backGroundColor = MaterialTheme.colors.warning,
+                            backGroundColor = MaterialTheme.colorScheme.warningContainer,
                             modifier = Modifier
                                 .padding(end = 2.5.dp)
                                 .weight(1f)
@@ -214,7 +233,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                                 )
                             },
                             statistics = "%,d".format(blockedDomainListCount),
-                            backGroundColor = MaterialTheme.colors.error,
+                            backGroundColor = MaterialTheme.colorScheme.errorContainer,
                             modifier = Modifier
                                 .padding(start = 2.5.dp)
                                 .weight(1f)
@@ -237,7 +256,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                         Column(Modifier.padding(15.dp)) {
                             Text(
                                 stringResource(R.string.home_queries_chart_title),
-                                style = MaterialTheme.typography.h6
+                                style = MaterialTheme.typography.titleLarge
                             )
                             Column(Modifier.alpha(if (permittedQueriesCount != null && blockedQueriesCount != null) 1f else 0f)) {
                                 Text(
@@ -247,19 +266,19 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                                             formattedStartTime ?: "",
                                             formattedEndTime ?: ""
                                         )
-                                    ), style = MaterialTheme.typography.caption
+                                    ), style = MaterialTheme.typography.bodySmall
                                 )
                                 Text(
                                     "%s: %d".format(
                                         stringResource(R.string.home_queries_chart_permitted_queries_label),
                                         permittedQueriesCount
-                                    ), style = MaterialTheme.typography.caption
+                                    ), style = MaterialTheme.typography.bodySmall
                                 )
                                 Text(
                                     "%s: %d".format(
                                         stringResource(R.string.home_queries_chart_blocked_queries_label),
                                         blockedQueriesCount
-                                    ), style = MaterialTheme.typography.caption
+                                    ), style = MaterialTheme.typography.bodySmall
                                 )
                             }
                         }
@@ -293,17 +312,12 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                                 ) = Unit
 
                                 override fun onChartScale(
-                                    me: MotionEvent?,
-                                    scaleX: Float,
-                                    scaleY: Float
+                                    me: MotionEvent?, scaleX: Float, scaleY: Float
                                 ) = Unit
 
                                 override fun onChartTranslate(
-                                    me: MotionEvent?,
-                                    dX: Float,
-                                    dY: Float
-                                ) =
-                                    Unit
+                                    me: MotionEvent?, dX: Float, dY: Float
+                                ) = Unit
                             }
                         }
                         LineChart(

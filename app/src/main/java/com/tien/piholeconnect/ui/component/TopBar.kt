@@ -1,5 +1,6 @@
 package com.tien.piholeconnect.ui.component
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -7,11 +8,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.*
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -22,8 +24,10 @@ import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.PiHoleConnection
 import com.tien.piholeconnect.model.Screen
 import com.tien.piholeconnect.model.TopBarOptionsMenuItem
+import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 import com.tien.piholeconnect.util.populateDefaultValues
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(
     title: String,
@@ -31,14 +35,16 @@ fun TopBar(
     onBackButtonClick: () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {}
 ) {
-    TopAppBar(title = { Text(title) }, navigationIcon = if (!isBackButtonEnabled) null else ({
-        IconButton(onClick = onBackButtonClick) {
-            Icon(
-                Icons.Default.ArrowBack,
-                contentDescription = stringResource(R.string.back_button_label)
-            )
+    TopAppBar(title = { Text(title) }, navigationIcon = {
+        if (isBackButtonEnabled) {
+            IconButton(onClick = onBackButtonClick) {
+                Icon(
+                    Icons.Default.ArrowBack,
+                    contentDescription = stringResource(R.string.back_button_label)
+                )
+            }
         }
-    }), actions = actions
+    }, actions = actions
     )
 }
 
@@ -95,21 +101,21 @@ private fun Menu(
 
     if (piHoleConnections.count() > 1) {
         piHoleConnections.forEach { connection ->
-            DropdownMenuItem(onClick = { onPiHoleConnectionClick(connection) }) {
-                ListItem(icon = {
-                    RadioButton(
-                        selected = connection.id == selectedId, onClick = null
-                    )
-                }, text = { Text(connection.name) }, secondaryText = { Text(connection.host) })
-            }
+            DropdownMenuItem(leadingIcon = {
+                RadioButton(
+                    selected = connection.id == selectedId, onClick = null
+                )
+            }, text = {
+                Text("${connection.name}@${connection.host}")
+            }, onClick = { onPiHoleConnectionClick(connection) })
         }
         Divider()
     }
+
     optionsMenuItems.forEach {
-        DropdownMenuItem(onClick = { onOptionsMenuItemClick(it) }) {
-            ListItem(icon = { Icon(imageVector = it.icon, contentDescription = null) },
-                text = { Text(stringResource(it.labelResourceId)) })
-        }
+        DropdownMenuItem(leadingIcon = { Icon(imageVector = it.icon, contentDescription = null) },
+            text = { Text(stringResource(it.labelResourceId)) },
+            onClick = { onOptionsMenuItemClick(it) })
     }
 }
 
@@ -122,36 +128,42 @@ fun TopBarProgressIndicator(visible: Boolean) {
         exit = slideOutVertically()
     ) {
         LinearProgressIndicator(
-            Modifier.fillMaxWidth(), color = MaterialTheme.colors.secondary
+            Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.secondary
         )
     }
 }
 
 @Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun TopBarPreview() {
-    TopBar(
-        title = "Pi-Hole Connect", isBackButtonEnabled = true
-    )
+    PiHoleConnectTheme {
+        TopBar(
+            title = "Pi-Hole Connect", isBackButtonEnabled = true
+        )
+    }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun MenuPreview() {
-    Column {
-        val piHoleConnections = listOf((0..4)).flatten().map {
-            PiHoleConnection.newBuilder().populateDefaultValues().build()
+    PiHoleConnectTheme {
+        Column {
+            val piHoleConnections = listOf((0..4)).flatten().map {
+                PiHoleConnection.newBuilder().populateDefaultValues().build()
+            }
+            Menu(piHoleConnections = piHoleConnections,
+                selectedPiHoleConnectionId = piHoleConnections.first().id,
+                optionsMenuItems = listOf(
+                    TopBarOptionsMenuItem(
+                        Screen.Preferences.route,
+                        Screen.Preferences.labelResourceId,
+                        Icons.Default.Settings
+                    )
+                ),
+                onOptionsMenuItemClick = {},
+                onPiHoleConnectionClick = {})
         }
-        Menu(piHoleConnections = piHoleConnections,
-            selectedPiHoleConnectionId = piHoleConnections.first().id,
-            optionsMenuItems = listOf(
-                TopBarOptionsMenuItem(
-                    Screen.Preferences.route,
-                    Screen.Preferences.labelResourceId,
-                    Icons.Default.Settings
-                )
-            ),
-            onOptionsMenuItemClick = {},
-            onPiHoleConnectionClick = {})
     }
 }

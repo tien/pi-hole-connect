@@ -9,15 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.AppBarDefaults
-import androidx.compose.material.BottomNavigationDefaults
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalElevationOverlay
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.twotone.Analytics
@@ -28,12 +19,21 @@ import androidx.compose.material.icons.twotone.OpenInNew
 import androidx.compose.material.icons.twotone.Paid
 import androidx.compose.material.icons.twotone.Settings
 import androidx.compose.material.icons.twotone.Shield
-import androidx.compose.material.primarySurface
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -88,7 +88,7 @@ fun App(
 
     if (userPreferences == null) return
 
-    val scaffoldState = rememberScaffoldState()
+    val snackbarHostState = remember { SnackbarHostState() }
     val navController = rememberNavController()
     val systemUiController = rememberSystemUiController()
 
@@ -107,7 +107,8 @@ fun App(
     selectedPiHole?.let {
         optionsMenuItems.add(
             TopBarOptionsMenuItem(
-                URLBuilder(protocol = it.protocol.toKtorURLProtocol(),
+                URLBuilder(
+                    protocol = it.protocol.toKtorURLProtocol(),
                     host = it.host,
                     port = it.port,
                     user = it.basicAuthUsername.ifBlank { null },
@@ -190,7 +191,7 @@ fun App(
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     Text(
                         stringResource(R.string.add_pi_hole_button),
-                        style = MaterialTheme.typography.button.copy(fontSize = MaterialTheme.typography.button.fontSize * 2)
+                        style = MaterialTheme.typography.labelLarge.copy(fontSize = MaterialTheme.typography.labelLarge.fontSize * 2)
                     )
                 }
             }
@@ -199,24 +200,24 @@ fun App(
         }
     }
 
-    PiHoleConnectTheme(darkTheme = isDarkTheme) {
-        val themeColors = MaterialTheme.colors
-        val elevationOverlay = LocalElevationOverlay.current
-        val topAppBarColor = elevationOverlay?.apply(
-            color = themeColors.primarySurface, elevation = AppBarDefaults.TopAppBarElevation
-        ) ?: themeColors.primarySurface
-        val bottomNavigationBackgroundColor = elevationOverlay?.apply(
-            color = themeColors.primarySurface, elevation = BottomNavigationDefaults.Elevation
-        ) ?: themeColors.primarySurface
+    PiHoleConnectTheme(
+        useDarkTheme = isDarkTheme,
+        useDynamicColor = userPreferences?.useDynamicColor ?: false
+    ) {
+        val themeColors = MaterialTheme.colorScheme
 
         SideEffect {
             systemUiController.apply {
-                setSystemBarsColor(color = topAppBarColor)
-                setNavigationBarColor(color = bottomNavigationBackgroundColor)
+                setSystemBarsColor(color = themeColors.background)
+                setNavigationBarColor(
+                    color = themeColors.surfaceColorAtElevation(
+                        NavigationBarDefaults.Elevation
+                    )
+                )
             }
         }
 
-        Scaffold(scaffoldState = scaffoldState, topBar = {
+        Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
             if (currentScreen?.options?.showTopAppBar != false) {
                 TopBar(title = title,
                     isBackButtonEnabled = currentScreen?.options?.showBackButton ?: false,
@@ -255,7 +256,7 @@ fun App(
                 composable(Screen.Statistics.route) {
                     ConnectionGuard {
                         StatisticsScreen(
-                            viewModel = statisticsViewModel, scaffoldState = scaffoldState
+                            viewModel = statisticsViewModel, snackbarHostState = snackbarHostState
                         )
                     }
                 }
