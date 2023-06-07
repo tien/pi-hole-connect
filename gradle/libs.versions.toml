@@ -8,7 +8,7 @@ hilt = "2.46.1"
 kotlin = "1.8.10"
 ktor = "2.3.0"
 lifecycle = "2.6.1"
-protoBufJavaLite = "3.21.2"
+protoBufJavaLite = "3.23.2"
 
 [libraries]
 accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
