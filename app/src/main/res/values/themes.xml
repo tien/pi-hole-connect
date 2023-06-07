@@ -1,27 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.PiHoleConnect" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/red_700</item>
-        <item name="colorPrimaryVariant">@color/red_700_dark</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/green_400</item>
-        <item name="colorSecondaryVariant">@color/green_400_dark</item>
-        <item name="colorOnSecondary">@color/white</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <!-- Customize your theme here. -->
-        <item name="android:navigationBarColor">@android:color/transparent
-        </item>
-    </style>
-
-    <style name="Theme.PiHoleConnect.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="Theme.PiHoleConnect.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="Theme.PiHoleConnect.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.PiHoleConnect" parent="Theme.Material3.DayNight.NoActionBar" />
 </resources>

@@ -201,16 +201,15 @@ fun App(
     }
 
     PiHoleConnectTheme(
-        useDarkTheme = isDarkTheme,
-        useDynamicColor = userPreferences?.useDynamicColor ?: false
+        useDarkTheme = isDarkTheme, useDynamicColor = userPreferences?.useDynamicColor ?: false
     ) {
         val themeColors = MaterialTheme.colorScheme
 
         SideEffect {
             systemUiController.apply {
-                setSystemBarsColor(color = themeColors.background)
+                setStatusBarColor(themeColors.background)
                 setNavigationBarColor(
-                    color = themeColors.surfaceColorAtElevation(
+                    themeColors.surfaceColorAtElevation(
                         NavigationBarDefaults.Elevation
                     )
                 )
