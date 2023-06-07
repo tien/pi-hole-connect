@@ -6,7 +6,7 @@ camerax = "1.2.2"
 compose = "1.4.3"
 hilt = "2.46.1"
 kotlin = "1.8.10"
-ktor = "2.3.0"
+ktor = "2.3.1"
 lifecycle = "2.6.1"
 protoBufJavaLite = "3.21.2"
 
