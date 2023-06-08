@@ -219,7 +219,7 @@ fun App(
         Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
             if (currentScreen?.options?.showTopAppBar != false) {
                 TopBar(title = title,
-                    isBackButtonEnabled = currentScreen?.options?.showBackButton ?: false,
+                    backButtonEnabled = currentScreen?.options?.showBackButton ?: false,
                     onBackButtonClick = { navController.navigateUp() },
                     actions = {
                         if (currentScreen?.options?.showMenus != false) {

@@ -31,21 +31,23 @@ import com.tien.piholeconnect.util.populateDefaultValues
 @Composable
 fun TopBar(
     title: String,
-    isBackButtonEnabled: Boolean,
+    backButtonEnabled: Boolean,
     onBackButtonClick: () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {}
 ) {
-    TopAppBar(title = { Text(title) }, navigationIcon = {
-        if (isBackButtonEnabled) {
+    if (backButtonEnabled) {
+        TopAppBar(title = { Text(title) }, navigationIcon = {
             IconButton(onClick = onBackButtonClick) {
                 Icon(
                     Icons.Default.ArrowBack,
                     contentDescription = stringResource(R.string.back_button_label)
                 )
             }
-        }
-    }, actions = actions
-    )
+        }, actions = actions
+        )
+    } else {
+        CenterAlignedTopAppBar(title = { Text(title) }, actions = actions)
+    }
 }
 
 @Composable
@@ -136,10 +138,21 @@ fun TopBarProgressIndicator(visible: Boolean) {
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-fun TopBarPreview() {
+fun RootTopAppBarPreview() {
     PiHoleConnectTheme {
         TopBar(
-            title = "Pi-Hole Connect", isBackButtonEnabled = true
+            title = "Pi-Hole Connect", backButtonEnabled = false
+        )
+    }
+}
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun NestedTopBarPreview() {
+    PiHoleConnectTheme {
+        TopBar(
+            title = "Pi-Hole Connect", backButtonEnabled = true
         )
     }
 }
