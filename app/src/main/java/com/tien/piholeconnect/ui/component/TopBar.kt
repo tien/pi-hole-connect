@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
@@ -90,7 +89,6 @@ fun OptionsMenu(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun Menu(
     piHoleConnections: Iterable<PiHoleConnection>,

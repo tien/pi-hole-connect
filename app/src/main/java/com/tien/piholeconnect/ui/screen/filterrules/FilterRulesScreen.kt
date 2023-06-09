@@ -1,17 +1,17 @@
+// TODO: Remove after material3 make swipe-able public
+@file:Suppress("INVISIBLE_MEMBER")
+
 package com.tien.piholeconnect.ui.screen.filterrules
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.rememberSwipeableState
-import androidx.compose.material.swipeable
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
 import java.text.DateFormat
 import kotlin.math.roundToInt
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterRulesScreen(viewModel: FilterRulesViewModel = viewModel()) {
     val context = LocalContext.current

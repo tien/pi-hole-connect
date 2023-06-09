@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.material.BottomSheetScaffoldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
@@ -126,7 +125,7 @@ fun LogScreen(viewModel: LogViewModel = viewModel(), actions: @Composable () -> 
     }
 
     BottomSheetScaffold(scaffoldState = scaffoldState,
-        sheetPeekHeight = BottomSheetScaffoldDefaults.SheetPeekHeight * 0.75f,
+        sheetPeekHeight = BottomSheetDefaults.SheetPeekHeight * 0.75f,
         topBar = {
             Box(Modifier.fillMaxWidth()) {
                 SearchBar(modifier = Modifier.align(Alignment.TopCenter),
