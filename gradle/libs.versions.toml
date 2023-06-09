@@ -1,14 +1,14 @@
 [versions]
 
-accompanist = "0.27.0"
+accompanist = "0.30.1"
 androidGradlePlugin = "8.0.2"
 camerax = "1.2.2"
 compose = "1.4.3"
 hilt = "2.46.1"
 kotlin = "1.8.10"
-ktor = "2.3.0"
+ktor = "2.3.1"
 lifecycle = "2.6.1"
-protoBufJavaLite = "3.21.2"
+protoBufJavaLite = "3.23.2"
 
 [libraries]
 accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
@@ -62,4 +62,4 @@ kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-protobuf = { id = "com.google.protobuf", version = "0.9.0" }
+protobuf = { id = "com.google.protobuf", version = "0.9.3" }
