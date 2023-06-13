@@ -29,7 +29,7 @@
     <string name="filter_rules_desc_delete_filter">Delete filter</string>
     <string name="filter_rules_reg_exr">RegExr</string>
     <string name="filter_rules_whitelist">Whitelist</string>
-    <string name="home_ads_over_time">Ads over time</string>
+    <string name="home_ads_over_time">blocked</string>
     <string name="home_blocklist">Blocklist</string>
     <string name="home_percent_blocked">Percent Blocked</string>
     <string name="home_queries_blocked">Queries Blocked</string>
@@ -37,7 +37,7 @@
     <string name="home_queries_chart_permitted_queries_label">Permitted queries</string>
     <string name="home_queries_chart_time_info">Queries from %s to %s</string>
     <string name="home_queries_chart_title">Queries over last 24 hours</string>
-    <string name="home_queries_over_time">Queries over time</string>
+    <string name="home_queries_over_time">permitted</string>
     <string name="home_total_queries">Total Queries</string>
     <string name="home_unique_clients">(%d clients)</string>
     <string name="label_disable_blocking">Disable blocking</string>

@@ -93,11 +93,11 @@ dependencies {
     implementation(libs.bundles.compose)
     implementation(libs.bundles.kotlin)
     implementation(libs.bundles.ktor)
+    implementation(libs.bundles.vico)
     implementation(libs.google.android.material)
     implementation(libs.google.dagger.hilt)
     implementation(libs.google.protobuf.javalite)
     implementation(libs.google.mlkit.barcodeScanning)
-    implementation(libs.philJay.mpAndroidChart)
 
     kapt(libs.google.dagger.hilt.compiler)
 

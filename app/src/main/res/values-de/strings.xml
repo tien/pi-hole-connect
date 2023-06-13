@@ -27,7 +27,7 @@
     <string name="filter_rules_desc_delete_filter">Netzwerkfilter löschen</string>
     <string name="filter_rules_reg_exr">RegExr</string>
     <string name="filter_rules_whitelist">Whitelist</string>
-    <string name="home_ads_over_time">Anzeigen im Laufe der Zeit</string>
+    <string name="home_ads_over_time">verstopft</string>
     <string name="home_blocklist">Blocklist</string>
     <string name="home_percent_blocked">Prozent blockiert</string>
     <string name="home_queries_blocked">Abfragen blockiert</string>
@@ -35,7 +35,7 @@
     <string name="home_queries_chart_permitted_queries_label">Erlaubte Netzwerkanfragen</string>
     <string name="home_queries_chart_time_info">Anfragen von %s bis %s</string>
     <string name="home_queries_chart_title">Anfragen in den letzten 24 Stunden</string>
-    <string name="home_queries_over_time">Abfragen im Laufe der Zeit</string>
+    <string name="home_queries_over_time">gestattet</string>
     <string name="home_total_queries">Anfragen</string>
     <string name="home_unique_clients">(%d clients)</string>
     <string name="label_disable_blocking">Werbeblocker deaktivieren</string>

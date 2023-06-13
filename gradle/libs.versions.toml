@@ -9,6 +9,7 @@ kotlin = "1.8.10"
 ktor = "2.3.1"
 lifecycle = "2.6.1"
 protoBufJavaLite = "3.23.2"
+vico = "1.6.6"
 
 [libraries]
 accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
@@ -44,7 +45,9 @@ ktor-client-contentNegotiation = { module = "io.ktor:ktor-client-content-negotia
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
-philJay-mpAndroidChart = { module = "com.github.PhilJay:MPAndroidChart", version = "3.1.0" }
+vico-compose = { module = "com.patrykandpatrick.vico:compose", version.ref = "vico" }
+vico-compose-material3 = { module = "com.patrykandpatrick.vico:compose-m3", version.ref = "vico" }
+vico-core = { module = "com.patrykandpatrick.vico:core", version.ref = "vico" }
 
 [bundles]
 accompanist = ["accompanist-swiperefresh", "accompanist-systemuicontroller"]
@@ -53,6 +56,7 @@ camerax = ["androidx-camera-camera2", "androidx-camera-lifecycle", "androidx-cam
 compose = ["androidx-compose-iconsExtended", "androidx-compose-material3", "androidx-compose-ui", "androidx-compose-ui-tooling"]
 kotlin = ["kotlin-reflect", "kotlin-serialization"]
 ktor = ["ktor-client-auth", "ktor-client-contentNegotiation", "ktor-client-core", "ktor-client-okhttp", "ktor-serialization-json"]
+vico = ["vico-compose", "vico-compose-material3", "vico-core"]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
