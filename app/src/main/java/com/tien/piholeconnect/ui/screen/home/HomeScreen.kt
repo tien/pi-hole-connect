@@ -1,6 +1,5 @@
 package com.tien.piholeconnect.ui.screen.home
 
-import android.view.MotionEvent
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -27,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -39,28 +37,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.github.mikephil.charting.formatter.ValueFormatter
-import com.github.mikephil.charting.listener.ChartTouchListener
-import com.github.mikephil.charting.listener.OnChartGestureListener
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.tien.piholeconnect.R
+import com.tien.piholeconnect.model.LineChartData
 import com.tien.piholeconnect.ui.component.DisableAdsBlockingAlertDialog
 import com.tien.piholeconnect.ui.component.EnableAdsBlockingAlertDialog
 import com.tien.piholeconnect.ui.component.LineChart
-import com.tien.piholeconnect.ui.component.LineChartData
 import com.tien.piholeconnect.ui.component.PiHoleSwitchFloatingActionButton
-import com.tien.piholeconnect.ui.component.SelectedValue
 import com.tien.piholeconnect.ui.component.StatsCard
 import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
 import com.tien.piholeconnect.ui.theme.infoContainer
 import com.tien.piholeconnect.ui.theme.success
 import com.tien.piholeconnect.ui.theme.successContainer
-import com.tien.piholeconnect.ui.theme.toColorInt
 import com.tien.piholeconnect.ui.theme.warningContainer
 import com.tien.piholeconnect.util.showGenericPiHoleConnectionError
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.text.DateFormat
 import java.text.DateFormat.getTimeInstance
 
 @Composable
@@ -77,26 +71,8 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     val queryBlockingPercentage: Float by animateFloatAsState(viewModel.queryBlockingPercentage.toFloat())
     val blockedDomainListCount: Int by animateIntAsState(viewModel.blockedDomainListCount)
 
-    val successColorInt = MaterialTheme.colorScheme.success.toColorInt()
-    val errorColorInt = MaterialTheme.colorScheme.error.toColorInt()
-
-    val queriesOverTimeLabel = stringResource(R.string.home_queries_over_time)
-    val queriesOverTimeData = remember(viewModel.queriesOverTime) {
-        LineChartData(label = queriesOverTimeLabel,
-            viewModel.queriesOverTime.map { Pair(it.key.toFloat() * 1000L, it.value.toFloat()) }) {
-            color = successColorInt
-            fillColor = successColorInt
-        }
-    }
-
-    val adsOverTimeLabel = stringResource(R.string.home_ads_over_time)
-    val adsOverTimeData = remember(viewModel.adsOverTime) {
-        LineChartData(label = adsOverTimeLabel,
-            viewModel.adsOverTime.map { Pair(it.key.toFloat() * 1000L, it.value.toFloat()) }) {
-            color = errorColorInt
-            fillColor = errorColorInt
-        }
-    }
+    val successColor = MaterialTheme.colorScheme.success
+    val errorColor = MaterialTheme.colorScheme.error
 
     viewModel.RefreshOnConnectionChangeEffect()
 
@@ -150,7 +126,6 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                 isLoading = viewModel.isPiHoleSwitchLoading,
                 onClick = { isDisableDialogVisible = true })
         }) {
-        var isScrollEnabled by remember { mutableStateOf(true) }
         SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing), onRefresh = {
             viewModel.viewModelScope.launch {
                 isRefreshing = true
@@ -161,7 +136,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
             Column(
                 Modifier
                     .fillMaxHeight()
-                    .verticalScroll(rememberScrollState(), enabled = isScrollEnabled)
+                    .verticalScroll(rememberScrollState())
                     .heightIn(min = 500.dp)
                     .padding(it)
                     .padding(start = 15.dp, top = 15.dp, end = 15.dp, bottom = 80.dp),
@@ -240,100 +215,40 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                         )
                     }
                 }
-                Card(Modifier.weight(1f)) {
-                    var value: Iterable<SelectedValue> by remember { mutableStateOf(listOf()) }
-                    val permittedQueriesCount =
-                        value.firstOrNull { it.label == queriesOverTimeData.label }?.value?.second?.toInt()
-                    val blockedQueriesCount =
-                        value.firstOrNull { it.label == adsOverTimeData.label }?.value?.second?.toInt()
-                    val dateFormat = remember { getTimeInstance() }
-                    val startTime = value.firstOrNull { it.value != null }?.value?.first
-                    val endTime = startTime?.let { it + 600_000 }
-                    val formattedStartTime = startTime?.let { dateFormat.format(it) }
-                    val formattedEndTime = endTime?.let { dateFormat.format(endTime) }
 
+                val queriesOverTimeLabel = stringResource(R.string.home_queries_over_time)
+                val queriesOverTimeData = remember(viewModel.queriesOverTime) {
+                    LineChartData(
+                        label = queriesOverTimeLabel,
+                        data = viewModel.queriesOverTime.map { Pair(it.key * 1000, it.value) },
+                        color = successColor
+                    )
+                }
+
+                val adsOverTimeLabel = stringResource(R.string.home_ads_over_time)
+                val adsOverTimeData = remember(viewModel.adsOverTime) {
+                    LineChartData(
+                        label = adsOverTimeLabel,
+                        data = viewModel.adsOverTime.map { Pair(it.key * 1000, it.value) },
+                        color = errorColor
+                    )
+                }
+
+                Card(Modifier.weight(1f)) {
                     Column {
                         Column(Modifier.padding(15.dp)) {
                             Text(
                                 stringResource(R.string.home_queries_chart_title),
                                 style = MaterialTheme.typography.titleLarge
                             )
-                            Column(Modifier.alpha(if (permittedQueriesCount != null && blockedQueriesCount != null) 1f else 0f)) {
-                                Text(
-                                    String.format(
-                                        stringResource(
-                                            R.string.home_queries_chart_time_info,
-                                            formattedStartTime ?: "",
-                                            formattedEndTime ?: ""
-                                        )
-                                    ), style = MaterialTheme.typography.bodySmall
-                                )
-                                Text(
-                                    "%s: %d".format(
-                                        stringResource(R.string.home_queries_chart_permitted_queries_label),
-                                        permittedQueriesCount
-                                    ), style = MaterialTheme.typography.bodySmall
-                                )
-                                Text(
-                                    "%s: %d".format(
-                                        stringResource(R.string.home_queries_chart_blocked_queries_label),
-                                        blockedQueriesCount
-                                    ), style = MaterialTheme.typography.bodySmall
-                                )
-                            }
                         }
-                        val listener = remember {
-                            object : OnChartGestureListener {
-                                override fun onChartGestureStart(
-                                    me: MotionEvent?,
-                                    lastPerformedGesture: ChartTouchListener.ChartGesture?
-                                ) {
-                                    isScrollEnabled = false
+                        LineChart(Modifier.fillMaxSize(),
+                            data = listOf(queriesOverTimeData, adsOverTimeData),
+                            xAxisFormatter = remember { getTimeInstance(DateFormat.SHORT) }.let { dateTime ->
+                                { value ->
+                                    dateTime.format(value)
                                 }
-
-                                override fun onChartGestureEnd(
-                                    me: MotionEvent?,
-                                    lastPerformedGesture: ChartTouchListener.ChartGesture?
-                                ) {
-                                    isScrollEnabled = true
-                                }
-
-                                override fun onChartLongPressed(me: MotionEvent?) = Unit
-
-                                override fun onChartDoubleTapped(me: MotionEvent?) = Unit
-
-                                override fun onChartSingleTapped(me: MotionEvent?) = Unit
-
-                                override fun onChartFling(
-                                    me1: MotionEvent?,
-                                    me2: MotionEvent?,
-                                    velocityX: Float,
-                                    velocityY: Float
-                                ) = Unit
-
-                                override fun onChartScale(
-                                    me: MotionEvent?, scaleX: Float, scaleY: Float
-                                ) = Unit
-
-                                override fun onChartTranslate(
-                                    me: MotionEvent?, dX: Float, dY: Float
-                                ) = Unit
-                            }
-                        }
-                        LineChart(
-                            lineData = listOf(queriesOverTimeData, adsOverTimeData),
-                            onValueSelected = { value = it },
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            xAxis.labelCount = 5
-                            xAxis.valueFormatter = object : ValueFormatter() {
-                                override fun getFormattedValue(value: Float): String =
-                                    dateFormat.format(value)
-                            }
-                            axisLeft.axisMinimum = 0f
-                            axisRight.axisMinimum = 0f
-                            onChartGestureListener = listener
-                        }
+                            })
                     }
                 }
             }
