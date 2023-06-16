@@ -8,6 +8,7 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
@@ -25,6 +26,18 @@ fun Scanner(
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
+    var cameraProvider: ProcessCameraProvider? = null
+
+    // TODO: Investigate further
+    // from memory, LocalLifecycleOwner used to close the camera
+    // when composition exit from view, this no longer seems to be the case
+    // hence we have to close camera manually
+    DisposableEffect(Unit) {
+        onDispose {
+            cameraProvider?.unbindAll()
+        }
+    }
+
     AndroidView(factory = { context ->
         val viewfinder = PreviewView(context).apply {
             implementationMode = PreviewView.ImplementationMode.COMPATIBLE
@@ -34,7 +47,7 @@ fun Scanner(
 
         cameraProviderFuture.addListener(
             {
-                val cameraProvider = cameraProviderFuture.get()
+                cameraProvider = cameraProviderFuture.get()
 
                 val preview = Preview.Builder().build()
                     .also { it.setSurfaceProvider(viewfinder.surfaceProvider) }
@@ -42,36 +55,29 @@ fun Scanner(
                 val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
                 val imageAnalysis = ImageAnalysis.Builder()
-                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                    .build().also {
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build().also {
                         it.setAnalyzer(
                             ContextCompat.getMainExecutor(context)
                         ) { imageProxy ->
                             imageProxy.image?.let { mediaImage ->
                                 val image = InputImage.fromMediaImage(
-                                    mediaImage,
-                                    imageProxy.imageInfo.rotationDegrees
+                                    mediaImage, imageProxy.imageInfo.rotationDegrees
                                 )
 
-                                barcodeScanner.process(image)
-                                    .addOnSuccessListener { barcodes ->
-                                        onBarcodeScanSuccess(barcodes)
-                                        imageProxy.close()
-                                    }
+                                barcodeScanner.process(image).addOnSuccessListener { barcodes ->
+                                    onBarcodeScanSuccess(barcodes)
+                                    imageProxy.close()
+                                }
                             }
                         }
                     }
 
-                cameraProvider.unbindAll()
+                cameraProvider?.unbindAll()
 
-                cameraProvider.bindToLifecycle(
-                    lifecycleOwner,
-                    cameraSelector,
-                    imageAnalysis,
-                    preview
+                cameraProvider?.bindToLifecycle(
+                    lifecycleOwner, cameraSelector, imageAnalysis, preview
                 )
-            },
-            ContextCompat.getMainExecutor(context)
+            }, ContextCompat.getMainExecutor(context)
         )
 
         viewfinder
