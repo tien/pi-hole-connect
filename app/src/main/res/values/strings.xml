@@ -27,7 +27,7 @@
     <string name="filter_rules_blacklist">Blacklist</string>
     <string name="filter_rules_desc_add_filter">Add filter rule</string>
     <string name="filter_rules_desc_delete_filter">Delete filter</string>
-    <string name="filter_rules_reg_exr">RegExr</string>
+    <string name="filter_rules_reg_exr">RegEx</string>
     <string name="filter_rules_whitelist">Whitelist</string>
     <string name="home_ads_over_time">blocked</string>
     <string name="home_blocklist">Blocklist</string>
