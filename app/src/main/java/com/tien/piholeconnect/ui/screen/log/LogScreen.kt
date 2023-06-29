@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
@@ -30,15 +29,13 @@ import com.tien.piholeconnect.ui.component.LogItem
 import com.tien.piholeconnect.ui.component.QueryDetail
 import com.tien.piholeconnect.util.ChangedEffect
 import com.tien.piholeconnect.util.ConsumeAllNestedScroll
-import com.tien.piholeconnect.util.showGenericPiHoleConnectionError
+import com.tien.piholeconnect.util.SnackbarErrorEffect
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogScreen(viewModel: LogViewModel = viewModel(), actions: @Composable () -> Unit) {
-    val context = LocalContext.current
-
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
     val scaffoldState = rememberBottomSheetScaffoldState()
@@ -53,13 +50,7 @@ fun LogScreen(viewModel: LogViewModel = viewModel(), actions: @Composable () -> 
 
     viewModel.RefreshOnConnectionChangeEffect()
 
-    if (viewModel.error != null) {
-        LaunchedEffect(scaffoldState.snackbarHostState) {
-            viewModel.error?.let {
-                scaffoldState.snackbarHostState.showGenericPiHoleConnectionError(context, it)
-            }
-        }
-    }
+    SnackbarErrorEffect(viewModel.error, scaffoldState.snackbarHostState)
 
     ChangedEffect(viewModel.modifyFilterRuleState) {
         (viewModel.modifyFilterRuleState.second as? AsyncState.Settled)?.let {

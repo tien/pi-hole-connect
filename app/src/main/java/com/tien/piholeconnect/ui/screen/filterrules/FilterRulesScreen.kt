@@ -17,7 +17,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
@@ -30,7 +29,7 @@ import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.RuleType
 import com.tien.piholeconnect.ui.component.AddFilterRuleDialog
 import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
-import com.tien.piholeconnect.util.showGenericPiHoleConnectionError
+import com.tien.piholeconnect.util.SnackbarErrorEffect
 import kotlinx.coroutines.launch
 import java.text.DateFormat
 import kotlin.math.roundToInt
@@ -38,8 +37,6 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterRulesScreen(viewModel: FilterRulesViewModel = viewModel()) {
-    val context = LocalContext.current
-
     val snackbarHostState = remember { SnackbarHostState() }
 
     val dateTimeInstance = remember { DateFormat.getDateInstance() }
@@ -50,13 +47,7 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = viewModel()) {
 
     viewModel.RefreshOnConnectionChangeEffect()
 
-    if (viewModel.error != null) {
-        LaunchedEffect(snackbarHostState) {
-            viewModel.error?.let {
-                snackbarHostState.showGenericPiHoleConnectionError(context, it)
-            }
-        }
-    }
+    SnackbarErrorEffect(viewModel.error, snackbarHostState)
 
     LaunchedEffect(Unit) {
         viewModel.refresh()
@@ -138,8 +129,7 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = viewModel()) {
                                             horizontalArrangement = Arrangement.End,
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
-                                            IconButton(
-                                                modifier = Modifier.fillMaxHeight(),
+                                            IconButton(modifier = Modifier.fillMaxHeight(),
                                                 onClick = {
                                                     viewModel.viewModelScope.launch {
                                                         viewModel.removeRule(
