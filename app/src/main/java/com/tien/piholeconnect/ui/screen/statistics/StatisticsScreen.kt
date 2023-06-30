@@ -20,7 +20,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
@@ -32,24 +31,18 @@ import com.tien.piholeconnect.ui.component.RankedListCard
 import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
 import com.tien.piholeconnect.ui.theme.info
 import com.tien.piholeconnect.ui.theme.success
-import com.tien.piholeconnect.util.showGenericPiHoleConnectionError
+import com.tien.piholeconnect.util.SnackbarErrorEffect
 import kotlinx.coroutines.launch
 
 @Composable
 fun StatisticsScreen(
     viewModel: StatisticsViewModel = viewModel(), snackbarHostState: SnackbarHostState
 ) {
-    val context = LocalContext.current
     var isRefreshing by rememberSaveable { mutableStateOf(false) }
 
     viewModel.RefreshOnConnectionChangeEffect()
-    if (viewModel.error != null) {
-        LaunchedEffect(snackbarHostState) {
-            viewModel.error?.let {
-                snackbarHostState.showGenericPiHoleConnectionError(context, it)
-            }
-        }
-    }
+
+    SnackbarErrorEffect(viewModel.error, snackbarHostState)
 
     LaunchedEffect(Unit) {
         viewModel.refresh()
