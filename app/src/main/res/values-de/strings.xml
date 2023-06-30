@@ -22,6 +22,7 @@
     <string name="enable_dialog_title">Pi-hole aktivieren?</string>
     <string name="error_pi_hole_connection_generic">Bitte Netzwerkverbindung und den API-Token auf Korrektheit überprüfen.</string>
     <string name="error_pi_hole_connection_generic_error_prefix">Ein Fehler ist aufgetreten</string>
+    <string name="error_show_details">Einzelheiten</string>
     <string name="filter_rules_blacklist">Blacklist</string>
     <string name="filter_rules_desc_add_filter">Netzwerkfilter hinzufügen</string>
     <string name="filter_rules_desc_delete_filter">Netzwerkfilter löschen</string>
