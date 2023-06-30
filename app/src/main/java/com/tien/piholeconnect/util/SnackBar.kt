@@ -68,8 +68,11 @@ suspend fun SnackbarHostState.showGenericPiHoleConnectionError(
 class SnackbarErrorViewModel @Inject constructor(
     userPreferencesRepository: UserPreferencesRepository,
 ) : ViewModel() {
-    val sensitiveData =
-        userPreferencesRepository.userPreferencesFlow.map { preferences -> preferences.piHoleConnectionsList.map { it.apiToken } }
+    val sensitiveData = userPreferencesRepository.userPreferencesFlow.map { preferences ->
+        preferences.piHoleConnectionsList.flatMap { listOf(it.apiToken, it.basicAuthPassword) }
+            .map { it.trim() }.filter { it.isNotBlank() }
+    }
+
 }
 
 @Composable
@@ -83,7 +86,7 @@ fun SnackbarErrorEffect(
 
     val sensitiveData by viewModel.sensitiveData.collectAsStateWithLifecycle(listOf())
     val sanitize = { string: String ->
-        sensitiveData.fold(string) { acc, curr -> acc.replace(curr, "***") }
+        sensitiveData.fold(string) { acc, curr -> acc.replace(curr, "*".repeat(curr.length)) }
     }
 
     var errorToDisplay by remember { mutableStateOf<Throwable?>(null) }
