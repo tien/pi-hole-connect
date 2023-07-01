@@ -21,8 +21,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.tien.piholeconnect.R
@@ -36,7 +36,7 @@ import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FilterRulesScreen(viewModel: FilterRulesViewModel = viewModel()) {
+fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     val dateTimeInstance = remember { DateFormat.getDateInstance() }
@@ -129,7 +129,8 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = viewModel()) {
                                             horizontalArrangement = Arrangement.End,
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
-                                            IconButton(modifier = Modifier.fillMaxHeight(),
+                                            IconButton(
+                                                modifier = Modifier.fillMaxHeight(),
                                                 onClick = {
                                                     viewModel.viewModelScope.launch {
                                                         viewModel.removeRule(

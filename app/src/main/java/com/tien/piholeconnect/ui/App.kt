@@ -31,7 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -40,8 +39,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -58,16 +57,12 @@ import com.tien.piholeconnect.ui.component.BottomTab
 import com.tien.piholeconnect.ui.component.OptionsMenu
 import com.tien.piholeconnect.ui.component.TopBar
 import com.tien.piholeconnect.ui.screen.filterrules.FilterRulesScreen
-import com.tien.piholeconnect.ui.screen.filterrules.FilterRulesViewModel
 import com.tien.piholeconnect.ui.screen.home.HomeScreen
-import com.tien.piholeconnect.ui.screen.home.HomeViewModel
 import com.tien.piholeconnect.ui.screen.log.LogScreen
 import com.tien.piholeconnect.ui.screen.piholeconnection.PiHoleConnectionScreen
-import com.tien.piholeconnect.ui.screen.piholeconnection.PiHoleConnectionViewModel
 import com.tien.piholeconnect.ui.screen.preferences.PreferencesScreen
 import com.tien.piholeconnect.ui.screen.preferences.PreferencesViewModel
 import com.tien.piholeconnect.ui.screen.statistics.StatisticsScreen
-import com.tien.piholeconnect.ui.screen.statistics.StatisticsViewModel
 import com.tien.piholeconnect.ui.screen.tipjar.TipJarScreen
 import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 import com.tien.piholeconnect.util.toKtorURLProtocol
@@ -77,14 +72,11 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun App(
-    homeViewModel: HomeViewModel = viewModel(),
-    preferencesViewModel: PreferencesViewModel = viewModel(),
-    statisticsViewModel: StatisticsViewModel = viewModel(),
-    filterRulesViewModel: FilterRulesViewModel = viewModel()
+    preferencesViewModel: PreferencesViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
-    val userPreferences by preferencesViewModel.userPreferencesFlow.collectAsState(initial = null)
-    val selectedPiHole by preferencesViewModel.selectedPiHoleFlow.collectAsState(initial = null)
+    val userPreferences by preferencesViewModel.userPreferencesFlow.collectAsStateWithLifecycle(null)
+    val selectedPiHole by preferencesViewModel.selectedPiHoleFlow.collectAsStateWithLifecycle(null)
 
     if (userPreferences == null) return
 
@@ -249,46 +241,41 @@ fun App(
             ) {
                 composable(Screen.Home.route) {
                     ConnectionGuard {
-                        HomeScreen(viewModel = homeViewModel)
+                        HomeScreen()
                     }
                 }
                 composable(Screen.Statistics.route) {
                     ConnectionGuard {
                         StatisticsScreen(
-                            viewModel = statisticsViewModel, snackbarHostState = snackbarHostState
+                            snackbarHostState = snackbarHostState
                         )
                     }
                 }
                 composable(Screen.Log.route) {
                     ConnectionGuard {
-                        LogScreen(viewModel = hiltViewModel(), actions = { defaultOptionsMenu() })
+                        LogScreen(actions = { defaultOptionsMenu() })
                     }
                 }
                 composable(Screen.FilterRules.route) {
                     ConnectionGuard {
-                        FilterRulesScreen(viewModel = filterRulesViewModel)
+                        FilterRulesScreen()
                     }
                 }
                 composable(Screen.Preferences.route) {
                     PreferencesScreen(
-                        viewModel = preferencesViewModel, navController = navController
+                        navController = navController
                     )
                 }
                 composable(
                     "${Screen.PiHoleConnection.route}?id={id}",
                     arguments = listOf(navArgument("id") { nullable = true })
                 ) {
-                    val piHoleConnectionViewModel = hiltViewModel<PiHoleConnectionViewModel>()
-                    val id = it.arguments?.getString("id")
-
                     PiHoleConnectionScreen(
-                        viewModel = piHoleConnectionViewModel,
-                        connectionId = id,
-                        navController = navController
+                        connectionId = it.arguments?.getString("id"), navController = navController
                     )
                 }
                 composable(Screen.TipJar.route) {
-                    TipJarScreen(viewModel = hiltViewModel())
+                    TipJarScreen()
                 }
             }
         }

@@ -28,8 +28,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.Screen
@@ -43,7 +43,7 @@ private val PreferenceItemModifier = Modifier
 
 @Composable
 fun PreferencesScreen(
-    viewModel: PreferencesViewModel = viewModel(), navController: NavHostController
+    navController: NavHostController, viewModel: PreferencesViewModel = hiltViewModel()
 ) {
     val userPreferences by viewModel.userPreferencesFlow.collectAsState(initial = UserPreferences.getDefaultInstance())
 

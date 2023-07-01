@@ -22,8 +22,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.tien.piholeconnect.R
@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun StatisticsScreen(
-    viewModel: StatisticsViewModel = viewModel(), snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState, viewModel: StatisticsViewModel = hiltViewModel()
 ) {
     var isRefreshing by rememberSaveable { mutableStateOf(false) }
 

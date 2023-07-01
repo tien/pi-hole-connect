@@ -12,10 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.tien.piholeconnect.R
 
 @Composable
-fun TipJarScreen(viewModel: TipJarViewModel) {
+fun TipJarScreen(viewModel: TipJarViewModel = hiltViewModel()) {
     val activity = LocalContext.current as Activity
 
     LaunchedEffect(Unit) {
@@ -29,16 +30,13 @@ fun TipJarScreen(viewModel: TipJarViewModel) {
         viewModel.tipOptions.forEach { tipOption ->
             ListItem(modifier = Modifier.clickable {
                 viewModel.launchBillingFlow(activity, tipOption)
-            },
-                headlineContent = {
-                    Text(tipOption.title.slice(IntRange(0, tipOption.title.indexOf(" ("))))
-                },
-                supportingContent = { Text(tipOption.description) },
-                trailingContent = {
-                    Text(
-                        tipOption.oneTimePurchaseOfferDetails?.formattedPrice ?: ""
-                    )
-                })
+            }, headlineContent = {
+                Text(tipOption.title.slice(IntRange(0, tipOption.title.indexOf(" ("))))
+            }, supportingContent = { Text(tipOption.description) }, trailingContent = {
+                Text(
+                    tipOption.oneTimePurchaseOfferDetails?.formattedPrice ?: ""
+                )
+            })
         }
     }
 }

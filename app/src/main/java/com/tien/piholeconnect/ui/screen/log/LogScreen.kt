@@ -19,8 +19,8 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.tien.piholeconnect.R
@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LogScreen(viewModel: LogViewModel = viewModel(), actions: @Composable () -> Unit) {
+fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltViewModel()) {
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
     val scaffoldState = rememberBottomSheetScaffoldState()

@@ -49,8 +49,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.URLProtocol
@@ -64,9 +64,9 @@ import java.util.Locale
 
 @Composable
 fun PiHoleConnectionScreen(
-    viewModel: PiHoleConnectionViewModel = viewModel(),
+    navController: NavController,
     connectionId: String? = null,
-    navController: NavController
+    viewModel: PiHoleConnectionViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
 
