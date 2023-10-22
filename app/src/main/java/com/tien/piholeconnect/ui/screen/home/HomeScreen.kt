@@ -54,6 +54,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.text.DateFormat.getTimeInstance
+import java.util.Date
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
@@ -210,7 +211,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                 val queriesOverTimeData = remember(viewModel.queriesOverTime) {
                     LineChartData(
                         label = queriesOverTimeLabel,
-                        data = viewModel.queriesOverTime.map { Pair(it.key * 1000, it.value) },
+                        data = viewModel.queriesOverTime.map { Pair(it.key, it.value) },
                         color = successColor
                     )
                 }
@@ -219,7 +220,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                 val adsOverTimeData = remember(viewModel.adsOverTime) {
                     LineChartData(
                         label = adsOverTimeLabel,
-                        data = viewModel.adsOverTime.map { Pair(it.key * 1000, it.value) },
+                        data = viewModel.adsOverTime.map { Pair(it.key, it.value) },
                         color = errorColor
                     )
                 }
@@ -236,7 +237,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                             data = listOf(queriesOverTimeData, adsOverTimeData),
                             xAxisFormatter = remember { getTimeInstance(DateFormat.SHORT) }.let { dateTime ->
                                 { value ->
-                                    dateTime.format(value)
+                                    dateTime.format(Date(value.toLong() * 1000))
                                 }
                             })
                     }
