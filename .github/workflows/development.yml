@@ -47,3 +47,7 @@ jobs:
             ${{ github.event.commits[0].message }}
 
             ${{ github.sha }}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: artifacts
