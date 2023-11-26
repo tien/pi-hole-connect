@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Pi-hole Connect</string>
     <string name="add_filter_rules_dialog_add">Dodaj</string>
     <string name="add_filter_rules_dialog_add_as_wildcard">Dodaj jako symbol zastępczy</string>
     <string name="add_filter_rules_dialog_add_rule">Dodaj regułę</string>
     <string name="add_filter_rules_dialog_domain">Domena</string>
     <string name="add_pi_hole_button">Dodaj Pi-hole</string>
-    <string name="app_name" translatable="false">Połączenie z Pi-hole</string>
     <string name="back_button_label">Przejdź wstecz</string>
     <string name="disable_dialog_button_10_seconds">10 sekund</string>
     <string name="disable_dialog_button_30_seconds">30 sekund</string>
@@ -20,7 +18,6 @@
     <string name="duration_picker_dialog_minutes">Minuty</string>
     <string name="duration_picker_enter_time">Wprowadź czas</string>
     <string name="enable_dialog_button_confirm">Włączać</string>
-    <string name="enable_dialog_button_dismiss" translatable="false">@android:string/cancel</string>
     <string name="enable_dialog_msg">Umożliwi to blokowanie reklam Pi-hole.</string>
     <string name="enable_dialog_title">Włączyć blokowanie reklam?</string>
     <string name="error_pi_hole_connection_generic">Sprawdź swoje połączenie internetowe lub czy klucz API został ustawiony.</string>
