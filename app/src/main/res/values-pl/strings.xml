@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Pi-hole Connect</string>
     <string name="add_filter_rules_dialog_add">Dodaj</string>
     <string name="add_filter_rules_dialog_add_as_wildcard">Dodaj jako symbol zastępczy</string>
     <string name="add_filter_rules_dialog_add_rule">Dodaj regułę</string>
