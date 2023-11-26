@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="add_filter_rules_dialog_add">Adaugă</string>
-    <string name="add_filter_rules_dialog_add_as_wildcard">Adaugă ca și wildcard</string>
+    <string name="add_filter_rules_dialog_add_as_wildcard">Adaugă ca wildcard</string>
     <string name="add_filter_rules_dialog_add_rule">Adaugă regulă</string>
     <string name="add_filter_rules_dialog_domain">Domeniu</string>
     <string name="add_pi_hole_button">Adaugă Pi-hole</string>
@@ -9,17 +9,17 @@
     <string name="disable_dialog_button_10_seconds">10 secunde</string>
     <string name="disable_dialog_button_30_seconds">30 de secunde</string>
     <string name="disable_dialog_button_5_minutes">5 minute</string>
-    <string name="disable_dialog_button_cancel">Anulează</string>
-    <string name="disable_dialog_button_custom_time">Timp personalizat</string>
+    <string name="disable_dialog_button_cancel">Nu, mulțumesc</string>
+    <string name="disable_dialog_button_custom_time">Durată personalizată</string>
     <string name="disable_dialog_button_permanent">Permanent</string>
     <string name="disable_dialog_msg">Funcția de blocare a reclamelor a lui Pi-hole va fi dezactivată pe perioada selectată. O poți reactiva din aplicație oricând dorești.</string>
-    <string name="disable_dialog_title">Dorești dezactivarea blocării reclamelor?</string>
+    <string name="disable_dialog_title">Dezactivare blocare reclame?</string>
     <string name="duration_picker_dialog_hours">Ore</string>
     <string name="duration_picker_dialog_minutes">Minute</string>
     <string name="duration_picker_enter_time">Introduce ora</string>
     <string name="enable_dialog_button_confirm">Confirm</string>
     <string name="enable_dialog_msg">Funcția de blocare a reclamelor va fi activată.</string>
-    <string name="enable_dialog_title">Activezi funcția de blocare a reclamelor?</string>
+    <string name="enable_dialog_title">Activare blocare reclame?</string>
     <string name="error_pi_hole_connection_generic">Te rog verifică conexiunea la internet sau dacă cheia API a fost setată.</string>
     <string name="error_pi_hole_connection_generic_error_prefix">A intervenit o eroare</string>
     <string name="error_show_details">Detalii</string>
