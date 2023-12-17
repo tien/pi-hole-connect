@@ -15,7 +15,7 @@ vico = "1.6.6"
 [libraries]
 accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
-android-billingclient-ktx = { module = "com.android.billingclient:billing-ktx", version = "6.0.0" }
+android-billingclient-ktx = { module = "com.android.billingclient:billing-ktx", version = "6.1.0" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.7.2" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1" }
 androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "camerax" }
