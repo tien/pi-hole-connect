@@ -10,7 +10,7 @@ kotlin = "1.9.21"
 ktor = "2.3.7"
 lifecycle = "2.6.2"
 protoBufJavaLite = "3.25.1"
-vico = "1.6.6"
+vico = "1.13.1"
 
 [libraries]
 accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanist" }
