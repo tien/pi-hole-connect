@@ -1,6 +1,8 @@
 package com.tien.piholeconnect.ui.screen.home
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.tien.piholeconnect.model.PiHoleConnectionAwareViewModel
@@ -23,15 +25,15 @@ class HomeViewModel @Inject constructor(
         private set
     var isAdsBlockingEnabled by mutableStateOf(true)
         private set
-    var totalQueries by mutableStateOf(0)
+    var totalQueries by mutableIntStateOf(0)
         private set
-    var totalBlockedQueries by mutableStateOf(0)
+    var totalBlockedQueries by mutableIntStateOf(0)
         private set
-    var queryBlockingPercentage by mutableStateOf(.0)
+    var queryBlockingPercentage by mutableDoubleStateOf(.0)
         private set
-    var blockedDomainListCount by mutableStateOf(0)
+    var blockedDomainListCount by mutableIntStateOf(0)
         private set
-    var uniqueClients by mutableStateOf(0)
+    var uniqueClients by mutableIntStateOf(0)
 
     var queriesOverTime by mutableStateOf(mapOf<Int, Int>())
         private set

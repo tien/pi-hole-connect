@@ -2,11 +2,17 @@ package com.tien.piholeconnect.ui.screen.log
 
 import androidx.annotation.StringRes
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.R
-import com.tien.piholeconnect.model.*
+import com.tien.piholeconnect.model.AnswerCategory
+import com.tien.piholeconnect.model.AsyncState
+import com.tien.piholeconnect.model.ModifyFilterRuleResponse
+import com.tien.piholeconnect.model.PiHoleConnectionAwareViewModel
+import com.tien.piholeconnect.model.PiHoleLog
+import com.tien.piholeconnect.model.RuleType
 import com.tien.piholeconnect.repository.PiHoleRepository
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,7 +53,7 @@ class LogViewModel @Inject constructor(
     val query = MutableStateFlow("")
     val sortBy = MutableStateFlow(Sort.DATE_DESC)
     val limits = listOf(1000, 2500, 10000)
-    var limit by mutableStateOf(limits[0])
+    var limit by mutableIntStateOf(limits[0])
         private set
     var enabledStatuses = MutableStateFlow(setOf(Status.ALLOWED, Status.BLOCKED))
 
