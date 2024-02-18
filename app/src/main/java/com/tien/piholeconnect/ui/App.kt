@@ -10,12 +10,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.twotone.OpenInNew
 import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.twotone.Analytics
 import androidx.compose.material.icons.twotone.BugReport
 import androidx.compose.material.icons.twotone.Home
 import androidx.compose.material.icons.twotone.Insights
-import androidx.compose.material.icons.twotone.OpenInNew
 import androidx.compose.material.icons.twotone.Paid
 import androidx.compose.material.icons.twotone.Settings
 import androidx.compose.material.icons.twotone.Shield
@@ -108,7 +108,7 @@ fun App(
                     pathSegments = listOf("admin")
                 ).buildString(),
                 R.string.options_menu_web_dashboard,
-                Icons.TwoTone.OpenInNew,
+                Icons.AutoMirrored.TwoTone.OpenInNew,
                 isExternalLink = true
             )
         )
