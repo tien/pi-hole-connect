@@ -72,7 +72,7 @@ fun LogItem(log: PiHoleLog, modifier: Modifier = Modifier) {
 fun LogItemPreview() {
     PiHoleConnectTheme {
         Column(Modifier.verticalScroll(rememberScrollState())) {
-            AnswerType.values().forEach {
+            AnswerType.entries.forEach {
                 LogItem(
                     PiHoleLog(
                         timestamp = 1616407649532,

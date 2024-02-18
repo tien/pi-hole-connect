@@ -27,7 +27,7 @@ class FilterRulesViewModel @Inject constructor(
     var addRuleIsWildcardChecked by mutableStateOf(false)
 
     override suspend fun queueRefresh() = coroutineScope {
-        rules = RuleType.values()
+        rules = RuleType.entries
             .map { async { piHoleRepository.getFilterRules(it) } }
             .awaitAll()
             .flatMap { it.data }
