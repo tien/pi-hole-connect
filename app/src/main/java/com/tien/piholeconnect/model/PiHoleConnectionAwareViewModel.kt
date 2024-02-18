@@ -1,6 +1,11 @@
 package com.tien.piholeconnect.model
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.NonRestartableComposable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import kotlinx.coroutines.flow.collectLatest
@@ -8,7 +13,7 @@ import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
-abstract class PiHoleConnectionAwareViewModel constructor(userPreferencesRepository: UserPreferencesRepository) :
+abstract class PiHoleConnectionAwareViewModel(userPreferencesRepository: UserPreferencesRepository) :
     RefreshableViewModel() {
     private val distinctPiHoleConnectionFlow = userPreferencesRepository.userPreferencesFlow
         .drop(1)

@@ -6,7 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
-class UserPreferencesRepositoryImpl constructor(private val dataStore: DataStore<UserPreferences>) :
+class UserPreferencesRepositoryImpl(private val dataStore: DataStore<UserPreferences>) :
     UserPreferencesRepository {
     override val userPreferencesFlow = dataStore.data
 
