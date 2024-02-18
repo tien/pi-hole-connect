@@ -34,9 +34,6 @@
     <string name="home_blocklist">Blocklist</string>
     <string name="home_percent_blocked">Percent Blocked</string>
     <string name="home_queries_blocked">Queries Blocked</string>
-    <string name="home_queries_chart_blocked_queries_label">Blocked queries</string>
-    <string name="home_queries_chart_permitted_queries_label">Permitted queries</string>
-    <string name="home_queries_chart_time_info">Queries from %s to %s</string>
     <string name="home_queries_chart_title">Queries over last 24 hours</string>
     <string name="home_queries_over_time">permitted</string>
     <string name="home_total_queries">Total Queries</string>
@@ -64,10 +61,6 @@
         <item quantity="one">%d result</item>
         <item quantity="other">%d results</item>
     </plurals>
-    <plurals name="log_screen_see_results">
-        <item quantity="one">See %d result</item>
-        <item quantity="other">See %d results</item>
-    </plurals>
     <string name="log_screen_sort">Sort</string>
     <string name="log_screen_status">Status</string>
     <string name="options_menu_bug_report">Report issue</string>
@@ -93,7 +86,6 @@
     <string name="preferences_add_pi_hole">Add Pi-hole</string>
     <string name="preferences_dynamic_color">Use dynamic color</string>
     <string name="preferences_my_pi_hole">My Pi-holes</string>
-    <string name="preferences_temperature">Temperature display</string>
     <string name="preferences_theme">Theme</string>
     <string name="query_detail_add_to_blacklist">Add to blacklist</string>
     <string name="query_detail_add_to_whitelist">Add to whitelist</string>
@@ -108,6 +100,5 @@
     <string name="statistics_top_client">Top client</string>
     <string name="statistics_top_permitted">Top permitted</string>
     <string name="tip_jar_msg">If you like what you are seeing. Then great, please also leave a tip and some feedback as it would greatly help me on developing this app further. Here\'s some confetti as a thank you (ﾉ´ヮ`)ﾉ*: ･ﾟ</string>
-    <string name="title_activity_home">Home</string>
     <string name="top_bar_more_options_label">More options</string>
 </resources>

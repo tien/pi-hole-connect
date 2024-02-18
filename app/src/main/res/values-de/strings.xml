@@ -32,9 +32,6 @@
     <string name="home_blocklist">Domains in Adlist</string>
     <string name="home_percent_blocked">Prozentual blockiert</string>
     <string name="home_queries_blocked">Anfragen blockiert</string>
-    <string name="home_queries_chart_blocked_queries_label">Blockierte Netzwerkanfragen</string>
-    <string name="home_queries_chart_permitted_queries_label">Erlaubte Netzwerkanfragen</string>
-    <string name="home_queries_chart_time_info">Anfragen von %s bis %s</string>
     <string name="home_queries_chart_title">Anfragen in den letzten 24 Stunden</string>
     <string name="home_queries_over_time">gestattet</string>
     <string name="home_total_queries">Anfragen</string>
@@ -62,10 +59,6 @@
         <item quantity="one">%d Ergebnis</item>
         <item quantity="other">%d Ergebnisse</item>
     </plurals>
-    <plurals name="log_screen_see_results">
-        <item quantity="one">Siehe %d Ergebnis</item>
-        <item quantity="other">Siehe %d Ergebnisse</item>
-    </plurals>
     <string name="log_screen_sort">Sortierung</string>
     <string name="log_screen_status">Status</string>
     <string name="options_menu_bug_report">Fehler melden</string>
@@ -91,7 +84,6 @@
     <string name="preferences_add_pi_hole">Pi-hole hinzufügen</string>
     <string name="preferences_dynamic_color">Dynamische Farben verwenden</string>
     <string name="preferences_my_pi_hole">Meine Pi-holes</string>
-    <string name="preferences_temperature">CPU-Temperatur</string>
     <string name="preferences_theme">Farbschema</string>
     <string name="query_detail_add_to_blacklist">Zur Blacklist hinzufügen</string>
     <string name="query_detail_add_to_whitelist">Zur Whitelist hinzufügen</string>
@@ -106,6 +98,5 @@
     <string name="statistics_top_client">Top client</string>
     <string name="statistics_top_permitted">Top erlaubt</string>
     <string name="tip_jar_msg">Gefällt Dir diese App? Falls JA, dann hinterlasse mir bitte ein Trinkgeld und ein Feedback, da es mir dabei sehr hilft, diese App weiter zu entwickeln. Herzlichen Dank!</string>
-    <string name="title_activity_home">Startseite</string>
     <string name="top_bar_more_options_label">Mehr Optionen</string>
 </resources>

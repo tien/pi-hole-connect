@@ -32,9 +32,6 @@
     <string name="home_blocklist">Lista zablokowanych</string>
     <string name="home_percent_blocked">Procent zablokowania</string>
     <string name="home_queries_blocked">Zapytania zablokowane</string>
-    <string name="home_queries_chart_blocked_queries_label">Zablokowane zapytania</string>
-    <string name="home_queries_chart_permitted_queries_label">Dozwolone zapytania</string>
-    <string name="home_queries_chart_time_info">Zapytania od %s do %s</string>
     <string name="home_queries_chart_title">Zapytania z ostatnich 24 godzin</string>
     <string name="home_queries_over_time">Dozwolone</string>
     <string name="home_total_queries">Łączna liczba zapytań</string>
@@ -66,12 +63,6 @@
         <item quantity="many">%d wyników</item>
         <item quantity="other">%d wyników</item>
     </plurals>
-    <plurals name="log_screen_see_results">
-        <item quantity="one">Zobacz %d wynik</item>
-        <item quantity="few">Zobacz %d wyniki</item>
-        <item quantity="many">Zobacz %d wyników</item>
-        <item quantity="other">Zobacz %d wyników</item>
-    </plurals>
     <string name="log_screen_sort">Sortować</string>
     <string name="log_screen_status">Status</string>
     <string name="options_menu_bug_report">Zgłoś problem</string>
@@ -97,7 +88,6 @@
     <string name="preferences_add_pi_hole">Dodaj Pi-hole</string>
     <string name="preferences_dynamic_color">Stosuj dynamiczne kolory</string>
     <string name="preferences_my_pi_hole">Mój Pi-holes</string>
-    <string name="preferences_temperature">Wskaźnik temperatury</string>
     <string name="preferences_theme">Motyw</string>
     <string name="query_detail_add_to_blacklist">Dodaj do czarnej listy</string>
     <string name="query_detail_add_to_whitelist">Dodaj do białej listy</string>
@@ -112,6 +102,5 @@
     <string name="statistics_top_client">Najlepsi klienci (łącznie)</string>
     <string name="statistics_top_permitted">Najpopularniejsze dozwolone</string>
     <string name="tip_jar_msg">Jeśli podoba Ci się to, co widzisz. W takim razie świetnie, proszę również o pozostawienie napiwku i opinii, ponieważ bardzo pomoże mi to w dalszym rozwijaniu tej aplikacji. Oto trochę konfetti w ramach podziękowania (ﾉ´ヮ`)ﾉ*: ･ﾟ</string>
-    <string name="title_activity_home">Stona Głowna</string>
     <string name="top_bar_more_options_label">Więcej opcji</string>
 </resources>
