@@ -8,7 +8,11 @@ import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.descriptors.element
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.json.*
+import kotlinx.serialization.json.JsonDecoder
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.long
 
 enum class AnswerCategory { ALLOW, BLOCK, CACHE, UNKNOWN }
 
@@ -98,8 +102,7 @@ object PiHoleLogSerializer : KSerializer<PiHoleLog> {
             queryType = jsonArray[1].jsonPrimitive.content,
             requestedDomain = jsonArray[2].jsonPrimitive.content,
             client = jsonArray[3].jsonPrimitive.content,
-            answerType = AnswerType.values()
-                .getOrElse(jsonArray[4].jsonPrimitive.int - 1) { AnswerType.UNKNOWN },
+            answerType = AnswerType.entries.getOrElse(jsonArray[4].jsonPrimitive.int - 1) { AnswerType.UNKNOWN },
             responseTime = jsonArray[7].jsonPrimitive.int
         )
     }

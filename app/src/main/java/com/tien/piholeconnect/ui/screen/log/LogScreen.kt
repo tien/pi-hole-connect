@@ -230,7 +230,7 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
             }
             styledDivider()
             Text(stringResource(R.string.log_screen_sort), modifier = paddingModifier)
-            LogViewModel.Sort.values().forEach { sort ->
+            LogViewModel.Sort.entries.forEach { sort ->
                 val selected = sortBy == sort
                 ListItem(modifier = Modifier.selectable(
                     selected = selected,

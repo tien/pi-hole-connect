@@ -87,7 +87,7 @@ fun PreferencesScreen(
                     style = MaterialTheme.typography.bodySmall
                 )
             }, headlineContent = {})
-            Theme.values().filter { it != Theme.UNRECOGNIZED }.forEach { theme ->
+            Theme.entries.filter { it != Theme.UNRECOGNIZED }.forEach { theme ->
                 ListItem(modifier = PreferenceItemModifier.selectable(
                     selected = theme == userPreferences.theme, onClick = {
                         viewModel.viewModelScope.launch {
