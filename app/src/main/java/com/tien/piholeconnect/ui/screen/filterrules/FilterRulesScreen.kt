@@ -3,18 +3,47 @@
 
 package com.tien.piholeconnect.ui.screen.filterrules
 
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.AnchoredDraggableState
+import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -34,7 +63,7 @@ import kotlinx.coroutines.launch
 import java.text.DateFormat
 import kotlin.math.roundToInt
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -111,13 +140,24 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
                             }
                         }.forEach { rule ->
                             item(rule.id) {
-                                val swipeableState = rememberSwipeableState(0)
-                                val iconSize = with(LocalDensity.current) { 48.dp.toPx() }
+                                val localDensity = LocalDensity.current
+                                val iconSize = with(localDensity) { 48.dp.toPx() }
+                                val anchoredDraggableState = remember {
+                                    AnchoredDraggableState(
+                                        initialValue = 0,
+                                        anchors = DraggableAnchors {
+                                            0 at 0f
+                                            1 at -iconSize
+                                        },
+                                        positionalThreshold = { distance: Float -> distance * 0.5f },
+                                        velocityThreshold = { with(localDensity) { 100.dp.toPx() } },
+                                        animationSpec = tween(),
+                                    )
+                                }
 
                                 Box(
-                                    Modifier.swipeable(
-                                        state = swipeableState,
-                                        anchors = mapOf(0f to 0, -iconSize to 1),
+                                    Modifier.anchoredDraggable(
+                                        state = anchoredDraggableState,
                                         orientation = Orientation.Horizontal
                                     )
                                 ) {
@@ -129,8 +169,7 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
                                             horizontalArrangement = Arrangement.End,
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
-                                            IconButton(
-                                                modifier = Modifier.fillMaxHeight(),
+                                            IconButton(modifier = Modifier.fillMaxHeight(),
                                                 onClick = {
                                                     viewModel.viewModelScope.launch {
                                                         viewModel.removeRule(
@@ -149,7 +188,9 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
                                     ListItem(modifier = Modifier
                                         .offset {
                                             IntOffset(
-                                                swipeableState.offset.value.roundToInt(), 0
+                                                anchoredDraggableState
+                                                    .requireOffset()
+                                                    .roundToInt(), 0
                                             )
                                         }
                                         .background(MaterialTheme.colorScheme.background),
