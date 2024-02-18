@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,6 +38,8 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,14 +49,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.RuleType
 import com.tien.piholeconnect.ui.component.AddFilterRuleDialog
@@ -63,7 +65,7 @@ import kotlinx.coroutines.launch
 import java.text.DateFormat
 import kotlin.math.roundToInt
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
     val snackbarHostState = remember { SnackbarHostState() }
@@ -71,7 +73,6 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
     val dateTimeInstance = remember { DateFormat.getDateInstance() }
     val whiteListTabRules = rememberSaveable { listOf(RuleType.WHITE, RuleType.REGEX_WHITE) }
     val blackListTabRules = rememberSaveable { listOf(RuleType.BLACK, RuleType.REGEX_BLACK) }
-    var isRefreshing by rememberSaveable { mutableStateOf(false) }
     var isAddDialogVisible by rememberSaveable { mutableStateOf(false) }
 
     viewModel.RefreshOnConnectionChangeEffect()
@@ -100,6 +101,17 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
             })
     }
 
+    val pullToRefreshState = rememberPullToRefreshState()
+
+    if (pullToRefreshState.isRefreshing) {
+        LaunchedEffect(true) {
+            viewModel.viewModelScope.launch {
+                viewModel.refresh()
+                pullToRefreshState.endRefresh()
+            }
+        }
+    }
+
     Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, floatingActionButton = {
         FloatingActionButton(onClick = { isAddDialogVisible = true }) {
             Icon(
@@ -108,13 +120,7 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
             )
         }
     }) {
-        SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing), onRefresh = {
-            viewModel.viewModelScope.launch {
-                isRefreshing = true
-                viewModel.refresh()
-                isRefreshing = false
-            }
-        }) {
+        Box(Modifier.nestedScroll(pullToRefreshState.nestedScrollConnection)) {
             Column(Modifier.padding(it)) {
                 TabRow(selectedTabIndex = viewModel.selectedTab.ordinal) {
                     Tab(selected = viewModel.selectedTab == FilterRulesViewModel.Tab.BLACK,
@@ -169,7 +175,8 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
                                             horizontalArrangement = Arrangement.End,
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
-                                            IconButton(modifier = Modifier.fillMaxHeight(),
+                                            IconButton(
+                                                modifier = Modifier.fillMaxHeight(),
                                                 onClick = {
                                                     viewModel.viewModelScope.launch {
                                                         viewModel.removeRule(
@@ -216,6 +223,7 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
                     }
                 }
             }
+            PullToRefreshContainer(pullToRefreshState, Modifier.align(Alignment.TopCenter))
         }
     }
 }
