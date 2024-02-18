@@ -12,14 +12,14 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -165,7 +165,7 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
                                 viewModel.query.value = ""
                             }) {
                                 Icon(
-                                    Icons.Default.ArrowBack,
+                                    Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = stringResource(android.R.string.cancel)
                                 )
                             }
@@ -188,7 +188,7 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
         sheetContent = {
             val paddingModifier = Modifier.padding(horizontal = 16.dp)
             val styledDivider = @Composable {
-                Divider(
+                HorizontalDivider(
                     paddingModifier.padding(vertical = 16.dp),
                     color = Color.White.copy(alpha = 0.12f)
                 )
@@ -211,7 +211,7 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
             }
             styledDivider()
             Text(stringResource(R.string.log_screen_status), modifier = paddingModifier)
-            LogViewModel.Status.values().forEach { status ->
+            LogViewModel.Status.entries.forEach { status ->
                 val checked = enabledStatuses.contains(status)
                 ListItem(modifier = Modifier.selectable(
                     selected = checked, onClick = {
@@ -278,7 +278,7 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
                             )
                         }
                     }
-                    Divider()
+                    HorizontalDivider()
                     LogList(state = lazyListState)
                 }
                 PullToRefreshContainer(pullToRefreshState, Modifier.align(Alignment.TopCenter))

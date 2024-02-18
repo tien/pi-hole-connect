@@ -9,13 +9,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Cached
 import androidx.compose.material.icons.filled.Devices
 import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.Domain
 import androidx.compose.material.icons.filled.GppBad
 import androidx.compose.material.icons.filled.GppGood
-import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.HourglassBottom
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.AlertDialog
@@ -70,7 +70,7 @@ fun QueryDetail(
         )
 
         AnswerCategory.UNKNOWN -> Pair(
-            Icons.Default.Help, LocalContentColor.current.copy(alpha = 0.5f)
+            Icons.AutoMirrored.Filled.Help, LocalContentColor.current.copy(alpha = 0.5f)
         )
     }
 

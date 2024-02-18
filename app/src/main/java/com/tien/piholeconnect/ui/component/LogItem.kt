@@ -7,10 +7,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Cached
 import androidx.compose.material.icons.filled.GppBad
 import androidx.compose.material.icons.filled.GppGood
-import androidx.compose.material.icons.filled.Help
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.LocalContentColor
@@ -40,7 +40,7 @@ fun LogItem(log: PiHoleLog, modifier: Modifier = Modifier) {
         AnswerCategory.ALLOW -> Pair(Icons.Default.GppGood, MaterialTheme.colorScheme.success)
         AnswerCategory.CACHE -> Pair(Icons.Default.Cached, MaterialTheme.colorScheme.info)
         AnswerCategory.UNKNOWN -> Pair(
-            Icons.Default.Help, LocalContentColor.current.copy(alpha = 0.5f)
+            Icons.AutoMirrored.Filled.Help, LocalContentColor.current.copy(alpha = 0.5f)
         )
     }
 
