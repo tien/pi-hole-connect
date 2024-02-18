@@ -40,7 +40,10 @@
     <string name="home_queries_chart_title">Queries over last 24 hours</string>
     <string name="home_queries_over_time">permitted</string>
     <string name="home_total_queries">Total Queries</string>
-    <string name="home_unique_clients">(%d clients)</string>
+    <plurals name="home_unique_clients">
+        <item quantity="one">(%d client)</item>
+        <item quantity="other">(%d clients)</item>
+    </plurals>
     <string name="label_disable_blocking">Disable blocking</string>
     <string name="label_enable_blocking">Enable blocking</string>
     <string name="label_filter_rules">Filters</string>
@@ -57,8 +60,14 @@
     <string name="log_screen_label_response_time_sort_asc">Response time (fastest)</string>
     <string name="log_screen_label_response_time_sort_desc">Response time (slowest)</string>
     <string name="log_screen_number_of_queries">Number of queries</string>
-    <string name="log_screen_results">%d results</string>
-    <string name="log_screen_see_results">See %d results</string>
+    <plurals name="log_screen_results">
+        <item quantity="one">%d result</item>
+        <item quantity="other">%d results</item>
+    </plurals>
+    <plurals name="log_screen_see_results">
+        <item quantity="one">See %d result</item>
+        <item quantity="other">See %d results</item>
+    </plurals>
     <string name="log_screen_sort">Sort</string>
     <string name="log_screen_status">Status</string>
     <string name="options_menu_bug_report">Report issue</string>

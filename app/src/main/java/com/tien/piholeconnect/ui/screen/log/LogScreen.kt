@@ -42,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
@@ -264,7 +265,9 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
                     ) {
                         if (viewModel.hasBeenLoaded) {
                             Text(
-                                stringResource(R.string.log_screen_results).format(logs.count()),
+                                pluralStringResource(
+                                    R.plurals.log_screen_results, logs.count(), logs.count()
+                                ),
                                 style = MaterialTheme.typography.bodySmall,
                             )
                         }
