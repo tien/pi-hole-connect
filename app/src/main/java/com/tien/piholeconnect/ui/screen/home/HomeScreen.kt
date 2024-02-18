@@ -69,10 +69,18 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
 
     var isDisableDialogVisible by rememberSaveable { mutableStateOf(false) }
 
-    val totalQueries: Int by animateIntAsState(viewModel.totalQueries)
-    val totalBlockedQueries: Int by animateIntAsState(viewModel.totalBlockedQueries)
-    val queryBlockingPercentage: Float by animateFloatAsState(viewModel.queryBlockingPercentage.toFloat())
-    val blockedDomainListCount: Int by animateIntAsState(viewModel.blockedDomainListCount)
+    val totalQueries: Int by animateIntAsState(
+        viewModel.totalQueries, label = "Total queries"
+    )
+    val totalBlockedQueries: Int by animateIntAsState(
+        viewModel.totalBlockedQueries, label = "Total blocked queries"
+    )
+    val queryBlockingPercentage: Float by animateFloatAsState(
+        viewModel.queryBlockingPercentage.toFloat(), label = "Query blocking percentage"
+    )
+    val blockedDomainListCount: Int by animateIntAsState(
+        viewModel.blockedDomainListCount, label = "Blocked domain list count"
+    )
 
     val successColor = MaterialTheme.colorScheme.success
     val errorColor = MaterialTheme.colorScheme.error
