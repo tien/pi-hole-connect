@@ -3,6 +3,7 @@ package com.tien.piholeconnect.ui.screen.home
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -12,19 +13,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -35,8 +42,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.LineChartData
 import com.tien.piholeconnect.ui.component.DisableAdsBlockingAlertDialog
@@ -56,11 +61,11 @@ import java.text.DateFormat
 import java.text.DateFormat.getTimeInstance
 import java.util.Date
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     val snackbarHostState = remember { SnackbarHostState() }
 
-    var isRefreshing by rememberSaveable { mutableStateOf(false) }
     var isDisableDialogVisible by rememberSaveable { mutableStateOf(false) }
 
     val totalQueries: Int by animateIntAsState(viewModel.totalQueries)
@@ -110,6 +115,17 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
         }
     }
 
+    val pullToRefreshState = rememberPullToRefreshState()
+
+    if (pullToRefreshState.isRefreshing) {
+        LaunchedEffect(true) {
+            viewModel.viewModelScope.launch {
+                viewModel.refresh()
+                pullToRefreshState.endRefresh()
+            }
+        }
+    }
+
     Scaffold(Modifier.fillMaxHeight(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
@@ -117,13 +133,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                 isLoading = viewModel.isPiHoleSwitchLoading,
                 onClick = { isDisableDialogVisible = true })
         }) {
-        SwipeRefresh(state = rememberSwipeRefreshState(isRefreshing), onRefresh = {
-            viewModel.viewModelScope.launch {
-                isRefreshing = true
-                viewModel.refresh()
-                isRefreshing = false
-            }
-        }) {
+        Box(Modifier.nestedScroll(pullToRefreshState.nestedScrollConnection)) {
             Column(
                 Modifier
                     .fillMaxHeight()
@@ -243,6 +253,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                     }
                 }
             }
+            PullToRefreshContainer(pullToRefreshState, Modifier.align(Alignment.TopCenter))
         }
     }
 }
