@@ -38,7 +38,11 @@
     <string name="home_queries_chart_title">Cereri din ultimele 24 de ore</string>
     <string name="home_queries_over_time">permise</string>
     <string name="home_total_queries">Total Cereri</string>
-    <string name="home_unique_clients">(%d clienți)</string>
+    <plurals name="home_unique_clients">
+        <item quantity="one">(%d client)</item>
+        <item quantity="few">(%d clienți)</item>
+        <item quantity="other">(%d de clienți)</item>
+    </plurals>
     <string name="label_disable_blocking">Dezactivează blocarea</string>
     <string name="label_enable_blocking">Activează blocarea</string>
     <string name="label_filter_rules">Filtre</string>
@@ -55,8 +59,16 @@
     <string name="log_screen_label_response_time_sort_asc">Timp de răspuns (cel mai rapid)</string>
     <string name="log_screen_label_response_time_sort_desc">Timp de răspuns (cel mai lent)</string>
     <string name="log_screen_number_of_queries">Număr de cereri</string>
-    <string name="log_screen_results">%d rezultate</string>
-    <string name="log_screen_see_results">Vezi %d rezultate</string>
+    <plurals name="log_screen_results">
+        <item quantity="one">%d rezultat</item>
+        <item quantity="few">%d rezultate</item>
+        <item quantity="other">%d de rezultate</item>
+    </plurals>
+    <plurals name="log_screen_see_results">
+        <item quantity="one">Vezi %d rezultat</item>
+        <item quantity="few">Vezi %d rezultate</item>
+        <item quantity="other">Vezi %d de rezultate</item>
+    </plurals>
     <string name="log_screen_sort">Sortează</string>
     <string name="log_screen_status">Stare</string>
     <string name="options_menu_bug_report">Reportează problemă</string>

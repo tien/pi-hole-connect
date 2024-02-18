@@ -38,7 +38,10 @@
     <string name="home_queries_chart_title">Anfragen in den letzten 24 Stunden</string>
     <string name="home_queries_over_time">gestattet</string>
     <string name="home_total_queries">Anfragen</string>
-    <string name="home_unique_clients">(%d clients)</string>
+    <plurals name="home_unique_clients">
+        <item quantity="one">(%d client)</item>
+        <item quantity="other">(%d clients)</item>
+    </plurals>
     <string name="label_disable_blocking">Pi-hole deaktivieren</string>
     <string name="label_enable_blocking">Pi-hole aktivieren</string>
     <string name="label_filter_rules">Filter</string>
@@ -55,8 +58,14 @@
     <string name="log_screen_label_response_time_sort_asc">Antwortzeit (schnellste zuerst)</string>
     <string name="log_screen_label_response_time_sort_desc">Antwortzeit (langsamste zuerst)</string>
     <string name="log_screen_number_of_queries">Anzahl der Netzwerkanfragen</string>
-    <string name="log_screen_results">%d Ergebnisse</string>
-    <string name="log_screen_see_results">Siehe %d Ergebnisse</string>
+    <plurals name="log_screen_results">
+        <item quantity="one">%d Ergebnis</item>
+        <item quantity="other">%d Ergebnisse</item>
+    </plurals>
+    <plurals name="log_screen_see_results">
+        <item quantity="one">Siehe %d Ergebnis</item>
+        <item quantity="other">Siehe %d Ergebnisse</item>
+    </plurals>
     <string name="log_screen_sort">Sortierung</string>
     <string name="log_screen_status">Status</string>
     <string name="options_menu_bug_report">Fehler melden</string>

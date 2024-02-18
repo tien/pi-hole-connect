@@ -38,7 +38,12 @@
     <string name="home_queries_chart_title">Zapytania z ostatnich 24 godzin</string>
     <string name="home_queries_over_time">Dozwolone</string>
     <string name="home_total_queries">Łączna liczba zapytań</string>
-    <string name="home_unique_clients">(%d klienci)</string>
+    <plurals name="home_unique_clients">
+        <item quantity="one">(%d klient)</item>
+        <item quantity="few">(%d klienci)</item>
+        <item quantity="many">(%d klientów)</item>
+        <item quantity="other">(%d klientów)</item>
+    </plurals>
     <string name="label_disable_blocking">Wyłącz blokowanie</string>
     <string name="label_enable_blocking">Włącz blokowanie</string>
     <string name="label_filter_rules">Filtry</string>
@@ -55,8 +60,18 @@
     <string name="log_screen_label_response_time_sort_asc">Czas reakcji (najszybszy)</string>
     <string name="log_screen_label_response_time_sort_desc">Czas reakcji (najwolniejszy)</string>
     <string name="log_screen_number_of_queries">Number of queries</string>
-    <string name="log_screen_results">%d wyniki</string>
-    <string name="log_screen_see_results">Zobacz %d wyników</string>
+    <plurals name="log_screen_results">
+        <item quantity="one">%d wynik</item>
+        <item quantity="few">%d wyniki</item>
+        <item quantity="many">%d wyników</item>
+        <item quantity="other">%d wyników</item>
+    </plurals>
+    <plurals name="log_screen_see_results">
+        <item quantity="one">Zobacz %d wynik</item>
+        <item quantity="few">Zobacz %d wyniki</item>
+        <item quantity="many">Zobacz %d wyników</item>
+        <item quantity="other">Zobacz %d wyników</item>
+    </plurals>
     <string name="log_screen_sort">Sortować</string>
     <string name="log_screen_status">Status</string>
     <string name="options_menu_bug_report">Zgłoś problem</string>
