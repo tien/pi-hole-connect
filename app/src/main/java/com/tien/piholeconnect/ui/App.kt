@@ -105,7 +105,7 @@ fun App(
                     port = it.port,
                     user = it.basicAuthUsername.ifBlank { null },
                     password = it.basicAuthPassword.ifBlank { null },
-                    pathSegments = listOf("admin")
+                    pathSegments = it.apiPath.split("/").slice(0..<1)
                 ).buildString(),
                 R.string.options_menu_web_dashboard,
                 Icons.AutoMirrored.TwoTone.OpenInNew,
