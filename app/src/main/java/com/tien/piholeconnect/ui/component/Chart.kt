@@ -10,12 +10,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.rememberEndAxis
 import com.patrykandpatrick.vico.compose.chart.Chart
+import com.patrykandpatrick.vico.compose.chart.layout.fullWidth
 import com.patrykandpatrick.vico.compose.chart.line.lineChart
 import com.patrykandpatrick.vico.compose.chart.scroll.rememberChartScrollSpec
 import com.patrykandpatrick.vico.compose.m3.style.m3ChartStyle
 import com.patrykandpatrick.vico.compose.style.ProvideChartStyle
 import com.patrykandpatrick.vico.core.axis.AxisItemPlacer
 import com.patrykandpatrick.vico.core.axis.vertical.VerticalAxis
+import com.patrykandpatrick.vico.core.chart.layout.HorizontalLayout
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
 import com.tien.piholeconnect.model.Entry
 import com.tien.piholeconnect.model.LineChartData
@@ -86,7 +88,8 @@ fun LineChart(
             horizontalLabelPosition = VerticalAxis.HorizontalLabelPosition.Inside,
             itemPlacer = remember { AxisItemPlacer.Vertical.default(maxItemCount = 3) }),
         chartScrollSpec = rememberChartScrollSpec(isScrollEnabled = false),
-        marker = rememberMarker()
+        marker = rememberMarker(),
+        horizontalLayout = HorizontalLayout.fullWidth()
     )
 }
 
