@@ -7,14 +7,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.patrykandpatrick.vico.compose.axis.horizontal.bottomAxis
-import com.patrykandpatrick.vico.compose.axis.vertical.endAxis
+import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
+import com.patrykandpatrick.vico.compose.axis.vertical.rememberEndAxis
 import com.patrykandpatrick.vico.compose.chart.Chart
 import com.patrykandpatrick.vico.compose.chart.line.lineChart
 import com.patrykandpatrick.vico.compose.chart.scroll.rememberChartScrollSpec
 import com.patrykandpatrick.vico.compose.m3.style.m3ChartStyle
 import com.patrykandpatrick.vico.compose.style.ProvideChartStyle
-import com.patrykandpatrick.vico.core.axis.horizontal.HorizontalAxis
+import com.patrykandpatrick.vico.core.axis.AxisItemPlacer
 import com.patrykandpatrick.vico.core.axis.vertical.VerticalAxis
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
 import com.tien.piholeconnect.model.Entry
@@ -58,30 +58,33 @@ fun LineChart(
         chartModelProducer.setEntries(entries)
     }
 
-    Chart(modifier = modifier,
+    Chart(
+        modifier = modifier,
         chart = lineChart(),
         chartModelProducer = chartModelProducer,
-        bottomAxis = bottomAxis(
+        bottomAxis = rememberBottomAxis(
             axis = null,
-            tickPosition = maxOf(data.maxOf { it.data.count() / 4 }, 1).let {
-                HorizontalAxis.TickPosition.Center(it, it)
-            },
             guideline = null,
+            itemPlacer = remember(data) {
+                AxisItemPlacer.Horizontal.default(
+                    spacing = maxOf(
+                        data.maxOf { it.data.count() / 4 }, 1
+                    )
+                )
+            },
             valueFormatter = { value, chartValues ->
-                (chartValues.chartEntryModel.entries.firstOrNull()?.getOrNull(value.toInt()) as Entry?)?.xDisplayValue
-                    ?: value.toString()
+                (chartValues.chartEntryModel.entries.firstOrNull()
+                    ?.getOrNull(value.toInt()) as Entry?)?.xDisplayValue ?: value.toString()
             },
         ),
-        endAxis = endAxis(
-            axis = null,
+        endAxis = rememberEndAxis(axis = null,
             tick = null,
             guideline = null,
             valueFormatter = { value, _ ->
                 if (value == 0f) "" else DecimalFormat("#.##;−#.##").format(value)
             },
             horizontalLabelPosition = VerticalAxis.HorizontalLabelPosition.Inside,
-            maxLabelCount = 3
-        ),
+            itemPlacer = remember { AxisItemPlacer.Vertical.default(maxItemCount = 3) }),
         chartScrollSpec = rememberChartScrollSpec(isScrollEnabled = false),
         marker = rememberMarker()
     )

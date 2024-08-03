@@ -10,7 +10,7 @@ kotlin = "2.0.0"
 ktor = "2.3.12"
 lifecycle = "2.8.4"
 protoBufJavaLite = "4.27.3"
-vico = "1.6.6"
+vico = "1.15.0"
 
 [libraries]
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
