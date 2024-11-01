@@ -211,7 +211,15 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
                                             else -> null
                                         },
                                         headlineContent = { Text(rule.domain) },
-                                        supportingContent = rule.comment?.let { { Text(it) } },
+                                        supportingContent = {
+                                            Text(buildString {
+                                                rule.comment?.let { append(it) }
+                                                if (!rule.enabled) {
+                                                    if (rule.comment != null) append(" ")
+                                                    append("(disabled)")
+                                                }
+                                            })
+                                        },
                                         trailingContent = {
                                             Text(
                                                 text = dateTimeInstance.format(rule.dateAdded * 1000L)
