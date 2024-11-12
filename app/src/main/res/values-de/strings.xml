@@ -28,6 +28,7 @@
     <string name="filter_rules_desc_delete_filter">Netzwerkfilter löschen</string>
     <string name="filter_rules_reg_exr">RegExp</string>
     <string name="filter_rules_whitelist">Whitelist</string>
+    <string name="filter_rules_disabled">deaktiviert</string>
     <string name="home_ads_over_time">Blockiert</string>
     <string name="home_blocklist">Domains in Adlist</string>
     <string name="home_percent_blocked">Prozentual blockiert</string>

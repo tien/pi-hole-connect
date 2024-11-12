@@ -216,7 +216,9 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
                                                 rule.comment?.let { append(it) }
                                                 if (!rule.enabled) {
                                                     if (rule.comment != null) append(" ")
-                                                    append("(disabled)")
+                                                    append("(")
+                                                    append(Text(stringResource(R.string.filter_rules_disabled)))
+                                                    append(")")
                                                 }
                                             })
                                         },
