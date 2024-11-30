@@ -28,6 +28,7 @@
     <string name="filter_rules_desc_delete_filter">Șterge filtru</string>
     <string name="filter_rules_reg_exr">RegEx</string>
     <string name="filter_rules_whitelist">Listă permise</string>
+    <string name="filter_rules_disabled">dezactivat</string>
     <string name="home_ads_over_time">blocate</string>
     <string name="home_blocklist">Listă blocate</string>
     <string name="home_percent_blocked">Procent Blocate</string>
