@@ -41,7 +41,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -121,8 +120,7 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
     }
 
     selectedLog?.let { logQuery ->
-        QueryDetail(
-            logQuery,
+        QueryDetail(logQuery,
             onWhitelistClick = { viewModel.addToWhiteList(logQuery.requestedDomain) },
             onBlacklistClick = { viewModel.addToBlacklist(logQuery.requestedDomain) },
             onDismissRequest = { selectedLog = null },
@@ -148,13 +146,11 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
         sheetPeekHeight = BottomSheetDefaults.SheetPeekHeight * 0.75f,
         topBar = {
             Box(Modifier.fillMaxWidth()) {
-                SearchBar(
+                SearchBar(modifier = Modifier.align(Alignment.TopCenter),
                     expanded = searchActive,
                     onExpandedChange = { searchActive = it },
                     inputField = @Composable {
-                        SearchBarDefaults.InputField(
-                            modifier = Modifier.align(Alignment.TopCenter),
-                            query = query,
+                        SearchBarDefaults.InputField(query = query,
                             onQueryChange = { viewModel.query.value = it },
                             onSearch = {
                                 viewModel.query.value = it
@@ -185,8 +181,7 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
                                 if (!searchActive) {
                                     actions()
                                 }
-                            }
-                        )
+                            })
                     }) {
                     LogList()
                 }
@@ -195,15 +190,10 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
         sheetContent = {
             val paddingModifier = Modifier.padding(horizontal = 16.dp)
             val styledDivider = @Composable {
-                HorizontalDivider(
-                    paddingModifier.padding(vertical = 16.dp),
-                    color = Color.White.copy(alpha = 0.12f)
-                )
+                HorizontalDivider(paddingModifier.padding(vertical = 16.dp))
             }
 
-            Text(
-                stringResource(R.string.log_screen_number_of_queries), modifier = paddingModifier
-            )
+            Text(stringResource(R.string.log_screen_number_of_queries), modifier = paddingModifier)
             viewModel.limits.forEach {
                 ListItem(modifier = Modifier.selectable(
                     selected = viewModel.limit == it,
