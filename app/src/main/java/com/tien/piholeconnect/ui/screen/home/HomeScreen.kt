@@ -3,7 +3,6 @@ package com.tien.piholeconnect.ui.screen.home
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -19,19 +18,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -124,16 +120,8 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
         }
     }
 
+    var isRefreshing by remember { mutableStateOf(false) }
     val pullToRefreshState = rememberPullToRefreshState()
-
-    if (pullToRefreshState.isRefreshing) {
-        LaunchedEffect(true) {
-            viewModel.viewModelScope.launch {
-                viewModel.refresh()
-                pullToRefreshState.endRefresh()
-            }
-        }
-    }
 
     Scaffold(Modifier.fillMaxHeight(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -142,7 +130,13 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                 isLoading = viewModel.isPiHoleSwitchLoading,
                 onClick = { isDisableDialogVisible = true })
         }) {
-        Box(Modifier.nestedScroll(pullToRefreshState.nestedScrollConnection)) {
+        PullToRefreshBox(state = pullToRefreshState, isRefreshing = isRefreshing, onRefresh = {
+            isRefreshing = true
+            viewModel.viewModelScope.launch {
+                viewModel.refresh()
+                isRefreshing = false
+            }
+        }) {
             Column(
                 Modifier
                     .fillMaxHeight()
@@ -264,7 +258,6 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                     }
                 }
             }
-            PullToRefreshContainer(pullToRefreshState, Modifier.align(Alignment.TopCenter))
         }
     }
 }

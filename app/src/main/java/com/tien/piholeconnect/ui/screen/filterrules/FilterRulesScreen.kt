@@ -4,6 +4,7 @@
 package com.tien.piholeconnect.ui.screen.filterrules
 
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.AnchoredDraggableState
@@ -38,7 +39,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,7 +50,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
@@ -101,16 +101,8 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
             })
     }
 
+    var isRefreshing by remember { mutableStateOf(false) }
     val pullToRefreshState = rememberPullToRefreshState()
-
-    if (pullToRefreshState.isRefreshing) {
-        LaunchedEffect(true) {
-            viewModel.viewModelScope.launch {
-                viewModel.refresh()
-                pullToRefreshState.endRefresh()
-            }
-        }
-    }
 
     Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, floatingActionButton = {
         FloatingActionButton(onClick = { isAddDialogVisible = true }) {
@@ -120,7 +112,13 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
             )
         }
     }) {
-        Box(Modifier.nestedScroll(pullToRefreshState.nestedScrollConnection)) {
+        PullToRefreshBox(state = pullToRefreshState, isRefreshing = isRefreshing, onRefresh = {
+            isRefreshing = true
+            viewModel.viewModelScope.launch {
+                viewModel.refresh()
+                isRefreshing = false
+            }
+        }) {
             Column(Modifier.padding(it)) {
                 TabRow(selectedTabIndex = viewModel.selectedTab.ordinal) {
                     Tab(selected = viewModel.selectedTab == FilterRulesViewModel.Tab.BLACK,
@@ -148,6 +146,7 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
                             item(rule.id) {
                                 val localDensity = LocalDensity.current
                                 val iconSize = with(localDensity) { 48.dp.toPx() }
+                                val decayAnimationSpec = rememberSplineBasedDecay<Float>()
                                 val anchoredDraggableState = remember {
                                     AnchoredDraggableState(
                                         initialValue = 0,
@@ -157,7 +156,8 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
                                         },
                                         positionalThreshold = { distance: Float -> distance * 0.5f },
                                         velocityThreshold = { with(localDensity) { 100.dp.toPx() } },
-                                        animationSpec = tween(),
+                                        snapAnimationSpec = tween(),
+                                        decayAnimationSpec = decayAnimationSpec
                                     )
                                 }
 
@@ -175,8 +175,7 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
                                             horizontalArrangement = Arrangement.End,
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
-                                            IconButton(
-                                                modifier = Modifier.fillMaxHeight(),
+                                            IconButton(modifier = Modifier.fillMaxHeight(),
                                                 onClick = {
                                                     viewModel.viewModelScope.launch {
                                                         viewModel.removeRule(
@@ -233,7 +232,6 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
                     }
                 }
             }
-            PullToRefreshContainer(pullToRefreshState, Modifier.align(Alignment.TopCenter))
         }
     }
 }
