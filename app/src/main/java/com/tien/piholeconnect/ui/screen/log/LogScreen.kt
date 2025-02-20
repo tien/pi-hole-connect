@@ -26,8 +26,9 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
@@ -40,8 +41,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -121,8 +120,7 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
     }
 
     selectedLog?.let { logQuery ->
-        QueryDetail(
-            logQuery,
+        QueryDetail(logQuery,
             onWhitelistClick = { viewModel.addToWhiteList(logQuery.requestedDomain) },
             onBlacklistClick = { viewModel.addToBlacklist(logQuery.requestedDomain) },
             onDismissRequest = { selectedLog = null },
@@ -149,37 +147,41 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
         topBar = {
             Box(Modifier.fillMaxWidth()) {
                 SearchBar(modifier = Modifier.align(Alignment.TopCenter),
-                    query = query,
-                    onQueryChange = { viewModel.query.value = it },
-                    onSearch = {
-                        viewModel.query.value = it
-                        searchActive = false
-                    },
-                    active = searchActive,
-                    onActiveChange = { searchActive = it },
-                    placeholder = { Text(stringResource(Screen.Log.labelResourceId)) },
-                    leadingIcon = {
-                        if (searchActive || query.isNotBlank()) {
-                            IconButton(onClick = {
+                    expanded = searchActive,
+                    onExpandedChange = { searchActive = it },
+                    inputField = @Composable {
+                        SearchBarDefaults.InputField(query = query,
+                            onQueryChange = { viewModel.query.value = it },
+                            onSearch = {
+                                viewModel.query.value = it
                                 searchActive = false
-                                viewModel.query.value = ""
-                            }) {
-                                Icon(
-                                    Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = stringResource(android.R.string.cancel)
-                                )
-                            }
-                        } else {
-                            Icon(
-                                Icons.Default.Search,
-                                contentDescription = stringResource(android.R.string.search_go)
-                            )
-                        }
-                    },
-                    trailingIcon = {
-                        if (!searchActive) {
-                            actions()
-                        }
+                            },
+                            expanded = searchActive,
+                            onExpandedChange = { searchActive = it },
+                            placeholder = { Text(stringResource(Screen.Log.labelResourceId)) },
+                            leadingIcon = {
+                                if (searchActive || query.isNotBlank()) {
+                                    IconButton(onClick = {
+                                        searchActive = false
+                                        viewModel.query.value = ""
+                                    }) {
+                                        Icon(
+                                            Icons.AutoMirrored.Filled.ArrowBack,
+                                            contentDescription = stringResource(android.R.string.cancel)
+                                        )
+                                    }
+                                } else {
+                                    Icon(
+                                        Icons.Default.Search,
+                                        contentDescription = stringResource(android.R.string.search_go)
+                                    )
+                                }
+                            },
+                            trailingIcon = {
+                                if (!searchActive) {
+                                    actions()
+                                }
+                            })
                     }) {
                     LogList()
                 }
@@ -188,15 +190,10 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
         sheetContent = {
             val paddingModifier = Modifier.padding(horizontal = 16.dp)
             val styledDivider = @Composable {
-                HorizontalDivider(
-                    paddingModifier.padding(vertical = 16.dp),
-                    color = Color.White.copy(alpha = 0.12f)
-                )
+                HorizontalDivider(paddingModifier.padding(vertical = 16.dp))
             }
 
-            Text(
-                stringResource(R.string.log_screen_number_of_queries), modifier = paddingModifier
-            )
+            Text(stringResource(R.string.log_screen_number_of_queries), modifier = paddingModifier)
             viewModel.limits.forEach {
                 ListItem(modifier = Modifier.selectable(
                     selected = viewModel.limit == it,
@@ -244,18 +241,16 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
             }
         },
         content = {
+            var isRefreshing by remember { mutableStateOf(false) }
             val pullToRefreshState = rememberPullToRefreshState()
 
-            if (pullToRefreshState.isRefreshing) {
-                LaunchedEffect(true) {
-                    viewModel.viewModelScope.launch {
-                        viewModel.refresh()
-                        pullToRefreshState.endRefresh()
-                    }
+            PullToRefreshBox(state = pullToRefreshState, isRefreshing = isRefreshing, onRefresh = {
+                isRefreshing = true
+                viewModel.viewModelScope.launch {
+                    viewModel.refresh()
+                    isRefreshing = false
                 }
-            }
-
-            Box(Modifier.nestedScroll(pullToRefreshState.nestedScrollConnection)) {
+            }) {
                 Column {
                     Row(
                         Modifier
@@ -281,7 +276,6 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
                     HorizontalDivider()
                     LogList(state = lazyListState)
                 }
-                PullToRefreshContainer(pullToRefreshState, Modifier.align(Alignment.TopCenter))
             }
         })
 }
