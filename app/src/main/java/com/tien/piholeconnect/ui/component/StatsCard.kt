@@ -25,7 +25,7 @@ fun StatsCard(
     modifier: Modifier = Modifier,
     name: @Composable () -> Unit,
     statistics: String,
-    backGroundColor: Color
+    backGroundColor: Color,
 ) {
     val defaultSize = MaterialTheme.typography
     var fontSize by remember { mutableStateOf(defaultSize.headlineMedium.fontSize) }
@@ -33,13 +33,15 @@ fun StatsCard(
     Card(modifier, colors = CardDefaults.cardColors(containerColor = backGroundColor)) {
         Column(Modifier.padding(horizontal = 10.dp, vertical = 5.dp)) {
             ProvideTextStyle(
-                value = MaterialTheme.typography.titleMedium.copy(
-                    color = MaterialTheme.colorScheme.contentColorFor(backGroundColor)
-                )
+                value =
+                    MaterialTheme.typography.titleMedium.copy(
+                        color = MaterialTheme.colorScheme.contentColorFor(backGroundColor)
+                    )
             ) {
                 name()
             }
-            Text(statistics,
+            Text(
+                statistics,
                 color = MaterialTheme.colorScheme.contentColorFor(backGroundColor),
                 style = MaterialTheme.typography.headlineMedium,
                 fontSize = fontSize,
@@ -49,7 +51,8 @@ fun StatsCard(
                     if (it.didOverflowWidth) {
                         fontSize *= 0.9
                     }
-                })
+                },
+            )
         }
     }
 }
@@ -61,6 +64,6 @@ fun StatsCardPreview() {
         Modifier.widthIn(max = 150.dp),
         name = { Text("Total Queries") },
         statistics = "23,456,756,456",
-        backGroundColor = MaterialTheme.colorScheme.success
+        backGroundColor = MaterialTheme.colorScheme.success,
     )
 }

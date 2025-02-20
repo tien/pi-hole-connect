@@ -25,16 +25,18 @@ import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 fun BottomTab(
     items: Iterable<BottomTabItem>,
     currentRoute: String,
-    onBottomTabItemClick: (BottomTabItem) -> Unit
+    onBottomTabItemClick: (BottomTabItem) -> Unit,
 ) {
     NavigationBar {
         items.forEach {
             val label = stringResource(it.screen.labelResourceId)
 
-            NavigationBarItem(selected = it.screen.route == currentRoute,
+            NavigationBarItem(
+                selected = it.screen.route == currentRoute,
                 onClick = { onBottomTabItemClick(it) },
                 icon = { Icon(it.icon, contentDescription = label) },
-                label = { Text(label) })
+                label = { Text(label) },
+            )
         }
     }
 }
@@ -45,16 +47,19 @@ fun BottomTab(
 fun BottomTabPreview() {
     var currentRoute by remember { mutableStateOf(Screen.Home.route) }
 
-    val tabItems = listOf(
-        BottomTabItem(Screen.Home, Icons.TwoTone.Home),
-        BottomTabItem(Screen.Statistics, Icons.TwoTone.Insights),
-        BottomTabItem(Screen.Log, Icons.TwoTone.Analytics),
-        BottomTabItem(Screen.FilterRules, Icons.TwoTone.Shield)
-    )
+    val tabItems =
+        listOf(
+            BottomTabItem(Screen.Home, Icons.TwoTone.Home),
+            BottomTabItem(Screen.Statistics, Icons.TwoTone.Insights),
+            BottomTabItem(Screen.Log, Icons.TwoTone.Analytics),
+            BottomTabItem(Screen.FilterRules, Icons.TwoTone.Shield),
+        )
 
     PiHoleConnectTheme {
-        BottomTab(items = tabItems,
+        BottomTab(
+            items = tabItems,
             currentRoute = currentRoute,
-            onBottomTabItemClick = { currentRoute = it.screen.route })
+            onBottomTabItemClick = { currentRoute = it.screen.route },
+        )
     }
 }

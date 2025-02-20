@@ -11,9 +11,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class StatisticsViewModel @Inject constructor(
+class StatisticsViewModel
+@Inject
+constructor(
     private val piHoleRepository: PiHoleRepository,
-    val userPreferencesRepository: UserPreferencesRepository
+    val userPreferencesRepository: UserPreferencesRepository,
 ) : PiHoleConnectionAwareViewModel(userPreferencesRepository) {
     var statistics: PiHoleStatistics by mutableStateOf(PiHoleStatistics())
         private set

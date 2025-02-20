@@ -9,7 +9,7 @@ class ConsumeAllNestedScroll : NestedScrollConnection {
     override fun onPostScroll(
         consumed: Offset,
         available: Offset,
-        source: NestedScrollSource
+        source: NestedScrollSource,
     ): Offset = available
 
     override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity = available

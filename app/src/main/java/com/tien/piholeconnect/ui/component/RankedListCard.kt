@@ -34,32 +34,38 @@ fun RankedListCard(
     title: @Composable () -> Unit,
     icon: @Composable () -> Unit,
     valueMap: Map<String, Int>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Card(modifier = modifier.fillMaxWidth()) {
         Column {
             Row(
                 Modifier.padding(start = 15.dp, end = 15.dp, top = 15.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 icon()
                 Spacer(Modifier.width(15.dp))
-                ProvideTextStyle(value = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)) {
+                ProvideTextStyle(
+                    value =
+                        MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
+                ) {
                     title()
                 }
             }
             Column {
                 valueMap.forEach {
-                    ListItem(colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                    ListItem(
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         headlineContent = {
                             Text(
                                 it.key,
                                 Modifier.horizontalScroll(rememberScrollState()),
                                 maxLines = 1,
-                                style = LocalTextStyle.current.copy(fontWeight = FontWeight.SemiBold)
+                                style =
+                                    LocalTextStyle.current.copy(fontWeight = FontWeight.SemiBold),
                             )
                         },
-                        trailingContent = { Text(it.value.toString()) })
+                        trailingContent = { Text(it.value.toString()) },
+                    )
                 }
             }
         }
@@ -72,24 +78,29 @@ fun RankedListCard(
 fun RankedListCardPreview() {
     PiHoleConnectTheme {
         Column {
-            RankedListCard(title = { Text("Top Queries") }, icon = {
-                Icon(
-                    Icons.Default.GppGood,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.success
-                )
-            }, valueMap = mapOf(
-                "debug.opendns.com" to 2385,
-                "ipv4only.arpa" to 2382,
-                "i-bl6p-cor004.api.p001.1drv.com" to 1095,
-                "gateway.fe.apple-dns.net" to 796,
-                "star-mini.c10r.facebook.com" to 617,
-                "e673.dsce9.akamaiedge.net" to 583,
-                "apac-au-courier-4.push-apple.com.akadns.net" to 553,
-                "www.google.com" to 475,
-                "e17437.dscb.akamaiedge.net" to 473,
-                "e6858.dscx.akamaiedge.net" to 431
-            ), Modifier.padding(15.dp)
+            RankedListCard(
+                title = { Text("Top Queries") },
+                icon = {
+                    Icon(
+                        Icons.Default.GppGood,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.success,
+                    )
+                },
+                valueMap =
+                    mapOf(
+                        "debug.opendns.com" to 2385,
+                        "ipv4only.arpa" to 2382,
+                        "i-bl6p-cor004.api.p001.1drv.com" to 1095,
+                        "gateway.fe.apple-dns.net" to 796,
+                        "star-mini.c10r.facebook.com" to 617,
+                        "e673.dsce9.akamaiedge.net" to 583,
+                        "apac-au-courier-4.push-apple.com.akadns.net" to 553,
+                        "www.google.com" to 475,
+                        "e17437.dscb.akamaiedge.net" to 473,
+                        "e6858.dscx.akamaiedge.net" to 431,
+                    ),
+                Modifier.padding(15.dp),
             )
         }
     }

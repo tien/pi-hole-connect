@@ -59,7 +59,6 @@ import com.tien.piholeconnect.util.ChangedEffect
 import com.tien.piholeconnect.util.SnackbarErrorEffect
 import kotlinx.coroutines.launch
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltViewModel()) {
@@ -80,52 +79,51 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
     SnackbarErrorEffect(viewModel.error, scaffoldState.snackbarHostState)
 
     ChangedEffect(viewModel.modifyFilterRuleState) {
-        (viewModel.modifyFilterRuleState.second as? AsyncState.Settled)?.let {
-            selectedLog = null
-        }
+        (viewModel.modifyFilterRuleState.second as? AsyncState.Settled)?.let { selectedLog = null }
     }
 
     ChangedEffect(scaffoldState.snackbarHostState, viewModel.modifyFilterRuleState) {
         when (viewModel.modifyFilterRuleState.second) {
             is AsyncState.Settled -> {
-                (viewModel.modifyFilterRuleState.second as? AsyncState.Settled<ModifyFilterRuleResponse>)?.let { asyncState ->
-                    when {
-                        asyncState.result.isSuccess -> asyncState.result.getOrNull()?.message?.let {
-                            scaffoldState.snackbarHostState.showSnackbar(it)
-                        }
+                (viewModel.modifyFilterRuleState.second
+                        as? AsyncState.Settled<ModifyFilterRuleResponse>)
+                    ?.let { asyncState ->
+                        when {
+                            asyncState.result.isSuccess ->
+                                asyncState.result.getOrNull()?.message?.let {
+                                    scaffoldState.snackbarHostState.showSnackbar(it)
+                                }
 
-                        asyncState.result.isFailure -> asyncState.result.exceptionOrNull()?.localizedMessage?.let {
-                            scaffoldState.snackbarHostState.showSnackbar(it)
-                        }
+                            asyncState.result.isFailure ->
+                                asyncState.result.exceptionOrNull()?.localizedMessage?.let {
+                                    scaffoldState.snackbarHostState.showSnackbar(it)
+                                }
 
-                        else -> Unit
+                            else -> Unit
+                        }
                     }
-                }
             }
 
             else -> Unit
         }
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.viewModelScope.launch {
-            viewModel.apply {
-                refresh()
-            }
-        }
-    }
+    LaunchedEffect(Unit) { viewModel.viewModelScope.launch { viewModel.apply { refresh() } } }
 
-    LaunchedEffect(logs) {
-        lazyListState.scrollToItem(0)
-    }
+    LaunchedEffect(logs) { lazyListState.scrollToItem(0) }
 
     selectedLog?.let { logQuery ->
-        QueryDetail(logQuery,
+        QueryDetail(
+            logQuery,
             onWhitelistClick = { viewModel.addToWhiteList(logQuery.requestedDomain) },
             onBlacklistClick = { viewModel.addToBlacklist(logQuery.requestedDomain) },
             onDismissRequest = { selectedLog = null },
-            addToWhitelistLoading = viewModel.modifyFilterRuleState.first == RuleType.WHITE && viewModel.modifyFilterRuleState.second is AsyncState.Pending,
-            addToBlacklistLoading = viewModel.modifyFilterRuleState.first == RuleType.BLACK && viewModel.modifyFilterRuleState.second is AsyncState.Pending
+            addToWhitelistLoading =
+                viewModel.modifyFilterRuleState.first == RuleType.WHITE &&
+                    viewModel.modifyFilterRuleState.second is AsyncState.Pending,
+            addToBlacklistLoading =
+                viewModel.modifyFilterRuleState.first == RuleType.BLACK &&
+                    viewModel.modifyFilterRuleState.second is AsyncState.Pending,
         )
     }
 
@@ -142,140 +140,159 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
         }
     }
 
-    BottomSheetScaffold(scaffoldState = scaffoldState,
+    BottomSheetScaffold(
+        scaffoldState = scaffoldState,
         sheetPeekHeight = BottomSheetDefaults.SheetPeekHeight * 0.75f,
         topBar = {
             Box(Modifier.fillMaxWidth()) {
-                SearchBar(modifier = Modifier.align(Alignment.TopCenter),
+                SearchBar(
+                    modifier = Modifier.align(Alignment.TopCenter),
                     expanded = searchActive,
                     onExpandedChange = { searchActive = it },
-                    inputField = @Composable {
-                        SearchBarDefaults.InputField(query = query,
-                            onQueryChange = { viewModel.query.value = it },
-                            onSearch = {
-                                viewModel.query.value = it
-                                searchActive = false
-                            },
-                            expanded = searchActive,
-                            onExpandedChange = { searchActive = it },
-                            placeholder = { Text(stringResource(Screen.Log.labelResourceId)) },
-                            leadingIcon = {
-                                if (searchActive || query.isNotBlank()) {
-                                    IconButton(onClick = {
-                                        searchActive = false
-                                        viewModel.query.value = ""
-                                    }) {
+                    inputField =
+                        @Composable {
+                            SearchBarDefaults.InputField(
+                                query = query,
+                                onQueryChange = { viewModel.query.value = it },
+                                onSearch = {
+                                    viewModel.query.value = it
+                                    searchActive = false
+                                },
+                                expanded = searchActive,
+                                onExpandedChange = { searchActive = it },
+                                placeholder = { Text(stringResource(Screen.Log.labelResourceId)) },
+                                leadingIcon = {
+                                    if (searchActive || query.isNotBlank()) {
+                                        IconButton(
+                                            onClick = {
+                                                searchActive = false
+                                                viewModel.query.value = ""
+                                            }
+                                        ) {
+                                            Icon(
+                                                Icons.AutoMirrored.Filled.ArrowBack,
+                                                contentDescription =
+                                                    stringResource(android.R.string.cancel),
+                                            )
+                                        }
+                                    } else {
                                         Icon(
-                                            Icons.AutoMirrored.Filled.ArrowBack,
-                                            contentDescription = stringResource(android.R.string.cancel)
+                                            Icons.Default.Search,
+                                            contentDescription =
+                                                stringResource(android.R.string.search_go),
                                         )
                                     }
-                                } else {
-                                    Icon(
-                                        Icons.Default.Search,
-                                        contentDescription = stringResource(android.R.string.search_go)
-                                    )
-                                }
-                            },
-                            trailingIcon = {
-                                if (!searchActive) {
-                                    actions()
-                                }
-                            })
-                    }) {
+                                },
+                                trailingIcon = {
+                                    if (!searchActive) {
+                                        actions()
+                                    }
+                                },
+                            )
+                        },
+                ) {
                     LogList()
                 }
             }
         },
         sheetContent = {
             val paddingModifier = Modifier.padding(horizontal = 16.dp)
-            val styledDivider = @Composable {
-                HorizontalDivider(paddingModifier.padding(vertical = 16.dp))
-            }
+            val styledDivider =
+                @Composable { HorizontalDivider(paddingModifier.padding(vertical = 16.dp)) }
 
             Text(stringResource(R.string.log_screen_number_of_queries), modifier = paddingModifier)
             viewModel.limits.forEach {
-                ListItem(modifier = Modifier.selectable(
-                    selected = viewModel.limit == it,
-                    onClick = { viewModel.changeLimit(it) },
-                    role = Role.RadioButton
-                ), leadingContent = {
-                    RadioButton(
-                        selected = viewModel.limit == it,
-                        onClick = null,
-                    )
-                }, headlineContent = { Text(it.toString()) })
+                ListItem(
+                    modifier =
+                        Modifier.selectable(
+                            selected = viewModel.limit == it,
+                            onClick = { viewModel.changeLimit(it) },
+                            role = Role.RadioButton,
+                        ),
+                    leadingContent = {
+                        RadioButton(selected = viewModel.limit == it, onClick = null)
+                    },
+                    headlineContent = { Text(it.toString()) },
+                )
             }
             styledDivider()
             Text(stringResource(R.string.log_screen_status), modifier = paddingModifier)
             LogViewModel.Status.entries.forEach { status ->
                 val checked = enabledStatuses.contains(status)
-                ListItem(modifier = Modifier.selectable(
-                    selected = checked, onClick = {
-                        if (!checked) {
-                            viewModel.enabledStatuses.value += status
-                        } else {
-                            viewModel.enabledStatuses.value -= status
-                        }
-                    }, role = Role.Checkbox
-                ), leadingContent = {
-                    Checkbox(
-                        checked = checked,
-                        onCheckedChange = null,
-                    )
-                }, headlineContent = { Text(stringResource(status.labelResourceId)) })
+                ListItem(
+                    modifier =
+                        Modifier.selectable(
+                            selected = checked,
+                            onClick = {
+                                if (!checked) {
+                                    viewModel.enabledStatuses.value += status
+                                } else {
+                                    viewModel.enabledStatuses.value -= status
+                                }
+                            },
+                            role = Role.Checkbox,
+                        ),
+                    leadingContent = { Checkbox(checked = checked, onCheckedChange = null) },
+                    headlineContent = { Text(stringResource(status.labelResourceId)) },
+                )
             }
             styledDivider()
             Text(stringResource(R.string.log_screen_sort), modifier = paddingModifier)
             LogViewModel.Sort.entries.forEach { sort ->
                 val selected = sortBy == sort
-                ListItem(modifier = Modifier.selectable(
-                    selected = selected,
-                    onClick = { viewModel.sortBy.value = sort },
-                    role = Role.RadioButton
-                ), leadingContent = {
-                    RadioButton(
-                        selected = selected, onClick = null
-                    )
-                }, headlineContent = { Text(stringResource(sort.labelResourceId)) })
+                ListItem(
+                    modifier =
+                        Modifier.selectable(
+                            selected = selected,
+                            onClick = { viewModel.sortBy.value = sort },
+                            role = Role.RadioButton,
+                        ),
+                    leadingContent = { RadioButton(selected = selected, onClick = null) },
+                    headlineContent = { Text(stringResource(sort.labelResourceId)) },
+                )
             }
         },
         content = {
             var isRefreshing by remember { mutableStateOf(false) }
             val pullToRefreshState = rememberPullToRefreshState()
 
-            PullToRefreshBox(state = pullToRefreshState, isRefreshing = isRefreshing, onRefresh = {
-                isRefreshing = true
-                viewModel.viewModelScope.launch {
-                    viewModel.refresh()
-                    isRefreshing = false
-                }
-            }) {
+            PullToRefreshBox(
+                state = pullToRefreshState,
+                isRefreshing = isRefreshing,
+                onRefresh = {
+                    isRefreshing = true
+                    viewModel.viewModelScope.launch {
+                        viewModel.refresh()
+                        isRefreshing = false
+                    }
+                },
+            ) {
                 Column {
                     Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(start = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        Modifier.fillMaxWidth().padding(start = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         if (viewModel.hasBeenLoaded) {
                             Text(
                                 pluralStringResource(
-                                    R.plurals.log_screen_results, logs.count(), logs.count()
+                                    R.plurals.log_screen_results,
+                                    logs.count(),
+                                    logs.count(),
                                 ),
                                 style = MaterialTheme.typography.bodySmall,
                             )
                         }
                         Spacer(Modifier.weight(1f))
-                        IconButton(onClick = { scope.launch { scaffoldState.bottomSheetState.expand() } }) {
-                            Icon(
-                                Icons.Default.Tune, contentDescription = null
-                            )
+                        IconButton(
+                            onClick = { scope.launch { scaffoldState.bottomSheetState.expand() } }
+                        ) {
+                            Icon(Icons.Default.Tune, contentDescription = null)
                         }
                     }
                     HorizontalDivider()
                     LogList(state = lazyListState)
                 }
             }
-        })
+        },
+    )
 }

@@ -36,20 +36,25 @@ import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun PiHoleSwitchFloatingActionButton(
-    isAdsBlockingEnabled: Boolean, isLoading: Boolean, onClick: () -> Unit
+    isAdsBlockingEnabled: Boolean,
+    isLoading: Boolean,
+    onClick: () -> Unit,
 ) {
     val containerColor =
-        if (isAdsBlockingEnabled) MaterialTheme.colorScheme.successContainer else MaterialTheme.colorScheme.errorContainer
-    FloatingActionButton(
-        containerColor = containerColor, onClick = onClick
-    ) {
+        if (isAdsBlockingEnabled) MaterialTheme.colorScheme.successContainer
+        else MaterialTheme.colorScheme.errorContainer
+    FloatingActionButton(containerColor = containerColor, onClick = onClick) {
         if (isLoading) {
             CircularProgressIndicator(color = LocalContentColor.current)
         } else {
             Icon(
                 if (isAdsBlockingEnabled) Icons.Default.GppGood else Icons.Default.GppBad,
-                contentDescription = stringResource(if (isAdsBlockingEnabled) R.string.label_disable_blocking else R.string.label_enable_blocking),
-                tint = MaterialTheme.colorScheme.contentColorFor(containerColor)
+                contentDescription =
+                    stringResource(
+                        if (isAdsBlockingEnabled) R.string.label_disable_blocking
+                        else R.string.label_enable_blocking
+                    ),
+                tint = MaterialTheme.colorScheme.contentColorFor(containerColor),
             )
         }
     }
@@ -57,31 +62,30 @@ fun PiHoleSwitchFloatingActionButton(
 
 @Composable
 fun DisableAdsBlockingAlertDialog(
-    onDismissRequest: () -> Unit, onDurationButtonClick: (Duration) -> Unit
+    onDismissRequest: () -> Unit,
+    onDurationButtonClick: (Duration) -> Unit,
 ) {
     var isDurationPickerVisible by rememberSaveable { mutableStateOf(false) }
 
     if (isDurationPickerVisible) {
         DurationPickerDialog(
-            onDurationConfirm = onDurationButtonClick, onDismissRequest = onDismissRequest
+            onDurationConfirm = onDurationButtonClick,
+            onDismissRequest = onDismissRequest,
         )
     } else {
-        AlertDialog(onDismissRequest = onDismissRequest,
+        AlertDialog(
+            onDismissRequest = onDismissRequest,
             icon = { Icon(Icons.Default.GppBad, null) },
             title = { Text(stringResource(R.string.disable_dialog_title)) },
             text = { Text(stringResource(R.string.disable_dialog_msg)) },
             confirmButton = {
                 Column(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
+                    Modifier.fillMaxWidth().padding(8.dp),
                     horizontalAlignment = Alignment.End,
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     TextButton(onClick = { onDurationButtonClick(Duration.INFINITE) }) {
-                        Text(
-                            stringResource(R.string.disable_dialog_button_permanent).uppercase()
-                        )
+                        Text(stringResource(R.string.disable_dialog_button_permanent).uppercase())
                     }
                     TextButton(onClick = { onDurationButtonClick(10.seconds) }) {
                         Text(stringResource(R.string.disable_dialog_button_10_seconds).uppercase())
@@ -92,16 +96,15 @@ fun DisableAdsBlockingAlertDialog(
                     TextButton(onClick = { onDurationButtonClick(5.minutes) }) {
                         Text(stringResource(R.string.disable_dialog_button_5_minutes).uppercase())
                     }
-                    TextButton(onClick = {
-                        isDurationPickerVisible = true
-                    }) { Text(stringResource(R.string.disable_dialog_button_custom_time).uppercase()) }
+                    TextButton(onClick = { isDurationPickerVisible = true }) {
+                        Text(stringResource(R.string.disable_dialog_button_custom_time).uppercase())
+                    }
                     TextButton(onClick = onDismissRequest) {
-                        Text(
-                            stringResource(R.string.disable_dialog_button_cancel).uppercase()
-                        )
+                        Text(stringResource(R.string.disable_dialog_button_cancel).uppercase())
                     }
                 }
-            })
+            },
+        )
     }
 }
 
@@ -113,16 +116,12 @@ fun EnableAdsBlockingAlertDialog(onConfirmRequest: () -> Unit, onDismissRequest:
         text = { Text(stringResource(R.string.enable_dialog_msg)) },
         confirmButton = {
             TextButton(onClick = onConfirmRequest) {
-                Text(
-                    stringResource(R.string.enable_dialog_button_confirm).uppercase()
-                )
+                Text(stringResource(R.string.enable_dialog_button_confirm).uppercase())
             }
         },
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
-                Text(
-                    stringResource(R.string.enable_dialog_button_dismiss).uppercase()
-                )
+                Text(stringResource(R.string.enable_dialog_button_dismiss).uppercase())
             }
         },
         onDismissRequest = onDismissRequest,
@@ -152,9 +151,11 @@ fun DisableAdsBlockingAlertDialogPreview() {
 @Composable
 fun PiHoleSwitchFloatingActionButtonDisablePreview() {
     PiHoleConnectTheme {
-        PiHoleSwitchFloatingActionButton(isAdsBlockingEnabled = false,
+        PiHoleSwitchFloatingActionButton(
+            isAdsBlockingEnabled = false,
             isLoading = false,
-            onClick = {})
+            onClick = {},
+        )
     }
 }
 
@@ -163,9 +164,11 @@ fun PiHoleSwitchFloatingActionButtonDisablePreview() {
 @Composable
 fun PiHoleSwitchFloatingActionButtonEnablePreview() {
     PiHoleConnectTheme {
-        PiHoleSwitchFloatingActionButton(isAdsBlockingEnabled = true,
+        PiHoleSwitchFloatingActionButton(
+            isAdsBlockingEnabled = true,
             isLoading = false,
-            onClick = {})
+            onClick = {},
+        )
     }
 }
 
@@ -174,9 +177,11 @@ fun PiHoleSwitchFloatingActionButtonEnablePreview() {
 @Composable
 fun PiHoleSwitchFloatingActionButtonEnableLoadingPreview() {
     PiHoleConnectTheme {
-        PiHoleSwitchFloatingActionButton(isAdsBlockingEnabled = true,
+        PiHoleSwitchFloatingActionButton(
+            isAdsBlockingEnabled = true,
             isLoading = true,
-            onClick = {})
+            onClick = {},
+        )
     }
 }
 
@@ -185,8 +190,10 @@ fun PiHoleSwitchFloatingActionButtonEnableLoadingPreview() {
 @Composable
 fun PiHoleSwitchFloatingActionButtonDisableLoadingPreview() {
     PiHoleConnectTheme {
-        PiHoleSwitchFloatingActionButton(isAdsBlockingEnabled = false,
+        PiHoleSwitchFloatingActionButton(
+            isAdsBlockingEnabled = false,
             isLoading = true,
-            onClick = {})
+            onClick = {},
+        )
     }
 }

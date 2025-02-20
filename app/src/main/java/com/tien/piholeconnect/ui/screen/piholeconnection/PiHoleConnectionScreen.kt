@@ -59,8 +59,8 @@ import com.tien.piholeconnect.util.isNumericOrWhitespace
 import com.tien.piholeconnect.util.toKtorURLProtocol
 import io.ktor.http.URLProtocol.Companion.HTTP
 import io.ktor.http.URLProtocol.Companion.HTTPS
-import kotlinx.coroutines.launch
 import java.util.Locale
+import kotlinx.coroutines.launch
 
 @Composable
 fun PiHoleConnectionScreen(
@@ -96,26 +96,24 @@ fun PiHoleConnectionScreen(
                         stringResource(R.string.pi_hole_connection_title_scanner),
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 24.dp),
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
                     )
                     Text(
                         stringResource(R.string.pi_hole_connection_hint_scanner),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(start = 24.dp, end = 24.dp, bottom = 28.dp),
-                        fontWeight = FontWeight.Normal
+                        fontWeight = FontWeight.Normal,
                     )
                     Scanner(
-                        Modifier
-                            .aspectRatio(1f)
-                            .fillMaxWidth()
-                            .clipToBounds(),
+                        Modifier.aspectRatio(1f).fillMaxWidth().clipToBounds(),
                         barcodeScanner = viewModel.barcodeScanner,
                         onBarcodeScanSuccess = {
                             it.firstOrNull()?.rawValue?.let { apiToken ->
                                 viewModel.apiToken = apiToken
                                 isScannerExpanded = false
                             }
-                        })
+                        },
+                    )
                     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
                         TextButton(onClick = { isScannerExpanded = false }) {
                             Text(stringResource(android.R.string.cancel).uppercase())
@@ -127,117 +125,114 @@ fun PiHoleConnectionScreen(
     }
 
     if (isDeleteAlertDialogExpanded) {
-        AlertDialog(text = { Text(stringResource(R.string.pi_hole_connection_remove_dialog_title)) },
+        AlertDialog(
+            text = { Text(stringResource(R.string.pi_hole_connection_remove_dialog_title)) },
             confirmButton = {
-                TextButton(onClick = {
-                    viewModel.viewModelScope.launch {
-                        viewModel.remove()
-                        navController.navigateUp()
+                TextButton(
+                    onClick = {
+                        viewModel.viewModelScope.launch {
+                            viewModel.remove()
+                            navController.navigateUp()
+                        }
                     }
-                }) {
+                ) {
                     Text(
-                        stringResource(R.string.pi_hole_connection_remove_dialog_button_remove).uppercase(
-                            Locale.getDefault()
-                        )
+                        stringResource(R.string.pi_hole_connection_remove_dialog_button_remove)
+                            .uppercase(Locale.getDefault())
                     )
                 }
             },
             dismissButton = {
-                TextButton(onClick = {
-                    isDeleteAlertDialogExpanded = false
-                }) { Text(stringResource(android.R.string.cancel).uppercase()) }
+                TextButton(onClick = { isDeleteAlertDialogExpanded = false }) {
+                    Text(stringResource(android.R.string.cancel).uppercase())
+                }
             },
-            onDismissRequest = { isDeleteAlertDialogExpanded = false })
+            onDismissRequest = { isDeleteAlertDialogExpanded = false },
+        )
     }
 
     Column(
-        Modifier
-            .verticalScroll(scrollState)
-            .padding(25.dp),
-        verticalArrangement = Arrangement.spacedBy(25.dp)
+        Modifier.verticalScroll(scrollState).padding(25.dp),
+        verticalArrangement = Arrangement.spacedBy(25.dp),
     ) {
-        OutlinedTextField(modifier = Modifier
-            .fillMaxWidth()
-            .onGloballyPositioned {
-                positionMap[viewModel::name.name] = it.positionInParent().y
-            }
-            .onFocusEvent { focusState ->
-                if (focusState.isFocused) {
-                    viewModel.viewModelScope.launch {
-                        positionMap[viewModel::name.name]?.let {
-                            scrollState.scrollTo(
-                                it.toInt()
-                            )
-                        }
+        OutlinedTextField(
+            modifier =
+                Modifier.fillMaxWidth()
+                    .onGloballyPositioned {
+                        positionMap[viewModel::name.name] = it.positionInParent().y
                     }
-                }
-            },
+                    .onFocusEvent { focusState ->
+                        if (focusState.isFocused) {
+                            viewModel.viewModelScope.launch {
+                                positionMap[viewModel::name.name]?.let {
+                                    scrollState.scrollTo(it.toInt())
+                                }
+                            }
+                        }
+                    },
             label = { Text(stringResource(R.string.pi_hole_connection_label_name)) },
             value = viewModel.name,
             onValueChange = { viewModel.name = it },
             singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         )
-        OutlinedTextField(modifier = Modifier
-            .fillMaxWidth()
-            .onGloballyPositioned {
-                positionMap[viewModel::host.name] = it.positionInParent().y
-            }
-            .onFocusEvent { focusState ->
-                if (focusState.isFocused) {
-                    viewModel.viewModelScope.launch {
-                        positionMap[viewModel::host.name]?.let {
-                            scrollState.scrollTo(
-                                it.toInt()
-                            )
-                        }
+        OutlinedTextField(
+            modifier =
+                Modifier.fillMaxWidth()
+                    .onGloballyPositioned {
+                        positionMap[viewModel::host.name] = it.positionInParent().y
                     }
-                }
-            },
+                    .onFocusEvent { focusState ->
+                        if (focusState.isFocused) {
+                            viewModel.viewModelScope.launch {
+                                positionMap[viewModel::host.name]?.let {
+                                    scrollState.scrollTo(it.toInt())
+                                }
+                            }
+                        }
+                    },
             label = { Text(stringResource(R.string.pi_hole_connection_label_host)) },
             value = viewModel.host,
             onValueChange = { viewModel.host = it },
             singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
         )
-        OutlinedTextField(modifier = Modifier
-            .fillMaxWidth()
-            .onGloballyPositioned {
-                positionMap[viewModel::apiPath.name] = it.positionInParent().y
-            }
-            .onFocusEvent { focusState ->
-                if (focusState.isFocused) {
-                    viewModel.viewModelScope.launch {
-                        positionMap[viewModel::apiPath.name]?.let {
-                            scrollState.scrollTo(
-                                it.toInt()
-                            )
-                        }
+        OutlinedTextField(
+            modifier =
+                Modifier.fillMaxWidth()
+                    .onGloballyPositioned {
+                        positionMap[viewModel::apiPath.name] = it.positionInParent().y
                     }
-                }
-            },
+                    .onFocusEvent { focusState ->
+                        if (focusState.isFocused) {
+                            viewModel.viewModelScope.launch {
+                                positionMap[viewModel::apiPath.name]?.let {
+                                    scrollState.scrollTo(it.toInt())
+                                }
+                            }
+                        }
+                    },
             label = { Text(stringResource(R.string.pi_hole_connection_label_api_path)) },
             value = viewModel.apiPath,
             onValueChange = { viewModel.apiPath = it },
             singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
         )
-        OutlinedTextField(modifier = Modifier
-            .fillMaxWidth()
-            .onGloballyPositioned {
-                positionMap[viewModel::port.name] = it.positionInParent().y
-            }
-            .onFocusEvent { focusState ->
-                if (focusState.isFocused) {
-                    viewModel.viewModelScope.launch {
-                        positionMap[viewModel::port.name]?.let {
-                            scrollState.scrollTo(
-                                it.toInt()
-                            )
-                        }
+        OutlinedTextField(
+            modifier =
+                Modifier.fillMaxWidth()
+                    .onGloballyPositioned {
+                        positionMap[viewModel::port.name] = it.positionInParent().y
                     }
-                }
-            },
+                    .onFocusEvent { focusState ->
+                        if (focusState.isFocused) {
+                            viewModel.viewModelScope.launch {
+                                positionMap[viewModel::port.name]?.let {
+                                    scrollState.scrollTo(it.toInt())
+                                }
+                            }
+                        }
+                    },
             label = { Text(stringResource(R.string.pi_hole_connection_label_port)) },
             value = viewModel.port,
             onValueChange = {
@@ -246,40 +241,46 @@ fun PiHoleConnectionScreen(
                 }
             },
             singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         )
-        OutlinedTextField(modifier = Modifier
-            .fillMaxWidth()
-            .onGloballyPositioned {
-                positionMap[viewModel::apiToken.name] = it.positionInParent().y
-            }
-            .onFocusEvent { focusState ->
-                if (focusState.isFocused) {
-                    viewModel.viewModelScope.launch {
-                        positionMap[viewModel::apiToken.name]?.let {
-                            scrollState.scrollTo(
-                                it.toInt()
-                            )
-                        }
+        OutlinedTextField(
+            modifier =
+                Modifier.fillMaxWidth()
+                    .onGloballyPositioned {
+                        positionMap[viewModel::apiToken.name] = it.positionInParent().y
                     }
-                }
-            },
+                    .onFocusEvent { focusState ->
+                        if (focusState.isFocused) {
+                            viewModel.viewModelScope.launch {
+                                positionMap[viewModel::apiToken.name]?.let {
+                                    scrollState.scrollTo(it.toInt())
+                                }
+                            }
+                        }
+                    },
             label = { Text(stringResource(R.string.pi_hole_connection_label_api_token)) },
             trailingIcon = {
-                IconButton(onClick = {
-                    if (ContextCompat.checkSelfPermission(
-                            context, Manifest.permission.CAMERA
-                        ) == PackageManager.PERMISSION_DENIED
-                    ) {
-                        ActivityCompat.requestPermissions(
-                            context as Activity, arrayOf(Manifest.permission.CAMERA), 0
-                        )
+                IconButton(
+                    onClick = {
+                        if (
+                            ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.CAMERA,
+                            ) == PackageManager.PERMISSION_DENIED
+                        ) {
+                            ActivityCompat.requestPermissions(
+                                context as Activity,
+                                arrayOf(Manifest.permission.CAMERA),
+                                0,
+                            )
+                        }
+                        isScannerExpanded = true
                     }
-                    isScannerExpanded = true
-                }) {
+                ) {
                     Icon(
                         Icons.Default.QrCode,
-                        contentDescription = stringResource(R.string.pi_hole_connection_desc_scanner)
+                        contentDescription =
+                            stringResource(R.string.pi_hole_connection_desc_scanner),
                     )
                 }
             },
@@ -287,12 +288,12 @@ fun PiHoleConnectionScreen(
             onValueChange = { viewModel.apiToken = it },
             visualTransformation = PasswordVisualTransformation(),
             singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         )
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(stringResource(R.string.pi_hole_connection_label_show_advance_options))
             Switch(checked = showAdvanceOptions, onCheckedChange = { showAdvanceOptions = it })
@@ -301,106 +302,125 @@ fun PiHoleConnectionScreen(
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(stringResource(R.string.pi_hole_connection_label_use_https))
-                Switch(checked = viewModel.protocol == URLProtocol.HTTPS, onCheckedChange = {
-                    val protocol = if (it) URLProtocol.HTTPS else URLProtocol.HTTP
-                    if ((viewModel.protocol == URLProtocol.HTTP && viewModel.port == HTTP.defaultPort.toString()) || (viewModel.protocol == URLProtocol.HTTPS && viewModel.port == HTTPS.defaultPort.toString())) {
-                        viewModel.port = protocol.toKtorURLProtocol().defaultPort.toString()
-                    }
-                    viewModel.protocol = protocol
-                })
+                Switch(
+                    checked = viewModel.protocol == URLProtocol.HTTPS,
+                    onCheckedChange = {
+                        val protocol = if (it) URLProtocol.HTTPS else URLProtocol.HTTP
+                        if (
+                            (viewModel.protocol == URLProtocol.HTTP &&
+                                viewModel.port == HTTP.defaultPort.toString()) ||
+                                (viewModel.protocol == URLProtocol.HTTPS &&
+                                    viewModel.port == HTTPS.defaultPort.toString())
+                        ) {
+                            viewModel.port = protocol.toKtorURLProtocol().defaultPort.toString()
+                        }
+                        viewModel.protocol = protocol
+                    },
+                )
             }
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(stringResource(R.string.pi_hole_connection_label_trust_all_certificates))
-                Switch(checked = viewModel.trustAllCertificates,
-                    onCheckedChange = { viewModel.trustAllCertificates = it })
+                Switch(
+                    checked = viewModel.trustAllCertificates,
+                    onCheckedChange = { viewModel.trustAllCertificates = it },
+                )
             }
-            OutlinedTextField(modifier = Modifier
-                .fillMaxWidth()
-                .onGloballyPositioned {
-                    positionMap[viewModel::basicAuthUsername.name] = it.positionInParent().y
-                }
-                .onFocusEvent { focusState ->
-                    if (focusState.isFocused) {
-                        viewModel.viewModelScope.launch {
-                            positionMap[viewModel::basicAuthUsername.name]?.let {
-                                scrollState.scrollTo(
-                                    it.toInt()
-                                )
-                            }
+            OutlinedTextField(
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .onGloballyPositioned {
+                            positionMap[viewModel::basicAuthUsername.name] = it.positionInParent().y
                         }
-                    }
+                        .onFocusEvent { focusState ->
+                            if (focusState.isFocused) {
+                                viewModel.viewModelScope.launch {
+                                    positionMap[viewModel::basicAuthUsername.name]?.let {
+                                        scrollState.scrollTo(it.toInt())
+                                    }
+                                }
+                            }
+                        },
+                label = {
+                    Text(stringResource(R.string.pi_hole_connection_label_basic_auth_username))
                 },
-                label = { Text(stringResource(R.string.pi_hole_connection_label_basic_auth_username)) },
                 value = viewModel.basicAuthUsername,
                 onValueChange = { viewModel.basicAuthUsername = it },
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             )
-            OutlinedTextField(modifier = Modifier
-                .fillMaxWidth()
-                .onGloballyPositioned {
-                    positionMap[viewModel::basicAuthPassword.name] = it.positionInParent().y
-                }
-                .onFocusEvent { focusState ->
-                    if (focusState.isFocused) {
-                        viewModel.viewModelScope.launch {
-                            positionMap[viewModel::basicAuthPassword.name]?.let {
-                                scrollState.scrollTo(
-                                    it.toInt()
-                                )
-                            }
+            OutlinedTextField(
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .onGloballyPositioned {
+                            positionMap[viewModel::basicAuthPassword.name] = it.positionInParent().y
                         }
-                    }
+                        .onFocusEvent { focusState ->
+                            if (focusState.isFocused) {
+                                viewModel.viewModelScope.launch {
+                                    positionMap[viewModel::basicAuthPassword.name]?.let {
+                                        scrollState.scrollTo(it.toInt())
+                                    }
+                                }
+                            }
+                        },
+                label = {
+                    Text(stringResource(R.string.pi_hole_connection_label_basic_auth_password))
                 },
-                label = { Text(stringResource(R.string.pi_hole_connection_label_basic_auth_password)) },
                 value = viewModel.basicAuthPassword,
                 onValueChange = { viewModel.basicAuthPassword = it },
                 visualTransformation = PasswordVisualTransformation(),
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             )
-            OutlinedTextField(modifier = Modifier
-                .fillMaxWidth()
-                .onGloballyPositioned {
-                    positionMap[viewModel::basicAuthRealm.name] = it.positionInParent().y
-                }
-                .onFocusEvent { focusState ->
-                    if (focusState.isFocused) {
-                        viewModel.viewModelScope.launch {
-                            positionMap[viewModel::basicAuthRealm.name]?.let {
-                                scrollState.scrollTo(
-                                    it.toInt()
-                                )
-                            }
+            OutlinedTextField(
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .onGloballyPositioned {
+                            positionMap[viewModel::basicAuthRealm.name] = it.positionInParent().y
                         }
-                    }
+                        .onFocusEvent { focusState ->
+                            if (focusState.isFocused) {
+                                viewModel.viewModelScope.launch {
+                                    positionMap[viewModel::basicAuthRealm.name]?.let {
+                                        scrollState.scrollTo(it.toInt())
+                                    }
+                                }
+                            }
+                        },
+                label = {
+                    Text(stringResource(R.string.pi_hole_connection_label_basic_auth_realm))
                 },
-                label = { Text(stringResource(R.string.pi_hole_connection_label_basic_auth_realm)) },
                 value = viewModel.basicAuthRealm,
                 onValueChange = { viewModel.basicAuthRealm = it },
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             )
         }
-        OutlinedButton(modifier = Modifier.fillMaxWidth(), onClick = {
-            viewModel.viewModelScope.launch {
-                viewModel.save()
-                navController.navigateUp()
-            }
-        }) {
+        OutlinedButton(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                viewModel.viewModelScope.launch {
+                    viewModel.save()
+                    navController.navigateUp()
+                }
+            },
+        ) {
             Text(stringResource(R.string.pi_hole_connection_save))
         }
         if (viewModel.shouldShowDeleteButton) {
-            Button(modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                onClick = { isDeleteAlertDialogExpanded = true }) {
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                colors =
+                    ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                onClick = { isDeleteAlertDialogExpanded = true },
+            ) {
                 Text(stringResource(R.string.pi_hole_connection_remove))
             }
         }

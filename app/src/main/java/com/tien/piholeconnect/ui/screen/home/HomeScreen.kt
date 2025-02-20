@@ -52,11 +52,11 @@ import com.tien.piholeconnect.ui.theme.success
 import com.tien.piholeconnect.ui.theme.successContainer
 import com.tien.piholeconnect.ui.theme.warningContainer
 import com.tien.piholeconnect.util.SnackbarErrorEffect
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.text.DateFormat.getTimeInstance
 import java.util.Date
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,18 +65,16 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
 
     var isDisableDialogVisible by rememberSaveable { mutableStateOf(false) }
 
-    val totalQueries: Int by animateIntAsState(
-        viewModel.totalQueries, label = "Total queries"
-    )
-    val totalBlockedQueries: Int by animateIntAsState(
-        viewModel.totalBlockedQueries, label = "Total blocked queries"
-    )
-    val queryBlockingPercentage: Float by animateFloatAsState(
-        viewModel.queryBlockingPercentage.toFloat(), label = "Query blocking percentage"
-    )
-    val blockedDomainListCount: Int by animateIntAsState(
-        viewModel.blockedDomainListCount, label = "Blocked domain list count"
-    )
+    val totalQueries: Int by animateIntAsState(viewModel.totalQueries, label = "Total queries")
+    val totalBlockedQueries: Int by
+        animateIntAsState(viewModel.totalBlockedQueries, label = "Total blocked queries")
+    val queryBlockingPercentage: Float by
+        animateFloatAsState(
+            viewModel.queryBlockingPercentage.toFloat(),
+            label = "Query blocking percentage",
+        )
+    val blockedDomainListCount: Int by
+        animateIntAsState(viewModel.blockedDomainListCount, label = "Blocked domain list count")
 
     val successColor = MaterialTheme.colorScheme.success
     val errorColor = MaterialTheme.colorScheme.error
@@ -86,108 +84,118 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     SnackbarErrorEffect(viewModel.error, snackbarHostState)
 
     DisposableEffect(Unit) {
-        val job = viewModel.viewModelScope.launch {
-            while (true) {
-                viewModel.refresh()
-                delay(10_000)
+        val job =
+            viewModel.viewModelScope.launch {
+                while (true) {
+                    viewModel.refresh()
+                    delay(10_000)
+                }
             }
-        }
 
-        onDispose {
-            job.cancel()
-        }
+        onDispose { job.cancel() }
     }
 
     TopBarProgressIndicator(visible = !viewModel.hasBeenLoaded && viewModel.isRefreshing)
 
     if (isDisableDialogVisible) {
         if (viewModel.isAdsBlockingEnabled) {
-            DisableAdsBlockingAlertDialog(onDismissRequest = { isDisableDialogVisible = false },
+            DisableAdsBlockingAlertDialog(
+                onDismissRequest = { isDisableDialogVisible = false },
                 onDurationButtonClick = {
                     viewModel.viewModelScope.launch {
                         isDisableDialogVisible = false
                         viewModel.disable(it)
                     }
-                })
+                },
+            )
         } else {
-            EnableAdsBlockingAlertDialog(onDismissRequest = { isDisableDialogVisible = false },
+            EnableAdsBlockingAlertDialog(
+                onDismissRequest = { isDisableDialogVisible = false },
                 onConfirmRequest = {
                     viewModel.viewModelScope.launch {
                         isDisableDialogVisible = false
                         viewModel.enable()
                     }
-                })
+                },
+            )
         }
     }
 
     var isRefreshing by remember { mutableStateOf(false) }
     val pullToRefreshState = rememberPullToRefreshState()
 
-    Scaffold(Modifier.fillMaxHeight(),
+    Scaffold(
+        Modifier.fillMaxHeight(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
-            PiHoleSwitchFloatingActionButton(isAdsBlockingEnabled = viewModel.isAdsBlockingEnabled,
+            PiHoleSwitchFloatingActionButton(
+                isAdsBlockingEnabled = viewModel.isAdsBlockingEnabled,
                 isLoading = viewModel.isPiHoleSwitchLoading,
-                onClick = { isDisableDialogVisible = true })
-        }) {
-        PullToRefreshBox(state = pullToRefreshState, isRefreshing = isRefreshing, onRefresh = {
-            isRefreshing = true
-            viewModel.viewModelScope.launch {
-                viewModel.refresh()
-                isRefreshing = false
-            }
-        }) {
+                onClick = { isDisableDialogVisible = true },
+            )
+        },
+    ) {
+        PullToRefreshBox(
+            state = pullToRefreshState,
+            isRefreshing = isRefreshing,
+            onRefresh = {
+                isRefreshing = true
+                viewModel.viewModelScope.launch {
+                    viewModel.refresh()
+                    isRefreshing = false
+                }
+            },
+        ) {
             Column(
-                Modifier
-                    .fillMaxHeight()
+                Modifier.fillMaxHeight()
                     .verticalScroll(rememberScrollState())
                     .heightIn(min = 500.dp)
                     .padding(it)
                     .padding(start = 15.dp, top = 15.dp, end = 15.dp, bottom = 80.dp),
-                verticalArrangement = Arrangement.spacedBy(15.dp)
+                verticalArrangement = Arrangement.spacedBy(15.dp),
             ) {
                 Column {
                     Row {
                         StatsCard(
                             name = {
-                                Text(buildAnnotatedString {
-                                    append(stringResource(R.string.home_total_queries))
-                                    append(" ")
-                                    withStyle(
-                                        SpanStyle(
-                                            fontSize = 9.sp,
-                                            baselineShift = BaselineShift.Superscript
-                                        )
-                                    ) {
-                                        append(
-                                            pluralStringResource(
-                                                R.plurals.home_unique_clients,
-                                                viewModel.uniqueClients,
-                                                viewModel.uniqueClients
+                                Text(
+                                    buildAnnotatedString {
+                                        append(stringResource(R.string.home_total_queries))
+                                        append(" ")
+                                        withStyle(
+                                            SpanStyle(
+                                                fontSize = 9.sp,
+                                                baselineShift = BaselineShift.Superscript,
                                             )
-                                        )
-                                    }
-                                }, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                        ) {
+                                            append(
+                                                pluralStringResource(
+                                                    R.plurals.home_unique_clients,
+                                                    viewModel.uniqueClients,
+                                                    viewModel.uniqueClients,
+                                                )
+                                            )
+                                        }
+                                    },
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
                             },
                             statistics = "%,d".format(totalQueries),
                             backGroundColor = MaterialTheme.colorScheme.successContainer,
-                            modifier = Modifier
-                                .padding(end = 2.5.dp)
-                                .weight(1f)
+                            modifier = Modifier.padding(end = 2.5.dp).weight(1f),
                         )
                         StatsCard(
                             name = {
                                 Text(
                                     stringResource(R.string.home_queries_blocked),
                                     maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
+                                    overflow = TextOverflow.Ellipsis,
                                 )
                             },
                             statistics = "%,d".format(totalBlockedQueries),
                             backGroundColor = MaterialTheme.colorScheme.infoContainer,
-                            modifier = Modifier
-                                .padding(start = 2.5.dp)
-                                .weight(1f)
+                            modifier = Modifier.padding(start = 2.5.dp).weight(1f),
                         )
                     }
                     Row(Modifier.padding(top = 5.dp)) {
@@ -196,65 +204,65 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                                 Text(
                                     stringResource(R.string.home_percent_blocked),
                                     maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
+                                    overflow = TextOverflow.Ellipsis,
                                 )
                             },
                             statistics = "%.2f%%".format(queryBlockingPercentage),
                             backGroundColor = MaterialTheme.colorScheme.warningContainer,
-                            modifier = Modifier
-                                .padding(end = 2.5.dp)
-                                .weight(1f)
+                            modifier = Modifier.padding(end = 2.5.dp).weight(1f),
                         )
                         StatsCard(
                             name = {
                                 Text(
                                     stringResource(R.string.home_blocklist),
                                     maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
+                                    overflow = TextOverflow.Ellipsis,
                                 )
                             },
                             statistics = "%,d".format(blockedDomainListCount),
                             backGroundColor = MaterialTheme.colorScheme.errorContainer,
-                            modifier = Modifier
-                                .padding(start = 2.5.dp)
-                                .weight(1f)
+                            modifier = Modifier.padding(start = 2.5.dp).weight(1f),
                         )
                     }
                 }
 
                 val queriesOverTimeLabel = stringResource(R.string.home_queries_over_time)
-                val queriesOverTimeData = remember(viewModel.queriesOverTime) {
-                    LineChartData(
-                        label = queriesOverTimeLabel,
-                        data = viewModel.queriesOverTime.map { Pair(it.key, it.value) },
-                        color = successColor
-                    )
-                }
+                val queriesOverTimeData =
+                    remember(viewModel.queriesOverTime) {
+                        LineChartData(
+                            label = queriesOverTimeLabel,
+                            data = viewModel.queriesOverTime.map { Pair(it.key, it.value) },
+                            color = successColor,
+                        )
+                    }
 
                 val adsOverTimeLabel = stringResource(R.string.home_ads_over_time)
-                val adsOverTimeData = remember(viewModel.adsOverTime) {
-                    LineChartData(
-                        label = adsOverTimeLabel,
-                        data = viewModel.adsOverTime.map { Pair(it.key, it.value) },
-                        color = errorColor
-                    )
-                }
+                val adsOverTimeData =
+                    remember(viewModel.adsOverTime) {
+                        LineChartData(
+                            label = adsOverTimeLabel,
+                            data = viewModel.adsOverTime.map { Pair(it.key, it.value) },
+                            color = errorColor,
+                        )
+                    }
 
                 Card(Modifier.weight(1f)) {
                     Column {
                         Column(Modifier.padding(15.dp)) {
                             Text(
                                 stringResource(R.string.home_queries_chart_title),
-                                style = MaterialTheme.typography.titleLarge
+                                style = MaterialTheme.typography.titleLarge,
                             )
                         }
-                        LineChart(Modifier.fillMaxSize(),
+                        LineChart(
+                            Modifier.fillMaxSize(),
                             data = listOf(queriesOverTimeData, adsOverTimeData),
-                            xAxisFormatter = remember { getTimeInstance(DateFormat.SHORT) }.let { dateTime ->
-                                { value ->
-                                    dateTime.format(Date(value.toLong() * 1000))
-                                }
-                            })
+                            xAxisFormatter =
+                                remember { getTimeInstance(DateFormat.SHORT) }
+                                    .let { dateTime ->
+                                        { value -> dateTime.format(Date(value.toLong() * 1000)) }
+                                    },
+                        )
                     }
                 }
             }

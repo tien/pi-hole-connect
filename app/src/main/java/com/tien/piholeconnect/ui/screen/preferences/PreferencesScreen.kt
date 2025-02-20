@@ -37,91 +37,107 @@ import com.tien.piholeconnect.model.Theme
 import com.tien.piholeconnect.model.UserPreferences
 import kotlinx.coroutines.launch
 
-private val PreferenceItemModifier = Modifier
-    .fillMaxWidth()
-    .height(56.dp)
+private val PreferenceItemModifier = Modifier.fillMaxWidth().height(56.dp)
 
 @Composable
 fun PreferencesScreen(
-    navController: NavHostController, viewModel: PreferencesViewModel = hiltViewModel()
+    navController: NavHostController,
+    viewModel: PreferencesViewModel = hiltViewModel(),
 ) {
-    val userPreferences by viewModel.userPreferencesFlow.collectAsState(initial = UserPreferences.getDefaultInstance())
+    val userPreferences by
+        viewModel.userPreferencesFlow.collectAsState(initial = UserPreferences.getDefaultInstance())
 
     Column(
-        Modifier
-            .verticalScroll(rememberScrollState())
-            .padding(vertical = 15.dp),
-        verticalArrangement = Arrangement.spacedBy(5.dp)
+        Modifier.verticalScroll(rememberScrollState()).padding(vertical = 15.dp),
+        verticalArrangement = Arrangement.spacedBy(5.dp),
     ) {
-        ListItem(leadingContent = {
-            Text(
-                stringResource(R.string.preferences_my_pi_hole),
-                style = MaterialTheme.typography.bodySmall
-            )
-        }, headlineContent = {})
+        ListItem(
+            leadingContent = {
+                Text(
+                    stringResource(R.string.preferences_my_pi_hole),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            },
+            headlineContent = {},
+        )
         userPreferences.piHoleConnectionsList.forEach {
-            ListItem(modifier = Modifier.clickable { navController.navigate("${Screen.PiHoleConnection.route}?id=${it.id}") },
+            ListItem(
+                modifier =
+                    Modifier.clickable {
+                        navController.navigate("${Screen.PiHoleConnection.route}?id=${it.id}")
+                    },
                 leadingContent = {
-                    Icon(
-                        Icons.Default.Router, contentDescription = "Pi-hole ${it.name}"
-                    )
+                    Icon(Icons.Default.Router, contentDescription = "Pi-hole ${it.name}")
                 },
                 headlineContent = { Text(it.name) },
-                supportingContent = { Text(it.host) })
+                supportingContent = { Text(it.host) },
+            )
         }
         if (userPreferences.piHoleConnectionsCount < 5) {
-            ListItem(modifier = Modifier.clickable { navController.navigate(Screen.PiHoleConnection.route) },
+            ListItem(
+                modifier =
+                    Modifier.clickable { navController.navigate(Screen.PiHoleConnection.route) },
                 leadingContent = {
-                    Icon(
-                        Icons.Default.AddCircleOutline, contentDescription = null
+                    Icon(Icons.Default.AddCircleOutline, contentDescription = null)
+                },
+                headlineContent = { Text(stringResource(R.string.preferences_add_pi_hole)) },
+            )
+        }
+        Column(Modifier.selectableGroup()) {
+            ListItem(
+                leadingContent = {
+                    Text(
+                        stringResource(R.string.preferences_theme),
+                        style = MaterialTheme.typography.bodySmall,
                     )
                 },
-                headlineContent = { Text(stringResource(R.string.preferences_add_pi_hole)) })
-        }
-        Column(
-            Modifier.selectableGroup()
-        ) {
-            ListItem(leadingContent = {
-                Text(
-                    stringResource(R.string.preferences_theme),
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }, headlineContent = {})
-            Theme.entries.filter { it != Theme.UNRECOGNIZED }.forEach { theme ->
-                ListItem(modifier = PreferenceItemModifier.selectable(
-                    selected = theme == userPreferences.theme, onClick = {
-                        viewModel.viewModelScope.launch {
-                            viewModel.updateUserPreferences {
-                                it.toBuilder().setTheme(theme).build()
-                            }
-                        }
-                    }, role = Role.RadioButton
-                ), leadingContent = {
-                    RadioButton(
-                        selected = theme == userPreferences.theme, onClick = null
+                headlineContent = {},
+            )
+            Theme.entries
+                .filter { it != Theme.UNRECOGNIZED }
+                .forEach { theme ->
+                    ListItem(
+                        modifier =
+                            PreferenceItemModifier.selectable(
+                                selected = theme == userPreferences.theme,
+                                onClick = {
+                                    viewModel.viewModelScope.launch {
+                                        viewModel.updateUserPreferences {
+                                            it.toBuilder().setTheme(theme).build()
+                                        }
+                                    }
+                                },
+                                role = Role.RadioButton,
+                            ),
+                        leadingContent = {
+                            RadioButton(selected = theme == userPreferences.theme, onClick = null)
+                        },
+                        headlineContent = {
+                            Text(text = theme.name.lowercase().replaceFirstChar { it.titlecase() })
+                        },
                     )
-                }, headlineContent = {
-                    Text(text = theme.name.lowercase().replaceFirstChar { it.titlecase() })
-                })
-            }
+                }
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            ListItem(modifier = PreferenceItemModifier.selectable(
-                selected = userPreferences.useDynamicColor, onClick = {
-                    viewModel.viewModelScope.launch {
-                        viewModel.updateUserPreferences {
-                            it.toBuilder().setUseDynamicColor(!it.useDynamicColor).build()
-                        }
-                    }
-                }, role = Role.Switch
-            ),
+            ListItem(
+                modifier =
+                    PreferenceItemModifier.selectable(
+                        selected = userPreferences.useDynamicColor,
+                        onClick = {
+                            viewModel.viewModelScope.launch {
+                                viewModel.updateUserPreferences {
+                                    it.toBuilder().setUseDynamicColor(!it.useDynamicColor).build()
+                                }
+                            }
+                        },
+                        role = Role.Switch,
+                    ),
                 leadingContent = { Icon(Icons.Default.Palette, contentDescription = null) },
                 trailingContent = {
                     Switch(checked = userPreferences.useDynamicColor, onCheckedChange = null)
                 },
-                headlineContent = {
-                    Text(stringResource(R.string.preferences_dynamic_color))
-                })
+                headlineContent = { Text(stringResource(R.string.preferences_dynamic_color)) },
+            )
         }
     }
 }

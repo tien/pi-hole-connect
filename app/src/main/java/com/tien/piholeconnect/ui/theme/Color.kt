@@ -66,7 +66,6 @@ val md_theme_dark_surfaceTint = Color(0xFF5BDBBF)
 val md_theme_dark_outlineVariant = Color(0xFF3F4945)
 val md_theme_dark_scrim = Color(0xFF000000)
 
-
 val seed = Color(0xFF004D40)
 val Info = Color(0xFF29B6F6)
 val Success = Color(0xFF66BB6A)
@@ -96,8 +95,9 @@ val dark_onWarning = Color(0xFF472A00)
 val dark_WarningContainer = Color(0xFF663E00)
 val dark_onWarningContainer = Color(0xFFFFDDB9)
 
-fun Color.toColorInt() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-    rgb(this.red, this.green, this.blue)
-} else {
-    rgb((this.red * 255).toInt(), (this.green * 255).toInt(), (this.blue * 255).toInt())
-}
+fun Color.toColorInt() =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        rgb(this.red, this.green, this.blue)
+    } else {
+        rgb((this.red * 255).toInt(), (this.green * 255).toInt(), (this.blue * 255).toInt())
+    }

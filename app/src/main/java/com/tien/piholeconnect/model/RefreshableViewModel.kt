@@ -25,16 +25,18 @@ abstract class RefreshableViewModel : ViewModel() {
 
     suspend fun refresh() {
         refreshJob?.cancel()
-        refreshJob = viewModelScope.launch {
-            kotlin.runCatching {
-                error = null
-                isRefreshing = true
-                queueRefresh()
+        refreshJob =
+            viewModelScope.launch {
+                kotlin
+                    .runCatching {
+                        error = null
+                        isRefreshing = true
+                        queueRefresh()
+                    }
+                    .onFailure(::onFailure)
+                    .onSuccess { onSuccess() }
+                isRefreshing = false
             }
-                .onFailure(::onFailure)
-                .onSuccess { onSuccess() }
-            isRefreshing = false
-        }
         refreshJob?.join()
     }
 }

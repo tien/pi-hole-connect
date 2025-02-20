@@ -14,59 +14,33 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 
-enum class AnswerCategory { ALLOW, BLOCK, CACHE, UNKNOWN }
-
-@Serializable
-enum class AnswerType(val category: AnswerCategory) {
-    @SerialName("1")
-    GRAVITY_BLOCK(AnswerCategory.BLOCK),
-
-    @SerialName("2")
-    UPSTREAM(AnswerCategory.ALLOW),
-
-    @SerialName("3")
-    LOCAL_CACHE(AnswerCategory.CACHE),
-
-    @SerialName("4")
-    REGEX_BLOCK(AnswerCategory.BLOCK),
-
-    @SerialName("5")
-    EXACT_BLOCK(AnswerCategory.BLOCK),
-
-    @SerialName("6")
-    EXTERNAL_IP_BLOCK(AnswerCategory.BLOCK),
-
-    @SerialName("7")
-    EXTERNAL_NULL_BLOCK(AnswerCategory.BLOCK),
-
-    @SerialName("8")
-    EXTERNAL_NXRA_BLOCK(AnswerCategory.BLOCK),
-
-    @SerialName("9")
-    CNAME_GRAVITY_BLOCK(AnswerCategory.BLOCK),
-
-    @SerialName("10")
-    CNAME_REGEX_BLOCK(AnswerCategory.BLOCK),
-
-    @SerialName("11")
-    CNAME_EXACT_BLOCK(AnswerCategory.BLOCK),
-
-    @SerialName("12")
-    RETRIED(AnswerCategory.ALLOW),
-
-    @SerialName("13")
-    RETRIED_IGNORED(AnswerCategory.ALLOW),
-
-    @SerialName("14")
-    ALREADY_FORWARDED(AnswerCategory.ALLOW),
-
-    UNKNOWN(AnswerCategory.UNKNOWN)
+enum class AnswerCategory {
+    ALLOW,
+    BLOCK,
+    CACHE,
+    UNKNOWN,
 }
 
 @Serializable
-data class PiHoleLogs(
-    val data: List<PiHoleLog> = listOf()
-)
+enum class AnswerType(val category: AnswerCategory) {
+    @SerialName("1") GRAVITY_BLOCK(AnswerCategory.BLOCK),
+    @SerialName("2") UPSTREAM(AnswerCategory.ALLOW),
+    @SerialName("3") LOCAL_CACHE(AnswerCategory.CACHE),
+    @SerialName("4") REGEX_BLOCK(AnswerCategory.BLOCK),
+    @SerialName("5") EXACT_BLOCK(AnswerCategory.BLOCK),
+    @SerialName("6") EXTERNAL_IP_BLOCK(AnswerCategory.BLOCK),
+    @SerialName("7") EXTERNAL_NULL_BLOCK(AnswerCategory.BLOCK),
+    @SerialName("8") EXTERNAL_NXRA_BLOCK(AnswerCategory.BLOCK),
+    @SerialName("9") CNAME_GRAVITY_BLOCK(AnswerCategory.BLOCK),
+    @SerialName("10") CNAME_REGEX_BLOCK(AnswerCategory.BLOCK),
+    @SerialName("11") CNAME_EXACT_BLOCK(AnswerCategory.BLOCK),
+    @SerialName("12") RETRIED(AnswerCategory.ALLOW),
+    @SerialName("13") RETRIED_IGNORED(AnswerCategory.ALLOW),
+    @SerialName("14") ALREADY_FORWARDED(AnswerCategory.ALLOW),
+    UNKNOWN(AnswerCategory.UNKNOWN),
+}
+
+@Serializable data class PiHoleLogs(val data: List<PiHoleLog> = listOf())
 
 @Serializable(PiHoleLogSerializer::class)
 data class PiHoleLog(
@@ -75,7 +49,7 @@ data class PiHoleLog(
     val requestedDomain: String,
     val client: String,
     val answerType: AnswerType,
-    val responseTime: Int
+    val responseTime: Int,
 )
 
 object PiHoleLogSerializer : KSerializer<PiHoleLog> {
@@ -102,8 +76,11 @@ object PiHoleLogSerializer : KSerializer<PiHoleLog> {
             queryType = jsonArray[1].jsonPrimitive.content,
             requestedDomain = jsonArray[2].jsonPrimitive.content,
             client = jsonArray[3].jsonPrimitive.content,
-            answerType = AnswerType.entries.getOrElse(jsonArray[4].jsonPrimitive.int - 1) { AnswerType.UNKNOWN },
-            responseTime = jsonArray[7].jsonPrimitive.int
+            answerType =
+                AnswerType.entries.getOrElse(jsonArray[4].jsonPrimitive.int - 1) {
+                    AnswerType.UNKNOWN
+                },
+            responseTime = jsonArray[7].jsonPrimitive.int,
         )
     }
 }

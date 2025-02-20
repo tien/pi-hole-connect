@@ -69,13 +69,11 @@ import com.tien.piholeconnect.util.toKtorURLProtocol
 import io.ktor.http.URLBuilder
 import kotlinx.coroutines.launch
 
-
 @Composable
-fun App(
-    preferencesViewModel: PreferencesViewModel = hiltViewModel(),
-) {
+fun App(preferencesViewModel: PreferencesViewModel = hiltViewModel()) {
     val context = LocalContext.current
-    val userPreferences by preferencesViewModel.userPreferencesFlow.collectAsStateWithLifecycle(null)
+    val userPreferences by
+        preferencesViewModel.userPreferencesFlow.collectAsStateWithLifecycle(null)
     val selectedPiHole by preferencesViewModel.selectedPiHoleFlow.collectAsStateWithLifecycle(null)
 
     if (userPreferences == null) return
@@ -84,38 +82,45 @@ fun App(
     val navController = rememberNavController()
     val systemUiController = rememberSystemUiController()
 
-    val isDarkTheme = when (userPreferences!!.theme) {
-        Theme.DARK -> true
-        Theme.LIGHT -> false
-        else -> isSystemInDarkTheme()
-    }
+    val isDarkTheme =
+        when (userPreferences!!.theme) {
+            Theme.DARK -> true
+            Theme.LIGHT -> false
+            else -> isSystemInDarkTheme()
+        }
 
-    val optionsMenuItems = mutableSetOf(
-        TopBarOptionsMenuItem(
-            Screen.Preferences.route, Screen.Preferences.labelResourceId, Icons.TwoTone.Settings
+    val optionsMenuItems =
+        mutableSetOf(
+            TopBarOptionsMenuItem(
+                Screen.Preferences.route,
+                Screen.Preferences.labelResourceId,
+                Icons.TwoTone.Settings,
+            )
         )
-    )
 
     selectedPiHole?.let {
         optionsMenuItems.add(
             TopBarOptionsMenuItem(
                 URLBuilder(
-                    protocol = it.protocol.toKtorURLProtocol(),
-                    host = it.host,
-                    port = it.port,
-                    user = it.basicAuthUsername.ifBlank { null },
-                    password = it.basicAuthPassword.ifBlank { null },
-                    pathSegments = listOf("admin")
-                ).buildString(),
+                        protocol = it.protocol.toKtorURLProtocol(),
+                        host = it.host,
+                        port = it.port,
+                        user = it.basicAuthUsername.ifBlank { null },
+                        password = it.basicAuthPassword.ifBlank { null },
+                        pathSegments = listOf("admin"),
+                    )
+                    .buildString(),
                 R.string.options_menu_web_dashboard,
                 Icons.AutoMirrored.TwoTone.OpenInNew,
-                isExternalLink = true
+                isExternalLink = true,
             )
         )
     }
     optionsMenuItems.add(
         TopBarOptionsMenuItem(
-            Screen.TipJar.route, Screen.TipJar.labelResourceId, Icons.TwoTone.Paid
+            Screen.TipJar.route,
+            Screen.TipJar.labelResourceId,
+            Icons.TwoTone.Paid,
         )
     )
     optionsMenuItems.add(
@@ -123,67 +128,71 @@ fun App(
             stringResource(R.string.bug_report_url),
             R.string.options_menu_bug_report,
             Icons.TwoTone.BugReport,
-            isExternalLink = true
+            isExternalLink = true,
         )
     )
 
-    val tabItems = listOf(
-        BottomTabItem(Screen.Home, Icons.TwoTone.Home),
-        BottomTabItem(Screen.Statistics, Icons.TwoTone.Insights),
-        BottomTabItem(Screen.FilterRules, Icons.TwoTone.Shield),
-        BottomTabItem(Screen.Log, Icons.TwoTone.Analytics),
-    )
+    val tabItems =
+        listOf(
+            BottomTabItem(Screen.Home, Icons.TwoTone.Home),
+            BottomTabItem(Screen.Statistics, Icons.TwoTone.Insights),
+            BottomTabItem(Screen.FilterRules, Icons.TwoTone.Shield),
+            BottomTabItem(Screen.Log, Icons.TwoTone.Analytics),
+        )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val currentScreen = currentRoute?.let(::screenForRoute)
-    val title = currentRoute?.let { stringResource(screenForRoute(it).labelResourceId) }
-        ?: stringResource(R.string.app_name)
+    val title =
+        currentRoute?.let { stringResource(screenForRoute(it).labelResourceId) }
+            ?: stringResource(R.string.app_name)
 
-    val defaultOptionsMenu = @Composable {
-        OptionsMenu(
-            selectedPiHoleConnectionId = userPreferences!!.selectedPiHoleConnectionId,
-            piHoleConnections = userPreferences!!.piHoleConnectionsList,
-            optionsMenuItems = optionsMenuItems,
-            onOptionsMenuItemClick = {
-                if (!it.isExternalLink) {
-                    navController.navigate(it.key)
-                } else {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it.key))
-                    runCatching { context.startActivity(intent) }
-                }
-            },
-            onPiHoleConnectionClick = { piHoleConnection ->
-                preferencesViewModel.viewModelScope.launch {
-                    preferencesViewModel.updateUserPreferences {
-                        it.toBuilder().setSelectedPiHoleConnectionId(piHoleConnection.id).build()
+    val defaultOptionsMenu =
+        @Composable {
+            OptionsMenu(
+                selectedPiHoleConnectionId = userPreferences!!.selectedPiHoleConnectionId,
+                piHoleConnections = userPreferences!!.piHoleConnectionsList,
+                optionsMenuItems = optionsMenuItems,
+                onOptionsMenuItemClick = {
+                    if (!it.isExternalLink) {
+                        navController.navigate(it.key)
+                    } else {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it.key))
+                        runCatching { context.startActivity(intent) }
                     }
-                }
-            },
-        )
-    }
+                },
+                onPiHoleConnectionClick = { piHoleConnection ->
+                    preferencesViewModel.viewModelScope.launch {
+                        preferencesViewModel.updateUserPreferences {
+                            it.toBuilder()
+                                .setSelectedPiHoleConnectionId(piHoleConnection.id)
+                                .build()
+                        }
+                    }
+                },
+            )
+        }
 
     @Composable
     fun ConnectionGuard(content: @Composable () -> Unit) {
         if (selectedPiHole == null) {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .padding(24.dp), contentAlignment = Alignment.Center
-            ) {
+            Box(Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
                 Button(
                     onClick = { navController.navigate(Screen.PiHoleConnection.route) },
-                    Modifier.fillMaxWidth()
+                    Modifier.fillMaxWidth(),
                 ) {
                     Icon(
                         Icons.Default.AddCircleOutline,
                         null,
-                        Modifier.size(ButtonDefaults.IconSize * 2)
+                        Modifier.size(ButtonDefaults.IconSize * 2),
                     )
                     Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     Text(
                         stringResource(R.string.add_pi_hole_button),
-                        style = MaterialTheme.typography.labelLarge.copy(fontSize = MaterialTheme.typography.labelLarge.fontSize * 2)
+                        style =
+                            MaterialTheme.typography.labelLarge.copy(
+                                fontSize = MaterialTheme.typography.labelLarge.fontSize * 2
+                            ),
                     )
                 }
             }
@@ -193,7 +202,8 @@ fun App(
     }
 
     PiHoleConnectTheme(
-        useDarkTheme = isDarkTheme, useDynamicColor = userPreferences?.useDynamicColor ?: false
+        useDarkTheme = isDarkTheme,
+        useDynamicColor = userPreferences?.useDynamicColor ?: false,
     ) {
         val themeColors = MaterialTheme.colorScheme
 
@@ -201,82 +211,71 @@ fun App(
             systemUiController.apply {
                 setStatusBarColor(themeColors.background)
                 setNavigationBarColor(
-                    themeColors.surfaceColorAtElevation(
-                        NavigationBarDefaults.Elevation
-                    )
+                    themeColors.surfaceColorAtElevation(NavigationBarDefaults.Elevation)
                 )
             }
         }
 
-        Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }, topBar = {
-            if (currentScreen?.options?.showTopAppBar != false) {
-                TopBar(title = title,
-                    backButtonEnabled = currentScreen?.options?.showBackButton ?: false,
-                    onBackButtonClick = { navController.navigateUp() },
-                    actions = {
-                        if (currentScreen?.options?.showMenus != false) {
-                            defaultOptionsMenu()
-                        }
-                    })
-            }
-        }, bottomBar = {
-            if (currentScreen?.options?.showTab != false) {
-                BottomTab(items = tabItems,
-                    currentRoute = currentRoute ?: Screen.Home.route,
-                    onBottomTabItemClick = {
-                        navController.navigate(it.screen.route) {
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = false
+        Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+            topBar = {
+                if (currentScreen?.options?.showTopAppBar != false) {
+                    TopBar(
+                        title = title,
+                        backButtonEnabled = currentScreen?.options?.showBackButton ?: false,
+                        onBackButtonClick = { navController.navigateUp() },
+                        actions = {
+                            if (currentScreen?.options?.showMenus != false) {
+                                defaultOptionsMenu()
                             }
-                            launchSingleTop = true
-                            restoreState = false
-                        }
-                    })
-            }
-        }) { padding ->
+                        },
+                    )
+                }
+            },
+            bottomBar = {
+                if (currentScreen?.options?.showTab != false) {
+                    BottomTab(
+                        items = tabItems,
+                        currentRoute = currentRoute ?: Screen.Home.route,
+                        onBottomTabItemClick = {
+                            navController.navigate(it.screen.route) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = false
+                                }
+                                launchSingleTop = true
+                                restoreState = false
+                            }
+                        },
+                    )
+                }
+            },
+        ) { padding ->
             NavHost(
                 navController = navController,
                 startDestination = Screen.Home.route,
-                modifier = Modifier.padding(padding)
+                modifier = Modifier.padding(padding),
             ) {
-                composable(Screen.Home.route) {
-                    ConnectionGuard {
-                        HomeScreen()
-                    }
-                }
+                composable(Screen.Home.route) { ConnectionGuard { HomeScreen() } }
                 composable(Screen.Statistics.route) {
-                    ConnectionGuard {
-                        StatisticsScreen(
-                            snackbarHostState = snackbarHostState
-                        )
-                    }
+                    ConnectionGuard { StatisticsScreen(snackbarHostState = snackbarHostState) }
                 }
                 composable(Screen.Log.route) {
-                    ConnectionGuard {
-                        LogScreen(actions = { defaultOptionsMenu() })
-                    }
+                    ConnectionGuard { LogScreen(actions = { defaultOptionsMenu() }) }
                 }
-                composable(Screen.FilterRules.route) {
-                    ConnectionGuard {
-                        FilterRulesScreen()
-                    }
-                }
+                composable(Screen.FilterRules.route) { ConnectionGuard { FilterRulesScreen() } }
                 composable(Screen.Preferences.route) {
-                    PreferencesScreen(
-                        navController = navController
-                    )
+                    PreferencesScreen(navController = navController)
                 }
                 composable(
                     "${Screen.PiHoleConnection.route}?id={id}",
-                    arguments = listOf(navArgument("id") { nullable = true })
+                    arguments = listOf(navArgument("id") { nullable = true }),
                 ) {
                     PiHoleConnectionScreen(
-                        connectionId = it.arguments?.getString("id"), navController = navController
+                        connectionId = it.arguments?.getString("id"),
+                        navController = navController,
                     )
                 }
-                composable(Screen.TipJar.route) {
-                    TipJarScreen()
-                }
+                composable(Screen.TipJar.route) { TipJarScreen() }
             }
         }
     }

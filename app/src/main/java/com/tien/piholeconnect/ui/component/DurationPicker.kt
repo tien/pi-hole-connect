@@ -47,46 +47,54 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 
-enum class TimeTextFieldType { PRIMARY, SECONDARY }
+enum class TimeTextFieldType {
+    PRIMARY,
+    SECONDARY,
+}
 
 @Composable
 fun TimeTextField(
     value: String,
     modifier: Modifier = Modifier,
     type: TimeTextFieldType,
-    onValueChange: (value: String) -> Unit
+    onValueChange: (value: String) -> Unit,
 ) {
     var focusState: FocusState? by rememberSaveable { mutableStateOf(null) }
 
-    val colors = when (type) {
-        TimeTextFieldType.PRIMARY -> {
-            OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                errorContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                focusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                unfocusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                disabledTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                errorTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                focusedBorderColor = Color.Transparent,
-                unfocusedBorderColor = Color.Transparent
-            )
-        }
+    val colors =
+        when (type) {
+            TimeTextFieldType.PRIMARY -> {
+                OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    errorContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    focusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    disabledTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    errorTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                )
+            }
 
-        TimeTextFieldType.SECONDARY -> OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
-            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
-            disabledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
-            errorContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
-            focusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            disabledTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            errorTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            focusedBorderColor = Color.Transparent,
-            unfocusedBorderColor = Color.Transparent
-        )
-    }
+            TimeTextFieldType.SECONDARY ->
+                OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor =
+                        MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
+                    unfocusedContainerColor =
+                        MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
+                    disabledContainerColor =
+                        MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
+                    errorContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp),
+                    focusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    errorTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                )
+        }
 
     TextField(
         value,
@@ -95,7 +103,8 @@ fun TimeTextField(
                 Text(
                     "00",
                     modifier = Modifier.fillMaxWidth(),
-                    style = MaterialTheme.typography.headlineMedium.copy(textAlign = TextAlign.Center)
+                    style =
+                        MaterialTheme.typography.headlineMedium.copy(textAlign = TextAlign.Center),
                 )
             }
         },
@@ -109,9 +118,7 @@ fun TimeTextField(
         },
         colors = colors,
         shape = MaterialTheme.shapes.medium,
-        modifier = modifier
-            .width(96.dp)
-            .onFocusChanged { focusState = it },
+        modifier = modifier.width(96.dp).onFocusChanged { focusState = it },
     )
 }
 
@@ -128,7 +135,7 @@ fun DurationPickerDialog(onDismissRequest: () -> Unit, onDurationConfirm: (Durat
             onMinutesChange = { minutes = it },
             onOkayClick = onDurationConfirm,
             onCancelClick = onDismissRequest,
-            autoFocus = true
+            autoFocus = true,
         )
     }
 }
@@ -154,14 +161,13 @@ fun DurationPicker(
     Card {
         Column(Modifier.width(IntrinsicSize.Max)) {
             Column(
-                Modifier
-                    .paddingFromBaseline(top = 28.dp)
+                Modifier.paddingFromBaseline(top = 28.dp)
                     .padding(top = 0.dp, end = 24.dp, bottom = 24.dp, start = 24.dp)
             ) {
                 Text(
                     stringResource(R.string.duration_picker_enter_time).uppercase(),
                     style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Normal
+                    fontWeight = FontWeight.Normal,
                 )
                 Row(Modifier.padding(top = 24.dp), verticalAlignment = Alignment.CenterVertically) {
                     TimeTextField(
@@ -172,13 +178,16 @@ fun DurationPicker(
                             if (it.isNumericOrWhitespace()) {
                                 onHoursChange(it)
                             }
-                        }
+                        },
                     )
                     Box(Modifier.width(24.dp)) {
                         Text(
                             ":",
                             modifier = Modifier.align(Alignment.Center),
-                            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
+                            style =
+                                MaterialTheme.typography.headlineMedium.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
                         )
                     }
                     TimeTextField(
@@ -188,34 +197,28 @@ fun DurationPicker(
                             if (it.isNumericOrWhitespace()) {
                                 onMinutesChange(it)
                             }
-                        }
+                        },
                     )
                 }
                 Row {
                     Text(
                         stringResource(R.string.duration_picker_dialog_hours),
                         style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier
-                            .weight(1f)
-                            .paddingFromBaseline(top = 20.dp),
-                        fontWeight = FontWeight.Normal
+                        modifier = Modifier.weight(1f).paddingFromBaseline(top = 20.dp),
+                        fontWeight = FontWeight.Normal,
                     )
                     Spacer(Modifier.width(24.dp))
                     Text(
                         stringResource(R.string.duration_picker_dialog_minutes),
                         style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier
-                            .weight(1f)
-                            .paddingFromBaseline(top = 20.dp),
-                        fontWeight = FontWeight.Normal
+                        modifier = Modifier.weight(1f).paddingFromBaseline(top = 20.dp),
+                        fontWeight = FontWeight.Normal,
                     )
                 }
             }
             Row(
-                Modifier
-                    .padding(end = 8.dp, bottom = 8.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                Modifier.padding(end = 8.dp, bottom = 8.dp).fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
             ) {
                 TextButton(onClick = onCancelClick) {
                     Text(stringResource(android.R.string.cancel).uppercase())
@@ -226,7 +229,8 @@ fun DurationPicker(
                         onOkayClick(
                             (hours.toIntOrNull() ?: 0).hours + (minutes.toIntOrNull() ?: 0).minutes
                         )
-                    }) {
+                    },
+                ) {
                     Text(stringResource(android.R.string.ok).uppercase())
                 }
             }
@@ -248,6 +252,7 @@ fun DurationPickerPreview() {
             onHoursChange = { hours = it },
             onMinutesChange = { minutes = it },
             onOkayClick = {},
-            onCancelClick = {})
+            onCancelClick = {},
+        )
     }
 }

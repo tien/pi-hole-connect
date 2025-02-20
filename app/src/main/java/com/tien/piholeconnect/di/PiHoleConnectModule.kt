@@ -30,19 +30,15 @@ import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
-import okhttp3.OkHttpClient
-import org.apache.http.conn.ssl.AllowAllHostnameVerifier
 import javax.inject.Qualifier
 import javax.inject.Singleton
 import javax.net.ssl.SSLContext
+import okhttp3.OkHttpClient
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier
 
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class DefaultHttpClient
+@Qualifier @Retention(AnnotationRetention.BINARY) annotation class DefaultHttpClient
 
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class TrustAllCertificatesHttpClient
+@Qualifier @Retention(AnnotationRetention.BINARY) annotation class TrustAllCertificatesHttpClient
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -53,22 +49,15 @@ abstract class PiHoleConnectModule {
     companion object {
         @Provides
         @Singleton
-        fun provideOkHttpClient(): OkHttpClient = OkHttpClient
-            .Builder()
-            .dns(Ipv4FirstDns())
-            .build()
+        fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder().dns(Ipv4FirstDns()).build()
 
         @Provides
         @DefaultHttpClient
         @Singleton
         fun provideDefaultHttpClient(okHttpClient: OkHttpClient): HttpClient =
             HttpClient(OkHttp) {
-                engine {
-                    preconfigured = okHttpClient
-                }
-                install(ContentNegotiation) {
-                    json(PiHoleSerializer.DefaultJson)
-                }
+                engine { preconfigured = okHttpClient }
+                install(ContentNegotiation) { json(PiHoleSerializer.DefaultJson) }
             }
 
         @SuppressLint("AllowAllHostnameVerifier")
@@ -79,30 +68,33 @@ abstract class PiHoleConnectModule {
             HttpClient(OkHttp) {
                 engine {
                     val trustManager = NaiveTrustManager()
-                    val sslContext = SSLContext.getInstance("TLS").apply {
-                        init(null, arrayOf(trustManager), null)
-                    }
-                    preconfigured = okHttpClient.newBuilder()
-                        .sslSocketFactory(
-                            sslSocketFactory = sslContext.socketFactory,
-                            trustManager = trustManager
-                        )
-                        .hostnameVerifier(AllowAllHostnameVerifier())
-                        .build()
+                    val sslContext =
+                        SSLContext.getInstance("TLS").apply {
+                            init(null, arrayOf(trustManager), null)
+                        }
+                    preconfigured =
+                        okHttpClient
+                            .newBuilder()
+                            .sslSocketFactory(
+                                sslSocketFactory = sslContext.socketFactory,
+                                trustManager = trustManager,
+                            )
+                            .hostnameVerifier(AllowAllHostnameVerifier())
+                            .build()
                 }
-                install(ContentNegotiation) {
-                    json(PiHoleSerializer.DefaultJson)
-                }
+                install(ContentNegotiation) { json(PiHoleSerializer.DefaultJson) }
             }
 
         @Provides
         @Singleton
-        fun provideUserPreferencesDataStore(@ApplicationContext appContext: Context): DataStore<UserPreferences> =
-            appContext.userPreferencesDataStore
+        fun provideUserPreferencesDataStore(
+            @ApplicationContext appContext: Context
+        ): DataStore<UserPreferences> = appContext.userPreferencesDataStore
 
         @Provides
-        fun provideUserPreferencesRepository(dataStore: DataStore<UserPreferences>): UserPreferencesRepository =
-            UserPreferencesRepositoryImpl(dataStore)
+        fun provideUserPreferencesRepository(
+            dataStore: DataStore<UserPreferences>
+        ): UserPreferencesRepository = UserPreferencesRepositoryImpl(dataStore)
 
         @Provides
         fun provideBarcodeScanner(): BarcodeScanner {

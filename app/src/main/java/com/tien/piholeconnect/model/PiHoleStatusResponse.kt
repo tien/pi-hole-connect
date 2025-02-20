@@ -5,17 +5,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 enum class PiHoleStatus {
-    @SerialName("enabled")
-    ENABLED,
-
-    @SerialName("disabled")
-    DISABLED,
-
-    UNKNOWN
+    @SerialName("enabled") ENABLED,
+    @SerialName("disabled") DISABLED,
+    UNKNOWN,
 }
 
 @Serializable
 data class PiHoleStatusResponse(
-    @SerialName("status")
-    val status: PiHoleStatus = PiHoleStatus.UNKNOWN
+    @SerialName("status") val status: PiHoleStatus = PiHoleStatus.UNKNOWN
 )

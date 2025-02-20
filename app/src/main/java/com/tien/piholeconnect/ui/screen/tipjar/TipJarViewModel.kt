@@ -15,14 +15,17 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class TipJarViewModel @Inject constructor(
-    private val inAppPurchase: InAppPurchase
-) : RefreshableViewModel() {
+class TipJarViewModel @Inject constructor(private val inAppPurchase: InAppPurchase) :
+    RefreshableViewModel() {
     private val productList =
-        listOf("coin", "coffee", "beer", "dinner").map { "com.tien.piholeconnect.tip.$it" }.map {
-            QueryProductDetailsParams.Product.newBuilder()
-                .setProductType(BillingClient.ProductType.INAPP).setProductId(it).build()
-        }
+        listOf("coin", "coffee", "beer", "dinner")
+            .map { "com.tien.piholeconnect.tip.$it" }
+            .map {
+                QueryProductDetailsParams.Product.newBuilder()
+                    .setProductType(BillingClient.ProductType.INAPP)
+                    .setProductId(it)
+                    .build()
+            }
 
     var tipOptions by mutableStateOf(listOf<ProductDetails>())
         private set
@@ -30,17 +33,22 @@ class TipJarViewModel @Inject constructor(
     override suspend fun queueRefresh() {
         val params = QueryProductDetailsParams.newBuilder().setProductList(productList).build()
         tipOptions =
-            inAppPurchase.billingClient.queryProductDetails(params).productDetailsList?.sortedBy { it.oneTimePurchaseOfferDetails?.priceAmountMicros }
-                ?: listOf()
+            inAppPurchase.billingClient.queryProductDetails(params).productDetailsList?.sortedBy {
+                it.oneTimePurchaseOfferDetails?.priceAmountMicros
+            } ?: listOf()
     }
 
     fun launchBillingFlow(activity: Activity, productDetails: ProductDetails) {
-        val params = BillingFlowParams.newBuilder().setProductDetailsParamsList(
-            listOf(
-                BillingFlowParams.ProductDetailsParams.newBuilder()
-                    .setProductDetails(productDetails).build()
-            )
-        ).build()
+        val params =
+            BillingFlowParams.newBuilder()
+                .setProductDetailsParamsList(
+                    listOf(
+                        BillingFlowParams.ProductDetailsParams.newBuilder()
+                            .setProductDetails(productDetails)
+                            .build()
+                    )
+                )
+                .build()
         inAppPurchase.billingClient.launchBillingFlow(activity, params)
     }
 }

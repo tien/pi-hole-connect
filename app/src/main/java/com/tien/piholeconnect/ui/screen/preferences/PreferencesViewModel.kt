@@ -6,8 +6,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class PreferencesViewModel @Inject constructor(private val userPreferencesRepository: UserPreferencesRepository) :
-    ViewModel() {
+class PreferencesViewModel
+@Inject
+constructor(private val userPreferencesRepository: UserPreferencesRepository) : ViewModel() {
     val selectedPiHoleFlow = userPreferencesRepository.selectedPiHoleFlow
     val userPreferencesFlow = userPreferencesRepository.userPreferencesFlow
     val updateUserPreferences = userPreferencesRepository::updateUserPreferences

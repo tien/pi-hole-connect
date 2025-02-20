@@ -10,33 +10,42 @@ import com.tien.piholeconnect.model.PiHoleStatus
 import com.tien.piholeconnect.repository.PiHoleRepository
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import kotlin.time.Duration
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import javax.inject.Inject
-import kotlin.time.Duration
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+class HomeViewModel
+@Inject
+constructor(
     private val piHoleRepository: PiHoleRepository,
-    userPreferencesRepository: UserPreferencesRepository
+    userPreferencesRepository: UserPreferencesRepository,
 ) : PiHoleConnectionAwareViewModel(userPreferencesRepository) {
     var isPiHoleSwitchLoading by mutableStateOf(false)
         private set
+
     var isAdsBlockingEnabled by mutableStateOf(true)
         private set
+
     var totalQueries by mutableIntStateOf(0)
         private set
+
     var totalBlockedQueries by mutableIntStateOf(0)
         private set
+
     var queryBlockingPercentage by mutableDoubleStateOf(.0)
         private set
+
     var blockedDomainListCount by mutableIntStateOf(0)
         private set
+
     var uniqueClients by mutableIntStateOf(0)
 
     var queriesOverTime by mutableStateOf(mapOf<Int, Int>())
         private set
+
     var adsOverTime by mutableStateOf(mapOf<Int, Int>())
         private set
 
@@ -70,18 +79,19 @@ class HomeViewModel @Inject constructor(
 
     private suspend fun toggle(state: Boolean, duration: Duration) {
         runCatching {
-            isPiHoleSwitchLoading = true
+                isPiHoleSwitchLoading = true
 
-            val result =
-                if (state) piHoleRepository.enable()
-                else piHoleRepository.disable(duration)
+                val result =
+                    if (state) piHoleRepository.enable() else piHoleRepository.disable(duration)
 
-            isAdsBlockingEnabled = when (result.status) {
-                PiHoleStatus.ENABLED -> true
-                PiHoleStatus.DISABLED -> false
-                else -> isAdsBlockingEnabled
+                isAdsBlockingEnabled =
+                    when (result.status) {
+                        PiHoleStatus.ENABLED -> true
+                        PiHoleStatus.DISABLED -> false
+                        else -> isAdsBlockingEnabled
+                    }
             }
-        }.onFailure { error = it }
+            .onFailure { error = it }
         isPiHoleSwitchLoading = false
     }
 }

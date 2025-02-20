@@ -7,9 +7,7 @@ import com.android.billingclient.api.BillingClient.BillingResponseCode
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-class InAppPurchaseImpl @Inject constructor(
-    @ApplicationContext private val context: Context
-) :
+class InAppPurchaseImpl @Inject constructor(@ApplicationContext private val context: Context) :
     InAppPurchase {
     override lateinit var billingClient: BillingClient
         private set
@@ -39,24 +37,22 @@ class InAppPurchaseImpl @Inject constructor(
         }
     }
 
-    override fun onBillingServiceDisconnected() {
-    }
+    override fun onBillingServiceDisconnected() {}
 
     override fun onPurchasesUpdated(
         billingResult: BillingResult,
-        purchases: MutableList<Purchase>?
+        purchases: MutableList<Purchase>?,
     ) {
         if (billingResult.responseCode == BillingResponseCode.OK) {
             purchases?.apply(this::consumePurchases)
         }
     }
 
-    override fun onConsumeResponse(billingResult: BillingResult, token: String) {
-    }
+    override fun onConsumeResponse(billingResult: BillingResult, token: String) {}
 
     override fun onQueryPurchasesResponse(
         billingResult: BillingResult,
-        purchases: MutableList<Purchase>
+        purchases: MutableList<Purchase>,
     ) {
         if (billingResult.responseCode == BillingResponseCode.OK) {
             this.consumePurchases(purchases)
@@ -65,21 +61,18 @@ class InAppPurchaseImpl @Inject constructor(
 
     private fun consumeOutstandingPurchases() {
         billingClient.queryPurchasesAsync(
-            QueryPurchasesParams
-                .newBuilder()
+            QueryPurchasesParams.newBuilder()
                 .setProductType(BillingClient.ProductType.INAPP)
                 .build(),
-            this
+            this,
         )
     }
 
     private fun consumePurchases(purchases: Iterable<Purchase>) {
         purchases.forEach { purchase ->
-            ConsumeParams.newBuilder()
-                .setPurchaseToken(purchase.purchaseToken)
-                .build().let {
-                    billingClient.consumeAsync(it, this)
-                }
+            ConsumeParams.newBuilder().setPurchaseToken(purchase.purchaseToken).build().let {
+                billingClient.consumeAsync(it, this)
+            }
         }
     }
 }

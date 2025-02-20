@@ -11,7 +11,8 @@ class Entry(
     val xLabel: String? = null,
     val yLabel: String? = null,
 ) : ChartEntry {
-    override fun withY(y: Float): ChartEntry = Entry(x, y, xDisplayValue, yDisplayValue, xLabel, yLabel)
+    override fun withY(y: Float): ChartEntry =
+        Entry(x, y, xDisplayValue, yDisplayValue, xLabel, yLabel)
 }
 
 data class LineChartData(

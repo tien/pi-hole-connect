@@ -19,24 +19,21 @@ import com.tien.piholeconnect.R
 fun TipJarScreen(viewModel: TipJarViewModel = hiltViewModel()) {
     val activity = LocalContext.current as Activity
 
-    LaunchedEffect(Unit) {
-        viewModel.refresh()
-    }
+    LaunchedEffect(Unit) { viewModel.refresh() }
 
     Column {
-        Text(
-            stringResource(R.string.tip_jar_msg), modifier = Modifier.padding(15.dp)
-        )
+        Text(stringResource(R.string.tip_jar_msg), modifier = Modifier.padding(15.dp))
         viewModel.tipOptions.forEach { tipOption ->
-            ListItem(modifier = Modifier.clickable {
-                viewModel.launchBillingFlow(activity, tipOption)
-            }, headlineContent = {
-                Text(tipOption.title.slice(IntRange(0, tipOption.title.indexOf(" ("))))
-            }, supportingContent = { Text(tipOption.description) }, trailingContent = {
-                Text(
-                    tipOption.oneTimePurchaseOfferDetails?.formattedPrice ?: ""
-                )
-            })
+            ListItem(
+                modifier = Modifier.clickable { viewModel.launchBillingFlow(activity, tipOption) },
+                headlineContent = {
+                    Text(tipOption.title.slice(IntRange(0, tipOption.title.indexOf(" ("))))
+                },
+                supportingContent = { Text(tipOption.description) },
+                trailingContent = {
+                    Text(tipOption.oneTimePurchaseOfferDetails?.formattedPrice ?: "")
+                },
+            )
         }
     }
 }

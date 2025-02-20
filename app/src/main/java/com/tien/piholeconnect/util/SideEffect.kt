@@ -9,9 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 fun ChangedEffect(vararg keys: Any?, block: suspend CoroutineScope.() -> Unit) {
     var firstLaunch by rememberSaveable { mutableStateOf(true) }
 
-    LaunchedEffect(Unit) {
-        firstLaunch = true
-    }
+    LaunchedEffect(Unit) { firstLaunch = true }
 
     LaunchedEffect(*keys) {
         if (firstLaunch) {

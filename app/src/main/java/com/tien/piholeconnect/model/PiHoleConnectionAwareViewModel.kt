@@ -13,22 +13,20 @@ import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 
-abstract class PiHoleConnectionAwareViewModel(userPreferencesRepository: UserPreferencesRepository) :
-    RefreshableViewModel() {
-    private val distinctPiHoleConnectionFlow = userPreferencesRepository.userPreferencesFlow
-        .drop(1)
-        .distinctUntilChangedBy { it.selectedPiHoleConnectionId }
+abstract class PiHoleConnectionAwareViewModel(
+    userPreferencesRepository: UserPreferencesRepository
+) : RefreshableViewModel() {
+    private val distinctPiHoleConnectionFlow =
+        userPreferencesRepository.userPreferencesFlow.drop(1).distinctUntilChangedBy {
+            it.selectedPiHoleConnectionId
+        }
 
     var hasBeenLoaded by mutableStateOf(false)
         private set
 
     init {
         viewModelScope.launch {
-            runCatching {
-                distinctPiHoleConnectionFlow.collectLatest {
-                    hasBeenLoaded = false
-                }
-            }
+            runCatching { distinctPiHoleConnectionFlow.collectLatest { hasBeenLoaded = false } }
         }
     }
 
@@ -40,10 +38,6 @@ abstract class PiHoleConnectionAwareViewModel(userPreferencesRepository: UserPre
     @Composable
     @NonRestartableComposable
     fun RefreshOnConnectionChangeEffect() {
-        LaunchedEffect(Unit) {
-            distinctPiHoleConnectionFlow.collectLatest {
-                refresh()
-            }
-        }
+        LaunchedEffect(Unit) { distinctPiHoleConnectionFlow.collectLatest { refresh() } }
     }
 }

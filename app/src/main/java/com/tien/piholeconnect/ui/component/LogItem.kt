@@ -32,27 +32,24 @@ import java.text.DateFormat
 @Composable
 fun LogItem(log: PiHoleLog, modifier: Modifier = Modifier) {
     val dateFormat = remember { DateFormat.getTimeInstance() }
-    val (icon, tint) = when (log.answerType.category) {
-        AnswerCategory.BLOCK -> Pair(
-            Icons.Default.GppBad, MaterialTheme.colorScheme.error
-        )
+    val (icon, tint) =
+        when (log.answerType.category) {
+            AnswerCategory.BLOCK -> Pair(Icons.Default.GppBad, MaterialTheme.colorScheme.error)
 
-        AnswerCategory.ALLOW -> Pair(Icons.Default.GppGood, MaterialTheme.colorScheme.success)
-        AnswerCategory.CACHE -> Pair(Icons.Default.Cached, MaterialTheme.colorScheme.info)
-        AnswerCategory.UNKNOWN -> Pair(
-            Icons.AutoMirrored.Filled.Help, LocalContentColor.current.copy(alpha = 0.5f)
-        )
-    }
+            AnswerCategory.ALLOW -> Pair(Icons.Default.GppGood, MaterialTheme.colorScheme.success)
+            AnswerCategory.CACHE -> Pair(Icons.Default.Cached, MaterialTheme.colorScheme.info)
+            AnswerCategory.UNKNOWN ->
+                Pair(Icons.AutoMirrored.Filled.Help, LocalContentColor.current.copy(alpha = 0.5f))
+        }
 
-    ListItem(modifier = modifier,
+    ListItem(
+        modifier = modifier,
         leadingContent = {
             Icon(
                 icon,
                 tint = tint,
                 contentDescription = log.answerType.toString(),
-                modifier = Modifier
-                    .padding(top = 11.dp)
-                    .size(35.dp)
+                modifier = Modifier.padding(top = 11.dp).size(35.dp),
             )
         },
         overlineContent = { Text(log.answerType.toString()) },
@@ -63,7 +60,8 @@ fun LogItem(log: PiHoleLog, modifier: Modifier = Modifier) {
                 Text(dateFormat.format(log.timestamp * 1000L))
                 Text("%.1f ms".format(log.responseTime * 0.1))
             }
-        })
+        },
+    )
 }
 
 @Preview
@@ -80,7 +78,7 @@ fun LogItemPreview() {
                         requestedDomain = "google.com",
                         client = "android.router",
                         answerType = it,
-                        responseTime = 450
+                        responseTime = 450,
                     )
                 )
             }

@@ -25,9 +25,7 @@ android {
         versionName = "SNAPSHOT"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
+        vectorDrawables { useSupportLibrary = true }
         resourceConfigurations += listOf("en", "de", "pl", "ro")
     }
 
@@ -36,11 +34,10 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
             )
-            ndk {
-                debugSymbolLevel = "FULL"
-            }
+            ndk { debugSymbolLevel = "FULL" }
         }
     }
     compileOptions {
@@ -49,21 +46,15 @@ android {
     }
     kotlinOptions {
         jvmTarget = "17"
-        freeCompilerArgs = freeCompilerArgs + listOf(
-            "-opt-in=kotlin.RequiresOptIn", "-opt-in=kotlin.time.ExperimentalTime"
-        )
+        freeCompilerArgs =
+            freeCompilerArgs +
+                listOf("-opt-in=kotlin.RequiresOptIn", "-opt-in=kotlin.time.ExperimentalTime")
     }
-    buildFeatures {
-        compose = true
-    }
+    buildFeatures { compose = true }
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get()
     }
-    packaging {
-        resources {
-            excludes.add("/META-INF/{AL2.0,LGPL2.1}")
-        }
-    }
+    packaging { resources { excludes.add("/META-INF/{AL2.0,LGPL2.1}") } }
 }
 
 // Temporary workaround
@@ -80,19 +71,9 @@ androidComponents {
 }
 
 protobuf {
-    protoc {
-        artifact = "com.google.protobuf:protoc:${libs.versions.protoBufJavaLite.get()}"
-    }
+    protoc { artifact = "com.google.protobuf:protoc:${libs.versions.protoBufJavaLite.get()}" }
 
-    generateProtoTasks {
-        all().forEach { task ->
-            task.builtins {
-                id("java") {
-                    option("lite")
-                }
-            }
-        }
-    }
+    generateProtoTasks { all().forEach { task -> task.builtins { id("java") { option("lite") } } } }
 }
 
 dependencies {

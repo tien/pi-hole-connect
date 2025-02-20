@@ -43,13 +43,11 @@ fun AddFilterRuleDialog(
     onIsWildcardCheckedChanged: (Boolean) -> Unit,
     onDismissRequest: () -> Unit,
     onConfirmClick: () -> Unit,
-    onCancelClick: () -> Unit
+    onCancelClick: () -> Unit,
 ) {
     val focusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-    }
+    LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
     Dialog(onDismissRequest = onDismissRequest) {
         AddFilterRuleCard(
@@ -59,7 +57,7 @@ fun AddFilterRuleDialog(
             onValueChange = onValueChange,
             onIsWildcardCheckedChanged = onIsWildcardCheckedChanged,
             onConfirmClick = onConfirmClick,
-            onCancelClick = onCancelClick
+            onCancelClick = onCancelClick,
         )
     }
 }
@@ -72,51 +70,51 @@ fun AddFilterRuleCard(
     onValueChange: (String) -> Unit,
     onIsWildcardCheckedChanged: (Boolean) -> Unit,
     onConfirmClick: () -> Unit,
-    onCancelClick: () -> Unit
+    onCancelClick: () -> Unit,
 ) {
     Card {
         Column {
-            Column(
-                Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
+            Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(
                     stringResource(R.string.add_filter_rules_dialog_add_rule),
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-
+                    fontWeight = FontWeight.Bold,
                 )
-                OutlinedTextField(modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(focusRequester),
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
                     label = { Text(stringResource(R.string.add_filter_rules_dialog_domain)) },
-                    leadingIcon = if (isWildcardChecked) {
-                        { Text(WILDCARD_REGEX_PREFIX) }
-                    } else null,
+                    leadingIcon =
+                        if (isWildcardChecked) {
+                            { Text(WILDCARD_REGEX_PREFIX) }
+                        } else null,
                     value = value,
-                    trailingIcon = if (isWildcardChecked) {
-                        { Text(WILDCARD_REGEX_SUFFIX) }
-                    } else null,
+                    trailingIcon =
+                        if (isWildcardChecked) {
+                            { Text(WILDCARD_REGEX_SUFFIX) }
+                        } else null,
                     onValueChange = onValueChange,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri))
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
+                )
                 Row(
                     Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(stringResource(R.string.add_filter_rules_dialog_add_as_wildcard))
                     Switch(
-                        checked = isWildcardChecked, onCheckedChange = onIsWildcardCheckedChanged
+                        checked = isWildcardChecked,
+                        onCheckedChange = onIsWildcardCheckedChanged,
                     )
                 }
             }
             HorizontalDivider()
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp), horizontalArrangement = Arrangement.End
-            ) {
-                TextButton(onClick = onCancelClick) { Text(stringResource(android.R.string.cancel).uppercase()) }
-                TextButton(onClick = onConfirmClick) { Text(stringResource(R.string.add_filter_rules_dialog_add).uppercase()) }
+            Row(Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.End) {
+                TextButton(onClick = onCancelClick) {
+                    Text(stringResource(android.R.string.cancel).uppercase())
+                }
+                TextButton(onClick = onConfirmClick) {
+                    Text(stringResource(R.string.add_filter_rules_dialog_add).uppercase())
+                }
             }
         }
     }
@@ -130,11 +128,13 @@ fun AddFilterRuleCardPreview() {
     var isWildcard by remember { mutableStateOf(false) }
 
     PiHoleConnectTheme {
-        AddFilterRuleCard(value = value,
+        AddFilterRuleCard(
+            value = value,
             onValueChange = { value = it },
             isWildcardChecked = isWildcard,
             onIsWildcardCheckedChanged = { isWildcard = it },
             onConfirmClick = {},
-            onCancelClick = {})
+            onCancelClick = {},
+        )
     }
 }

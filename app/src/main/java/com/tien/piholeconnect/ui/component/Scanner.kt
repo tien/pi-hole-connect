@@ -22,7 +22,7 @@ import com.google.mlkit.vision.common.InputImage
 fun Scanner(
     modifier: Modifier = Modifier,
     barcodeScanner: BarcodeScanner,
-    onBarcodeScanSuccess: (Iterable<Barcode>) -> Unit
+    onBarcodeScanSuccess: (Iterable<Barcode>) -> Unit,
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -32,54 +32,65 @@ fun Scanner(
     // from memory, LocalLifecycleOwner used to close the camera
     // when composition exit from view, this no longer seems to be the case
     // hence we have to close camera manually
-    DisposableEffect(Unit) {
-        onDispose {
-            cameraProvider?.unbindAll()
-        }
-    }
+    DisposableEffect(Unit) { onDispose { cameraProvider?.unbindAll() } }
 
-    AndroidView(factory = { context ->
-        val viewfinder = PreviewView(context).apply {
-            implementationMode = PreviewView.ImplementationMode.COMPATIBLE
-        }
+    AndroidView(
+        factory = { context ->
+            val viewfinder =
+                PreviewView(context).apply {
+                    implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+                }
 
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+            val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
 
-        cameraProviderFuture.addListener(
-            {
-                cameraProvider = cameraProviderFuture.get()
+            cameraProviderFuture.addListener(
+                {
+                    cameraProvider = cameraProviderFuture.get()
 
-                val preview = Preview.Builder().build()
-                    .also { it.setSurfaceProvider(viewfinder.surfaceProvider) }
+                    val preview =
+                        Preview.Builder().build().also {
+                            it.setSurfaceProvider(viewfinder.surfaceProvider)
+                        }
 
-                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+                    val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
-                val imageAnalysis = ImageAnalysis.Builder()
-                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build().also {
-                        it.setAnalyzer(
-                            ContextCompat.getMainExecutor(context)
-                        ) { imageProxy ->
-                            imageProxy.image?.let { mediaImage ->
-                                val image = InputImage.fromMediaImage(
-                                    mediaImage, imageProxy.imageInfo.rotationDegrees
-                                )
+                    val imageAnalysis =
+                        ImageAnalysis.Builder()
+                            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                            .build()
+                            .also {
+                                it.setAnalyzer(ContextCompat.getMainExecutor(context)) { imageProxy
+                                    ->
+                                    imageProxy.image?.let { mediaImage ->
+                                        val image =
+                                            InputImage.fromMediaImage(
+                                                mediaImage,
+                                                imageProxy.imageInfo.rotationDegrees,
+                                            )
 
-                                barcodeScanner.process(image).addOnSuccessListener { barcodes ->
-                                    onBarcodeScanSuccess(barcodes)
-                                    imageProxy.close()
+                                        barcodeScanner.process(image).addOnSuccessListener {
+                                            barcodes ->
+                                            onBarcodeScanSuccess(barcodes)
+                                            imageProxy.close()
+                                        }
+                                    }
                                 }
                             }
-                        }
-                    }
 
-                cameraProvider?.unbindAll()
+                    cameraProvider?.unbindAll()
 
-                cameraProvider?.bindToLifecycle(
-                    lifecycleOwner, cameraSelector, imageAnalysis, preview
-                )
-            }, ContextCompat.getMainExecutor(context)
-        )
+                    cameraProvider?.bindToLifecycle(
+                        lifecycleOwner,
+                        cameraSelector,
+                        imageAnalysis,
+                        preview,
+                    )
+                },
+                ContextCompat.getMainExecutor(context),
+            )
 
-        viewfinder
-    }, modifier = modifier)
+            viewfinder
+        },
+        modifier = modifier,
+    )
 }

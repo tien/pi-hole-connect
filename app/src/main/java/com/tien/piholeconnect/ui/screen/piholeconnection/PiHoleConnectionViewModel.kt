@@ -12,15 +12,17 @@ import com.tien.piholeconnect.repository.UserPreferencesRepository
 import com.tien.piholeconnect.util.populateDefaultValues
 import com.tien.piholeconnect.util.toKtorURLProtocol
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 @HiltViewModel
-class PiHoleConnectionViewModel @Inject constructor(
+class PiHoleConnectionViewModel
+@Inject
+constructor(
     private val userPreferencesRepository: UserPreferencesRepository,
-    val barcodeScanner: BarcodeScanner
+    val barcodeScanner: BarcodeScanner,
 ) : ViewModel() {
     private val default = PiHoleConnection.newBuilder().populateDefaultValues()
 
@@ -43,7 +45,9 @@ class PiHoleConnectionViewModel @Inject constructor(
         viewModelScope.launch {
             val preferences = userPreferencesRepository.userPreferencesFlow.first()
             val connection =
-                preferences.piHoleConnectionsList.first { it.id == piHoleConnectionId }.toBuilder()
+                preferences.piHoleConnectionsList
+                    .first { it.id == piHoleConnectionId }
+                    .toBuilder()
                     .build()
 
             id = connection.id
@@ -66,36 +70,33 @@ class PiHoleConnectionViewModel @Inject constructor(
         userPreferencesRepository.updateUserPreferences { userPreferences ->
             val builder = userPreferences.toBuilder()
 
-            val connectionBuilder = PiHoleConnection.newBuilder()
-                .setId(id ?: UUID.randomUUID().toString())
-                .setName(name)
-                .setDescription(description)
-                .setProtocol(protocol)
-                .setHost(host)
-                .setApiPath(apiPath)
-                .setPort(port.toIntOrNull() ?: protocol.toKtorURLProtocol().defaultPort)
-                .setApiToken(apiToken)
-                .setBasicAuthUsername(basicAuthUsername)
-                .setBasicAuthPassword(basicAuthPassword)
-                .setBasicAuthRealm(basicAuthRealm)
-                .setTrustAllCertificates(trustAllCertificates)
+            val connectionBuilder =
+                PiHoleConnection.newBuilder()
+                    .setId(id ?: UUID.randomUUID().toString())
+                    .setName(name)
+                    .setDescription(description)
+                    .setProtocol(protocol)
+                    .setHost(host)
+                    .setApiPath(apiPath)
+                    .setPort(port.toIntOrNull() ?: protocol.toKtorURLProtocol().defaultPort)
+                    .setApiToken(apiToken)
+                    .setBasicAuthUsername(basicAuthUsername)
+                    .setBasicAuthPassword(basicAuthPassword)
+                    .setBasicAuthRealm(basicAuthRealm)
+                    .setTrustAllCertificates(trustAllCertificates)
 
             if (id == null) {
                 return@updateUserPreferences builder.addPiHoleConnections(connectionBuilder).build()
             } else {
-                val index =
-                    userPreferences.piHoleConnectionsList.indexOfFirst { it.id == id }
-                return@updateUserPreferences builder.setPiHoleConnections(index, connectionBuilder)
+                val index = userPreferences.piHoleConnectionsList.indexOfFirst { it.id == id }
+                return@updateUserPreferences builder
+                    .setPiHoleConnections(index, connectionBuilder)
                     .build()
             }
         }
     }
 
     suspend fun remove() {
-        id?.let {
-            runCatching {
-                userPreferencesRepository.removePiHoleConnection(it)
-            }
-        }
+        id?.let { runCatching { userPreferencesRepository.removePiHoleConnection(it) } }
     }
 }

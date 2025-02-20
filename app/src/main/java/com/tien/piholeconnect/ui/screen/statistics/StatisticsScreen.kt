@@ -38,15 +38,14 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatisticsScreen(
-    snackbarHostState: SnackbarHostState, viewModel: StatisticsViewModel = hiltViewModel()
+    snackbarHostState: SnackbarHostState,
+    viewModel: StatisticsViewModel = hiltViewModel(),
 ) {
     viewModel.RefreshOnConnectionChangeEffect()
 
     SnackbarErrorEffect(viewModel.error, snackbarHostState)
 
-    LaunchedEffect(Unit) {
-        viewModel.refresh()
-    }
+    LaunchedEffect(Unit) { viewModel.refresh() }
 
     TopBarProgressIndicator(visible = !viewModel.hasBeenLoaded && viewModel.isRefreshing)
 
@@ -55,18 +54,20 @@ fun StatisticsScreen(
     var isRefreshing by remember { mutableStateOf(false) }
     val pullToRefreshState = rememberPullToRefreshState()
 
-    PullToRefreshBox(state = pullToRefreshState, isRefreshing = isRefreshing, onRefresh = {
-        isRefreshing = true
-        viewModel.viewModelScope.launch {
-            viewModel.refresh()
-            isRefreshing = false
-        }
-    }) {
+    PullToRefreshBox(
+        state = pullToRefreshState,
+        isRefreshing = isRefreshing,
+        onRefresh = {
+            isRefreshing = true
+            viewModel.viewModelScope.launch {
+                viewModel.refresh()
+                isRefreshing = false
+            }
+        },
+    ) {
         Column(
-            Modifier
-                .verticalScroll(rememberScrollState())
-                .padding(15.dp),
-            verticalArrangement = Arrangement.spacedBy(15.dp)
+            Modifier.verticalScroll(rememberScrollState()).padding(15.dp),
+            verticalArrangement = Arrangement.spacedBy(15.dp),
         ) {
             RankedListCard(
                 title = { Text(stringResource(R.string.statistics_top_permitted)) },
@@ -74,10 +75,10 @@ fun StatisticsScreen(
                     Icon(
                         Icons.Default.GppGood,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.success
+                        tint = MaterialTheme.colorScheme.success,
                     )
                 },
-                valueMap = viewModel.statistics.topQueries
+                valueMap = viewModel.statistics.topQueries,
             )
             RankedListCard(
                 title = { Text(stringResource(R.string.statistics_top_blocked)) },
@@ -85,10 +86,10 @@ fun StatisticsScreen(
                     Icon(
                         Icons.Default.GppBad,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.error
+                        tint = MaterialTheme.colorScheme.error,
                     )
                 },
-                valueMap = viewModel.statistics.topAds
+                valueMap = viewModel.statistics.topAds,
             )
             RankedListCard(
                 title = { Text(stringResource(R.string.statistics_top_client)) },
@@ -96,10 +97,10 @@ fun StatisticsScreen(
                     Icon(
                         Icons.Default.Devices,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.info
+                        tint = MaterialTheme.colorScheme.info,
                     )
                 },
-                valueMap = viewModel.statistics.topSources
+                valueMap = viewModel.statistics.topSources,
             )
         }
     }
