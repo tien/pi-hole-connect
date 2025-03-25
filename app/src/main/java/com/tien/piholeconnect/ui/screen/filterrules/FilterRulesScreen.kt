@@ -61,6 +61,7 @@ import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.LoadState
 import com.tien.piholeconnect.repository.models.GetDomainsInner
 import com.tien.piholeconnect.ui.component.AddFilterRuleDialog
+import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
 import kotlinx.coroutines.launch
 import java.text.DateFormat
 import kotlin.math.roundToInt
@@ -75,7 +76,7 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
 
     viewModel.SnackBarErrorEffect(snackbarHostState)
 
-    LaunchedEffect(Unit) { viewModel.refresh() }
+    LaunchedEffect(Unit) { viewModel.backgroundRefresh() }
 
     if (isAddDialogVisible) {
         AddFilterRuleDialog(
@@ -95,8 +96,11 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
         )
     }
 
-    var isRefreshing by remember { mutableStateOf(false) }
+    val loading by viewModel.loading.collectAsStateWithLifecycle(false)
+    val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
     val pullToRefreshState = rememberPullToRefreshState()
+
+    TopBarProgressIndicator(visible = loading && !refreshing)
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -111,14 +115,8 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
     ) {
         PullToRefreshBox(
             state = pullToRefreshState,
-            isRefreshing = isRefreshing,
-            onRefresh = {
-                isRefreshing = true
-                viewModel.viewModelScope.launch {
-                    viewModel.refresh()
-                    isRefreshing = false
-                }
-            },
+            isRefreshing = refreshing,
+            onRefresh = { viewModel.refresh() },
         ) {
             Column(Modifier.padding(it)) {
                 TabRow(selectedTabIndex = viewModel.selectedTab.ordinal) {

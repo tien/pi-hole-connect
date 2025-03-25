@@ -94,7 +94,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
         val job =
             viewModel.viewModelScope.launch {
                 while (true) {
-                    viewModel.refresh()
+                    viewModel.backgroundRefresh()
                     delay(10_000)
                 }
             }
@@ -134,11 +134,11 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
         }
     }
 
-    var isRefreshing by remember { mutableStateOf(false) }
+    val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
     val pullToRefreshState = rememberPullToRefreshState()
     val loading by viewModel.loading.collectAsStateWithLifecycle(false)
 
-    TopBarProgressIndicator(visible = loading && !isRefreshing)
+    TopBarProgressIndicator(visible = loading && !refreshing)
 
     Scaffold(
         Modifier.fillMaxHeight(),
@@ -153,14 +153,8 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     ) {
         PullToRefreshBox(
             state = pullToRefreshState,
-            isRefreshing = isRefreshing,
-            onRefresh = {
-                isRefreshing = true
-                viewModel.viewModelScope.launch {
-                    viewModel.refresh()
-                    isRefreshing = false
-                }
-            },
+            isRefreshing = refreshing,
+            onRefresh = { viewModel.refresh() },
         ) {
             Column(
                 Modifier.fillMaxHeight()

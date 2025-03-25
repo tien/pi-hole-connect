@@ -27,6 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.LoadState
 import com.tien.piholeconnect.ui.component.RankedListCard
+import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
 import com.tien.piholeconnect.ui.theme.info
 import com.tien.piholeconnect.ui.theme.success
 
@@ -38,14 +39,17 @@ fun StatisticsScreen(
 ) {
     viewModel.SnackBarErrorEffect(snackbarHostState)
 
-    LaunchedEffect(Unit) { viewModel.refresh() }
+    LaunchedEffect(Unit) { viewModel.backgroundRefresh() }
 
-    val isRefreshing by viewModel.refreshing.collectAsStateWithLifecycle(false)
+    val loading by viewModel.loading.collectAsStateWithLifecycle(false)
+    val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
     val pullToRefreshState = rememberPullToRefreshState()
+
+    TopBarProgressIndicator(visible = loading && !refreshing)
 
     PullToRefreshBox(
         state = pullToRefreshState,
-        isRefreshing = isRefreshing,
+        isRefreshing = refreshing,
         onRefresh = { viewModel.refresh() },
     ) {
         val topDomains by viewModel.topDomains.collectAsStateWithLifecycle(LoadState.Loading())

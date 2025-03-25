@@ -24,17 +24,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import com.tien.piholeconnect.util.showGenericPiHoleConnectionError
-import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.runningFold
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 open class ScreenViewModel
 @Inject
@@ -43,7 +48,8 @@ constructor(userPreferencesRepository: UserPreferencesRepository) : ViewModel() 
 
     @OptIn(ExperimentalCoroutinesApi::class)
     protected fun <T> Flow<T>.asRegisteredLoadState(): Flow<LoadState<T>> {
-        return refreshCount
+        return refreshTrigger
+            .onStart { emit(Unit) }
             .flatMapLatest { this.asLoadState() }
             .runningFold(LoadState.Loading<T>() as LoadState<T>) { prev, curr ->
                 when (curr) {
@@ -65,12 +71,25 @@ constructor(userPreferencesRepository: UserPreferencesRepository) : ViewModel() 
     val loading =
         flows.flatMapLatest { combine(it) { values -> values.any { it is LoadState.Loading } } }
 
-    private val refreshCount = MutableStateFlow(0)
+    private val refreshTrigger = MutableSharedFlow<Unit>(replay = 1)
 
-    val refreshing = loading.combine(refreshCount) { loading, count -> loading && count >= 1 }
+    val refreshing = MutableStateFlow(false)
 
     fun refresh() {
-        refreshCount.value++
+        refreshing.value = true
+        viewModelScope.launch {
+            doRefresh()
+            refreshing.value = false
+        }
+    }
+
+    fun backgroundRefresh() {
+        viewModelScope.launch { doRefresh() }
+    }
+
+    private suspend fun doRefresh() {
+        refreshTrigger.emit(Unit)
+        loading.first { !it }
     }
 
     private val errors = MutableStateFlow(listOf<Throwable>())

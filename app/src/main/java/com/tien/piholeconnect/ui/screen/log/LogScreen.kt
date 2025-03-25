@@ -46,7 +46,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.LoadState
 import com.tien.piholeconnect.model.QueryLog
@@ -54,6 +53,7 @@ import com.tien.piholeconnect.model.RuleType
 import com.tien.piholeconnect.model.Screen
 import com.tien.piholeconnect.ui.component.LogItem
 import com.tien.piholeconnect.ui.component.QueryDetail
+import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
 import com.tien.piholeconnect.util.ChangedEffect
 import kotlinx.coroutines.launch
 
@@ -96,7 +96,7 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
         }
     }
 
-    LaunchedEffect(Unit) { viewModel.viewModelScope.launch { viewModel.apply { refresh() } } }
+    LaunchedEffect(Unit) { viewModel.backgroundRefresh() }
 
     LaunchedEffect(logs) { lazyListState.scrollToItem(0) }
 
@@ -250,19 +250,16 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
             }
         },
         content = {
-            var isRefreshing by remember { mutableStateOf(false) }
+            val loading by viewModel.loading.collectAsStateWithLifecycle(false)
+            val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
             val pullToRefreshState = rememberPullToRefreshState()
+
+            TopBarProgressIndicator(visible = loading && !refreshing)
 
             PullToRefreshBox(
                 state = pullToRefreshState,
-                isRefreshing = isRefreshing,
-                onRefresh = {
-                    isRefreshing = true
-                    viewModel.viewModelScope.launch {
-                        viewModel.refresh()
-                        isRefreshing = false
-                    }
-                },
+                isRefreshing = refreshing,
+                onRefresh = { viewModel.refresh() },
             ) {
                 Column {
                     Row(
