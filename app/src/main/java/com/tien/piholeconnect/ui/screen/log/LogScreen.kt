@@ -85,13 +85,15 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
             else -> Unit
         }
     }
+    val addRuleSuccessMessage = stringResource(R.string.log_screen_add_filter_rule_success)
+    val addRuleFailureMessage = stringResource(R.string.log_screen_add_filter_rule_failure)
 
     ChangedEffect(scaffoldState.snackbarHostState, modifiedFilterRuleState) {
         when (modifiedFilterRuleState) {
             is LoadState.Success ->
-                scaffoldState.snackbarHostState.showSnackbar("Successfully added to whitelist")
+                scaffoldState.snackbarHostState.showSnackbar(addRuleSuccessMessage)
             is LoadState.Failure ->
-                scaffoldState.snackbarHostState.showSnackbar("Unable to add to whitelist")
+                scaffoldState.snackbarHostState.showSnackbar(addRuleFailureMessage)
             else -> Unit
         }
     }
@@ -263,7 +265,9 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
             ) {
                 Column {
                     Row(
-                        Modifier.fillMaxWidth().padding(start = 16.dp),
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         if (logs is LoadState.Success) {

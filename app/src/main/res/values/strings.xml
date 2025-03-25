@@ -102,4 +102,6 @@
     <string name="statistics_top_permitted">Top permitted</string>
     <string name="tip_jar_msg">If you like what you are seeing. Then great, please also leave a tip and some feedback as it would greatly help me on developing this app further. Here\'s some confetti as a thank you (ﾉ´ヮ`)ﾉ*: ･ﾟ</string>
     <string name="top_bar_more_options_label">More options</string>
+    <string name="log_screen_add_filter_rule_success">Successfully added filter rule</string>
+    <string name="log_screen_add_filter_rule_failure">Unable to add filter rule</string>
 </resources>
