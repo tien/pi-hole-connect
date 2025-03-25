@@ -28,7 +28,7 @@ constructor(
                     ?.map { (it.domain ?: "") to (it.count ?: 0) }
                     ?.toMap()
             }
-            .asRegisteredLoadState()
+            .asViewModelFlowState()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val topBlockedDomains =
@@ -42,7 +42,7 @@ constructor(
                     ?.map { (it.domain ?: "") to (it.count ?: 0) }
                     ?.toMap()
             }
-            .asRegisteredLoadState()
+            .asViewModelFlowState()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val topClients =
@@ -56,5 +56,5 @@ constructor(
                     ?.map { (it.name ?: "") to (it.count ?: 0) }
                     ?.toMap()
             }
-            .asRegisteredLoadState()
+            .asViewModelFlowState()
 }

@@ -42,7 +42,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.LineChartData
-import com.tien.piholeconnect.model.LoadState
 import com.tien.piholeconnect.ui.component.DisableAdsBlockingAlertDialog
 import com.tien.piholeconnect.ui.component.EnableAdsBlockingAlertDialog
 import com.tien.piholeconnect.ui.component.LineChart
@@ -63,7 +62,7 @@ import kotlin.math.max
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
-    val metrics by viewModel.metricSummary.collectAsStateWithLifecycle(LoadState.Loading())
+    val metrics by viewModel.metricSummary.collectAsStateWithLifecycle()
 
     val totalQueries by
         animateIntAsState(metrics.data?.queries?.total ?: 0, label = "Total queries")
@@ -103,10 +102,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     }
 
     val isAdsBlockingEnabled =
-        viewModel.isAdsBlockingEnabled
-            .collectAsStateWithLifecycle(LoadState.Loading())
-            .value
-            .data == true
+        viewModel.isAdsBlockingEnabled.collectAsStateWithLifecycle().value.data == true
 
     var isDisableDialogVisible by rememberSaveable { mutableStateOf(false) }
 
@@ -136,7 +132,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
 
     val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
     val pullToRefreshState = rememberPullToRefreshState()
-    val loading by viewModel.loading.collectAsStateWithLifecycle(false)
+    val loading by viewModel.loading.collectAsStateWithLifecycle()
 
     TopBarProgressIndicator(visible = loading && !refreshing)
 
@@ -238,8 +234,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                     }
                 }
 
-                val history by
-                    viewModel.history.collectAsStateWithLifecycle(LoadState.Loading(listOf()))
+                val history by viewModel.history.collectAsStateWithLifecycle()
 
                 val queriesOverTimeLabel = stringResource(R.string.home_queries_over_time)
                 val queriesOverTimeData =

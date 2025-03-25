@@ -30,19 +30,19 @@ constructor(
                 it.dnsControlApi.getBlocking().body().blocking ==
                     GetBlocking200Response.Blocking.ENABLED
             }
-            .asRegisteredLoadState()
+            .asViewModelFlowState()
 
     val metricSummary =
         piHoleRepositoryProvider.selectedPiHoleRepository
             .filterNotNull()
             .mapLatest { it.metricsApi.getMetricsSummary().body() }
-            .asRegisteredLoadState()
+            .asViewModelFlowState()
 
     val history =
         piHoleRepositoryProvider.selectedPiHoleRepository
             .filterNotNull()
             .mapLatest { it.metricsApi.getActivityMetrics().body().history ?: listOf() }
-            .asRegisteredLoadState()
+            .asViewModelFlowState()
 
     var isPiHoleSwitchLoading by mutableStateOf(false)
         private set

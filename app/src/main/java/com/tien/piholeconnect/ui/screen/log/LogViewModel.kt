@@ -47,7 +47,7 @@ constructor(
         ),
     }
 
-    var modifyFilterRuleState = MutableStateFlow(LoadState.Idle as LoadState<RuleType>)
+    var modifyFilterRuleState = MutableStateFlow<LoadState<RuleType>>(LoadState.Idle<RuleType>())
 
     val query = MutableStateFlow("")
     val sortBy = MutableStateFlow(Sort.DATE_DESC)
@@ -91,7 +91,7 @@ constructor(
                     Sort.RESPONSE_TIME_DESC -> logs.sortedByDescending { it.reply?.time }
                 }
             }
-            .asRegisteredLoadState()
+            .asViewModelFlowState()
 
     fun addToWhiteList(domain: String) =
         viewModelScope.launch {

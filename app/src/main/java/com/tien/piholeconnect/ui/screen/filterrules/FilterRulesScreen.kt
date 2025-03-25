@@ -58,7 +58,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.R
-import com.tien.piholeconnect.model.LoadState
 import com.tien.piholeconnect.repository.models.GetDomainsInner
 import com.tien.piholeconnect.ui.component.AddFilterRuleDialog
 import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
@@ -96,7 +95,7 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
         )
     }
 
-    val loading by viewModel.loading.collectAsStateWithLifecycle(false)
+    val loading by viewModel.loading.collectAsStateWithLifecycle()
     val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
     val pullToRefreshState = rememberPullToRefreshState()
 
@@ -136,7 +135,7 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
                     )
                 }
 
-                val rulesState by viewModel.rules.collectAsStateWithLifecycle(LoadState.Loading())
+                val rulesState by viewModel.rules.collectAsStateWithLifecycle()
 
                 if (rulesState.data != null) {
                     LazyColumn(contentPadding = PaddingValues(bottom = 80.dp)) {

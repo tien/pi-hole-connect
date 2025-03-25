@@ -66,7 +66,7 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
 
     var searchActive by remember { mutableStateOf(false) }
     val query by viewModel.query.collectAsStateWithLifecycle()
-    val logs by viewModel.logs.collectAsStateWithLifecycle(LoadState.Loading())
+    val logs by viewModel.logs.collectAsStateWithLifecycle()
     val enabledStatuses by viewModel.enabledStatuses.collectAsStateWithLifecycle()
     val sortBy by viewModel.sortBy.collectAsStateWithLifecycle()
 
@@ -250,7 +250,7 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
             }
         },
         content = {
-            val loading by viewModel.loading.collectAsStateWithLifecycle(false)
+            val loading by viewModel.loading.collectAsStateWithLifecycle()
             val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
             val pullToRefreshState = rememberPullToRefreshState()
 

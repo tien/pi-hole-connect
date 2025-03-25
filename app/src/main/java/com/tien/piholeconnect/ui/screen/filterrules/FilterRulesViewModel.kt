@@ -32,7 +32,7 @@ constructor(
         piHoleRepositoryProvider.selectedPiHoleRepository
             .filterNotNull()
             .mapLatest { it.domainManagementApi.getDomains().body().domains ?: listOf() }
-            .asRegisteredLoadState()
+            .asViewModelFlowState()
 
     var selectedTab by mutableStateOf(Tab.BLACK)
 

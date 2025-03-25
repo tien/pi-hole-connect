@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tien.piholeconnect.R
-import com.tien.piholeconnect.model.LoadState
 import com.tien.piholeconnect.ui.component.RankedListCard
 import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
 import com.tien.piholeconnect.ui.theme.info
@@ -41,7 +40,7 @@ fun StatisticsScreen(
 
     LaunchedEffect(Unit) { viewModel.backgroundRefresh() }
 
-    val loading by viewModel.loading.collectAsStateWithLifecycle(false)
+    val loading by viewModel.loading.collectAsStateWithLifecycle()
     val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
     val pullToRefreshState = rememberPullToRefreshState()
 
@@ -52,10 +51,9 @@ fun StatisticsScreen(
         isRefreshing = refreshing,
         onRefresh = { viewModel.refresh() },
     ) {
-        val topDomains by viewModel.topDomains.collectAsStateWithLifecycle(LoadState.Loading())
-        val topBlockedDomains by
-            viewModel.topBlockedDomains.collectAsStateWithLifecycle(LoadState.Loading())
-        val topClients by viewModel.topClients.collectAsStateWithLifecycle(LoadState.Loading())
+        val topDomains by viewModel.topDomains.collectAsStateWithLifecycle()
+        val topBlockedDomains by viewModel.topBlockedDomains.collectAsStateWithLifecycle()
+        val topClients by viewModel.topClients.collectAsStateWithLifecycle()
 
         if (topDomains.data == null && topBlockedDomains.data == null && topClients.data == null) {
             return@PullToRefreshBox

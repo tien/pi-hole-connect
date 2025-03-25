@@ -8,9 +8,7 @@ import kotlinx.coroutines.flow.onStart
 sealed interface LoadState<out T> {
     val data: T?
 
-    object Idle : LoadState<Nothing> {
-        override val data = null
-    }
+    data class Idle<T>(override val data: T? = null) : LoadState<T>
 
     data class Success<T>(override val data: T) : LoadState<T>
 

@@ -51,7 +51,11 @@ constructor(
     override val selectedPiHoleRepository =
         userPreferencesRepository.selectedPiHole
             .map { it?.let { piHoleRepositoryFactory.create(it) } }
-            .stateIn(scope = MainScope(), started = SharingStarted.Lazily, initialValue = null)
+            .stateIn(
+                scope = MainScope(),
+                started = SharingStarted.WhileSubscribed(),
+                initialValue = null,
+            )
             .filterNotNull()
             .mapLatest { it.authenticate() }
 
