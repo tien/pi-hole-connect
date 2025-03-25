@@ -4,9 +4,6 @@ import com.tien.piholeconnect.util.EnumIntSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-const val WILDCARD_REGEX_PREFIX = "(\\.|^)"
-const val WILDCARD_REGEX_SUFFIX = "$"
-
 @Serializable(RuleType.Companion.Serializer::class)
 enum class RuleType {
     WHITE,

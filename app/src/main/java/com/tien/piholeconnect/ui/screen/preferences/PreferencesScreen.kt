@@ -22,13 +22,13 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.tien.piholeconnect.R
@@ -45,7 +45,9 @@ fun PreferencesScreen(
     viewModel: PreferencesViewModel = hiltViewModel(),
 ) {
     val userPreferences by
-        viewModel.userPreferencesFlow.collectAsState(initial = UserPreferences.getDefaultInstance())
+        viewModel.userPreferencesFlow.collectAsStateWithLifecycle(
+            UserPreferences.getDefaultInstance()
+        )
 
     Column(
         Modifier.verticalScroll(rememberScrollState()).padding(vertical = 15.dp),

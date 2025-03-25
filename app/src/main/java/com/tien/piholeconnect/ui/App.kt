@@ -61,7 +61,6 @@ import com.tien.piholeconnect.ui.screen.home.HomeScreen
 import com.tien.piholeconnect.ui.screen.log.LogScreen
 import com.tien.piholeconnect.ui.screen.piholeconnection.PiHoleConnectionScreen
 import com.tien.piholeconnect.ui.screen.preferences.PreferencesScreen
-import com.tien.piholeconnect.ui.screen.preferences.PreferencesViewModel
 import com.tien.piholeconnect.ui.screen.statistics.StatisticsScreen
 import com.tien.piholeconnect.ui.screen.tipjar.TipJarScreen
 import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
@@ -70,10 +69,12 @@ import io.ktor.http.URLBuilder
 import kotlinx.coroutines.launch
 
 @Composable
-fun App(preferencesViewModel: PreferencesViewModel = hiltViewModel()) {
+fun App(preferencesViewModel: AppViewModel = hiltViewModel()) {
     val context = LocalContext.current
+
     val userPreferences by
         preferencesViewModel.userPreferencesFlow.collectAsStateWithLifecycle(null)
+
     val selectedPiHole by preferencesViewModel.selectedPiHoleFlow.collectAsStateWithLifecycle(null)
 
     if (userPreferences == null) return

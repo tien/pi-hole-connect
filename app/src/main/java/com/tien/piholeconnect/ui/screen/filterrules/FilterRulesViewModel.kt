@@ -4,72 +4,91 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.tien.piholeconnect.model.*
-import com.tien.piholeconnect.repository.PiHoleRepository
+import com.tien.piholeconnect.repository.PiHoleRepositoryProvider
 import com.tien.piholeconnect.repository.UserPreferencesRepository
+import com.tien.piholeconnect.repository.apis.DomainManagementApi
+import com.tien.piholeconnect.repository.models.GetDomainsInner
+import com.tien.piholeconnect.repository.models.Post
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.mapLatest
 import javax.inject.Inject
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 
 @HiltViewModel
 class FilterRulesViewModel
 @Inject
 constructor(
-    private val piHoleRepository: PiHoleRepository,
+    private val piHoleRepositoryProvider: PiHoleRepositoryProvider,
     val userPreferencesRepository: UserPreferencesRepository,
-) : PiHoleConnectionAwareViewModel(userPreferencesRepository) {
+) : ScreenViewModel(userPreferencesRepository) {
     enum class Tab {
         BLACK,
         WHITE,
     }
 
-    var rules: Iterable<PiHoleFilterRule> by mutableStateOf(listOf())
-        private set
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val rules =
+        piHoleRepositoryProvider.selectedPiHoleRepositoryFlow
+            .filterNotNull()
+            .mapLatest { it.domainManagementApi.getDomains().body().domains ?: listOf() }
+            .asRegisteredLoadState()
 
     var selectedTab by mutableStateOf(Tab.BLACK)
 
     var addRuleInputValue by mutableStateOf("")
     var addRuleIsWildcardChecked by mutableStateOf(false)
 
-    override suspend fun queueRefresh() = coroutineScope {
-        rules =
-            RuleType.entries
-                .map { async { piHoleRepository.getFilterRules(it) } }
-                .awaitAll()
-                .flatMap { it.data }
-    }
-
     suspend fun addRule() {
         kotlin
             .runCatching {
-                val ruleType =
-                    when (selectedTab) {
-                        Tab.WHITE ->
-                            if (addRuleIsWildcardChecked) RuleType.REGEX_WHITE else RuleType.WHITE
-                        Tab.BLACK ->
-                            if (addRuleIsWildcardChecked) RuleType.REGEX_BLACK else RuleType.BLACK
-                    }
-                val trimmedDomain = addRuleInputValue.trim()
-                val parsedDomain =
-                    if (addRuleIsWildcardChecked)
-                        "$WILDCARD_REGEX_PREFIX$trimmedDomain$WILDCARD_REGEX_SUFFIX"
-                    else trimmedDomain
+                piHoleRepositoryProvider
+                    .getSelectedPiHoleRepository()
+                    ?.domainManagementApi
+                    ?.addDomain(
+                        type =
+                            when (selectedTab) {
+                                Tab.WHITE -> DomainManagementApi.TypeAddDomain.ALLOW
+                                Tab.BLACK -> DomainManagementApi.TypeAddDomain.DENY
+                            },
+                        kind =
+                            if (addRuleIsWildcardChecked) DomainManagementApi.KindAddDomain.REGEX
+                            else DomainManagementApi.KindAddDomain.EXACT,
+                        Post(domain = listOf(addRuleInputValue.trim())),
+                    )
 
-                piHoleRepository.addFilterRule(parsedDomain, ruleType = ruleType)
                 resetAddRuleDialogInputs()
                 refresh()
             }
-            .onFailure { error = it }
+            .onFailure(this::addError)
     }
 
-    suspend fun removeRule(rule: String, ruleType: RuleType) {
+    suspend fun removeRule(domain: GetDomainsInner) {
+        if (domain.domain == null || domain.type == null || domain.kind == null) {
+            return
+        }
+
+        return removeRule(
+            domain.domain,
+            type = enumValueOf<DomainManagementApi.TypeDeleteDomain>(domain.type.value.uppercase()),
+            kind = enumValueOf<DomainManagementApi.KindDeleteDomain>(domain.kind.value.uppercase()),
+        )
+    }
+
+    suspend fun removeRule(
+        domain: String,
+        type: DomainManagementApi.TypeDeleteDomain,
+        kind: DomainManagementApi.KindDeleteDomain,
+    ) {
         kotlin
             .runCatching {
-                piHoleRepository.removeFilterRule(rule, ruleType = ruleType)
+                piHoleRepositoryProvider
+                    .getSelectedPiHoleRepository()
+                    ?.domainManagementApi
+                    ?.deleteDomain(type, kind, domain)
                 refresh()
             }
-            .onFailure { error = it }
+            .onFailure(this::addError)
     }
 
     fun resetAddRuleDialogInputs() {

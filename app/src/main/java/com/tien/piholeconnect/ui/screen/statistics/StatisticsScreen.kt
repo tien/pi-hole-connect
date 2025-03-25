@@ -19,21 +19,16 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tien.piholeconnect.R
+import com.tien.piholeconnect.model.LoadState
 import com.tien.piholeconnect.ui.component.RankedListCard
-import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
 import com.tien.piholeconnect.ui.theme.info
 import com.tien.piholeconnect.ui.theme.success
-import com.tien.piholeconnect.util.SnackbarErrorEffect
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,30 +36,27 @@ fun StatisticsScreen(
     snackbarHostState: SnackbarHostState,
     viewModel: StatisticsViewModel = hiltViewModel(),
 ) {
-    viewModel.RefreshOnConnectionChangeEffect()
-
-    SnackbarErrorEffect(viewModel.error, snackbarHostState)
+    viewModel.SnackBarErrorEffect(snackbarHostState)
 
     LaunchedEffect(Unit) { viewModel.refresh() }
 
-    TopBarProgressIndicator(visible = !viewModel.hasBeenLoaded && viewModel.isRefreshing)
-
-    if (!viewModel.hasBeenLoaded) return
-
-    var isRefreshing by remember { mutableStateOf(false) }
+    val isRefreshing by viewModel.refreshing.collectAsStateWithLifecycle(false)
     val pullToRefreshState = rememberPullToRefreshState()
 
     PullToRefreshBox(
         state = pullToRefreshState,
         isRefreshing = isRefreshing,
-        onRefresh = {
-            isRefreshing = true
-            viewModel.viewModelScope.launch {
-                viewModel.refresh()
-                isRefreshing = false
-            }
-        },
+        onRefresh = { viewModel.refresh() },
     ) {
+        val topDomains by viewModel.topDomains.collectAsStateWithLifecycle(LoadState.Loading())
+        val topBlockedDomains by
+            viewModel.topBlockedDomains.collectAsStateWithLifecycle(LoadState.Loading())
+        val topClients by viewModel.topClients.collectAsStateWithLifecycle(LoadState.Loading())
+
+        if (topDomains.data == null && topBlockedDomains.data == null && topClients.data == null) {
+            return@PullToRefreshBox
+        }
+
         Column(
             Modifier.verticalScroll(rememberScrollState()).padding(15.dp),
             verticalArrangement = Arrangement.spacedBy(15.dp),
@@ -78,7 +70,7 @@ fun StatisticsScreen(
                         tint = MaterialTheme.colorScheme.success,
                     )
                 },
-                valueMap = viewModel.statistics.topQueries,
+                valueMap = topDomains.data ?: mapOf(),
             )
             RankedListCard(
                 title = { Text(stringResource(R.string.statistics_top_blocked)) },
@@ -89,7 +81,7 @@ fun StatisticsScreen(
                         tint = MaterialTheme.colorScheme.error,
                     )
                 },
-                valueMap = viewModel.statistics.topAds,
+                valueMap = topBlockedDomains.data ?: mapOf(),
             )
             RankedListCard(
                 title = { Text(stringResource(R.string.statistics_top_client)) },
@@ -100,7 +92,7 @@ fun StatisticsScreen(
                         tint = MaterialTheme.colorScheme.info,
                     )
                 },
-                valueMap = viewModel.statistics.topSources,
+                valueMap = topClients.data ?: mapOf(),
             )
         }
     }

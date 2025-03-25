@@ -2,6 +2,8 @@ import com.google.protobuf.gradle.id
 import org.gradle.configurationcache.extensions.capitalized
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+val openApiOutput = file("${layout.buildDirectory.asFile.get().path}/generated/source/open-api")
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
@@ -9,7 +11,9 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.openapi.generator)
     alias(libs.plugins.protobuf)
+    idea
 }
 
 android {
@@ -40,21 +44,33 @@ android {
             ndk { debugSymbolLevel = "FULL" }
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
         jvmTarget = "17"
-        freeCompilerArgs =
-            freeCompilerArgs +
-                listOf("-opt-in=kotlin.RequiresOptIn", "-opt-in=kotlin.time.ExperimentalTime")
+        freeCompilerArgs +=
+                listOf(
+                    "-opt-in=kotlin.RequiresOptIn",
+                    "-opt-in=kotlin.time.ExperimentalTime",
+                    "-opt-in=io.ktor.utils.io.InternalAPI",
+                )
     }
+
     buildFeatures { compose = true }
+
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get()
     }
+
     packaging { resources { excludes.add("/META-INF/{AL2.0,LGPL2.1}") } }
+
+    sourceSets.getByName("main") { kotlin { srcDir(File(openApiOutput, "debug/kotlin")) } }
+
+    tasks { preBuild { dependsOn(openApiGenerate) } }
 }
 
 // Temporary workaround
@@ -74,6 +90,29 @@ protobuf {
     protoc { artifact = "com.google.protobuf:protoc:${libs.versions.protoBufJavaLite.get()}" }
 
     generateProtoTasks { all().forEach { task -> task.builtins { id("java") { option("lite") } } } }
+}
+
+openApiGenerate {
+    generatorName = "kotlin"
+    remoteInputSpec =
+        "https://raw.githubusercontent.com/tien/FTL/refs/heads/fix/batch-delete-request-body/src/api/docs/content/specs/main.yaml"
+    outputDir = openApiOutput.absolutePath
+    ignoreFileOverride = "${projectDir.path}/openapi-generator-ignore"
+    templateDir = "${projectDir.path}/templates"
+    library = "multiplatform"
+    packageName = "${android.namespace}.repository"
+    additionalProperties =
+        mapOf(
+            "sourceFolder" to "debug/kotlin",
+            "enumPropertyNaming" to "UPPERCASE",
+            "dateLibrary" to "kotlinx-datetime",
+            "useSettingsGradle" to true,
+        )
+    typeMappings =
+        mapOf(
+            "AddressMaybeArrayAddress" to "List<String>",
+            "DomainMaybeArrayDomain" to "List<String>",
+        )
 }
 
 dependencies {

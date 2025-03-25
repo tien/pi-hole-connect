@@ -3,15 +3,15 @@ package com.tien.piholeconnect.di
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.datastore.core.DataStore
-import com.google.mlkit.vision.barcode.BarcodeScanner
-import com.google.mlkit.vision.barcode.BarcodeScannerOptions
-import com.google.mlkit.vision.barcode.BarcodeScanning
-import com.google.mlkit.vision.barcode.common.Barcode
-import com.tien.piholeconnect.data.userPreferencesDataStore
+import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.dataStoreFile
+import com.tien.piholeconnect.data.AuthenticationSerializer
+import com.tien.piholeconnect.data.UserPreferencesSerializer
+import com.tien.piholeconnect.model.Authentication
 import com.tien.piholeconnect.model.PiHoleSerializer
 import com.tien.piholeconnect.model.UserPreferences
-import com.tien.piholeconnect.repository.PiHoleRepository
-import com.tien.piholeconnect.repository.PiHoleRepositoryImpl
+import com.tien.piholeconnect.repository.PiHoleRepositoryProvider
+import com.tien.piholeconnect.repository.PiHoleRepositoryProviderImpl
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import com.tien.piholeconnect.repository.UserPreferencesRepositoryImpl
 import com.tien.piholeconnect.service.InAppPurchase
@@ -30,11 +30,14 @@ import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import okhttp3.OkHttpClient
+import org.apache.http.conn.ssl.AllowAllHostnameVerifier
 import javax.inject.Qualifier
 import javax.inject.Singleton
 import javax.net.ssl.SSLContext
-import okhttp3.OkHttpClient
-import org.apache.http.conn.ssl.AllowAllHostnameVerifier
 
 @Qualifier @Retention(AnnotationRetention.BINARY) annotation class DefaultHttpClient
 
@@ -44,7 +47,10 @@ import org.apache.http.conn.ssl.AllowAllHostnameVerifier
 @InstallIn(SingletonComponent::class)
 abstract class PiHoleConnectModule {
     @Binds
-    abstract fun bindPiHoleRepository(piHoleRepositoryImpl: PiHoleRepositoryImpl): PiHoleRepository
+    @Singleton
+    abstract fun bindPiHoleRepositoryProvider(
+        piHoleRepositoryProviderImpl: PiHoleRepositoryProviderImpl
+    ): PiHoleRepositoryProvider
 
     companion object {
         @Provides
@@ -89,19 +95,31 @@ abstract class PiHoleConnectModule {
         @Singleton
         fun provideUserPreferencesDataStore(
             @ApplicationContext appContext: Context
-        ): DataStore<UserPreferences> = appContext.userPreferencesDataStore
+        ): DataStore<UserPreferences> =
+            DataStoreFactory.create(
+                serializer = UserPreferencesSerializer,
+                migrations = listOf(),
+                scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
+                produceFile = { appContext.dataStoreFile("userPreferences.pb") },
+            )
 
         @Provides
+        @Singleton
+        fun provideAuthenticationDataStore(
+            @ApplicationContext appContext: Context
+        ): DataStore<Authentication> =
+            DataStoreFactory.create(
+                serializer = AuthenticationSerializer,
+                migrations = listOf(),
+                scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
+                produceFile = { appContext.dataStoreFile("authentication.pb") },
+            )
+
+        @Provides
+        @Singleton
         fun provideUserPreferencesRepository(
             dataStore: DataStore<UserPreferences>
         ): UserPreferencesRepository = UserPreferencesRepositoryImpl(dataStore)
-
-        @Provides
-        fun provideBarcodeScanner(): BarcodeScanner {
-            val options =
-                BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_QR_CODE).build()
-            return BarcodeScanning.getClient(options)
-        }
     }
 }
 

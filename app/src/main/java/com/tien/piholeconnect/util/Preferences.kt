@@ -11,7 +11,7 @@ fun PiHoleConnection.Builder.populateDefaultValues(): PiHoleConnection.Builder =
         .setName("My Pi-hole")
         .setProtocol(URLProtocol.HTTP)
         .setHost("pi.hole")
-        .setApiPath("/admin/api.php")
+        .setApiPath("/api")
         .setPort(HTTP.defaultPort)
 
 fun UserPreferences.Builder.populateDefaultValues(): UserPreferences.Builder = this

@@ -31,8 +31,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.tien.piholeconnect.R
-import com.tien.piholeconnect.model.WILDCARD_REGEX_PREFIX
-import com.tien.piholeconnect.model.WILDCARD_REGEX_SUFFIX
 import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 
 @Composable
@@ -83,15 +81,7 @@ fun AddFilterRuleCard(
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
                     label = { Text(stringResource(R.string.add_filter_rules_dialog_domain)) },
-                    leadingIcon =
-                        if (isWildcardChecked) {
-                            { Text(WILDCARD_REGEX_PREFIX) }
-                        } else null,
                     value = value,
-                    trailingIcon =
-                        if (isWildcardChecked) {
-                            { Text(WILDCARD_REGEX_SUFFIX) }
-                        } else null,
                     onValueChange = onValueChange,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
                 )

@@ -31,9 +31,9 @@ import com.tien.piholeconnect.R
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.plugins.ResponseException
+import kotlinx.coroutines.flow.map
 import java.util.concurrent.CancellationException
 import javax.inject.Inject
-import kotlinx.coroutines.flow.map
 
 suspend fun SnackbarHostState.showGenericPiHoleConnectionError(
     throwable: Throwable,
@@ -75,7 +75,7 @@ constructor(userPreferencesRepository: UserPreferencesRepository) : ViewModel() 
     val sensitiveData =
         userPreferencesRepository.userPreferencesFlow.map { preferences ->
             preferences.piHoleConnectionsList
-                .flatMap { listOf(it.apiToken, it.basicAuthPassword) }
+                .flatMap { listOf(it.password, it.basicAuthPassword) }
                 .map { it.trim() }
                 .filter { it.isNotBlank() }
         }

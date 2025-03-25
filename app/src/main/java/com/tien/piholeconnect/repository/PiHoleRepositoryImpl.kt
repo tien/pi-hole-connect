@@ -18,15 +18,15 @@ import io.ktor.client.plugins.auth.providers.BasicAuthProvider
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.http.encodedPath
-import java.util.Locale
-import javax.inject.Inject
-import kotlin.time.Duration
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import java.util.Locale
+import javax.inject.Inject
+import kotlin.time.Duration
 
 class PiHoleRepositoryImpl
 @Inject
@@ -49,8 +49,8 @@ constructor(
                     host = piHoleConnection.host
                     encodedPath = piHoleConnection.apiPath
                     port = piHoleConnection.port
-                    if (piHoleConnection.apiToken.isNotBlank()) {
-                        parameters["auth"] = piHoleConnection.apiToken
+                    if (piHoleConnection.password.isNotBlank()) {
+                        parameters["auth"] = piHoleConnection.password
                     }
                 }
                 if (
