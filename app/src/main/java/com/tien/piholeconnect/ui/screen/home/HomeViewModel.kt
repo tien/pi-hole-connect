@@ -24,7 +24,7 @@ constructor(
     userPreferencesRepository: UserPreferencesRepository,
 ) : ScreenViewModel(userPreferencesRepository) {
     val isAdsBlockingEnabled =
-        piHoleRepositoryProvider.selectedPiHoleRepositoryFlow
+        piHoleRepositoryProvider.selectedPiHoleRepository
             .filterNotNull()
             .mapLatest {
                 it.dnsControlApi.getBlocking().body().blocking ==
@@ -33,13 +33,13 @@ constructor(
             .asRegisteredLoadState()
 
     val metricSummary =
-        piHoleRepositoryProvider.selectedPiHoleRepositoryFlow
+        piHoleRepositoryProvider.selectedPiHoleRepository
             .filterNotNull()
             .mapLatest { it.metricsApi.getMetricsSummary().body() }
             .asRegisteredLoadState()
 
     val history =
-        piHoleRepositoryProvider.selectedPiHoleRepositoryFlow
+        piHoleRepositoryProvider.selectedPiHoleRepository
             .filterNotNull()
             .mapLatest { it.metricsApi.getActivityMetrics().body().history ?: listOf() }
             .asRegisteredLoadState()

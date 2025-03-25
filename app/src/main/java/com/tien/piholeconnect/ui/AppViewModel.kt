@@ -9,7 +9,7 @@ import javax.inject.Inject
 class AppViewModel
 @Inject
 constructor(private val userPreferencesRepository: UserPreferencesRepository) : ViewModel() {
-    val userPreferencesFlow = userPreferencesRepository.userPreferencesFlow
-    val selectedPiHoleFlow = userPreferencesRepository.selectedPiHoleFlow
+    val userPreferencesFlow = userPreferencesRepository.userPreferences
+    val selectedPiHoleFlow = userPreferencesRepository.selectedPiHole
     val updateUserPreferences = userPreferencesRepository::updateUserPreferences
 }

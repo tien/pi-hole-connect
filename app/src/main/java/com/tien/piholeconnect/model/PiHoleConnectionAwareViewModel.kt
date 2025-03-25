@@ -17,7 +17,7 @@ abstract class PiHoleConnectionAwareViewModel(
     userPreferencesRepository: UserPreferencesRepository
 ) : RefreshableViewModel() {
     private val distinctPiHoleConnectionFlow =
-        userPreferencesRepository.userPreferencesFlow.drop(1).distinctUntilChangedBy {
+        userPreferencesRepository.userPreferences.drop(1).distinctUntilChangedBy {
             it.selectedPiHoleConnectionId
         }
 

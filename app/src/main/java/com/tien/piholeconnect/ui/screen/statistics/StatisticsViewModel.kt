@@ -18,7 +18,7 @@ constructor(
 ) : ScreenViewModel(userPreferencesRepository) {
     @OptIn(ExperimentalCoroutinesApi::class)
     val topDomains =
-        piHoleRepositoryProvider.selectedPiHoleRepositoryFlow
+        piHoleRepositoryProvider.selectedPiHoleRepository
             .filterNotNull()
             .mapLatest {
                 it.metricsApi
@@ -32,7 +32,7 @@ constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val topBlockedDomains =
-        piHoleRepositoryProvider.selectedPiHoleRepositoryFlow
+        piHoleRepositoryProvider.selectedPiHoleRepository
             .filterNotNull()
             .mapLatest {
                 it.metricsApi
@@ -46,7 +46,7 @@ constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val topClients =
-        piHoleRepositoryProvider.selectedPiHoleRepositoryFlow
+        piHoleRepositoryProvider.selectedPiHoleRepository
             .filterNotNull()
             .mapLatest {
                 it.metricsApi

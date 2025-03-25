@@ -36,7 +36,7 @@ constructor(
     userPreferencesRepository: UserPreferencesRepository,
 ) : PiHoleRepository {
     private val baseRequestFlow: Flow<Pair<HttpClient, HttpRequestBuilder.() -> Unit>> =
-        userPreferencesRepository.selectedPiHoleFlow.map { piHoleConnection ->
+        userPreferencesRepository.selectedPiHole.map { piHoleConnection ->
             piHoleConnection ?: throw Exception("Pi-hole connection hasn't been setup")
 
             val httpClient =

@@ -5,8 +5,9 @@ import com.tien.piholeconnect.model.UserPreferences
 import kotlinx.coroutines.flow.Flow
 
 interface UserPreferencesRepository {
-    val userPreferencesFlow: Flow<UserPreferences>
-    val selectedPiHoleFlow: Flow<PiHoleConnection?>
+    val userPreferences: Flow<UserPreferences>
+
+    val selectedPiHole: Flow<PiHoleConnection?>
 
     suspend fun updateUserPreferences(transform: (UserPreferences) -> UserPreferences)
 

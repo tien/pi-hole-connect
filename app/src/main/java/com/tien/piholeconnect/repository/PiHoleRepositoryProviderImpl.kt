@@ -48,15 +48,15 @@ constructor(
     userPreferencesRepository: UserPreferencesRepository,
 ) : PiHoleRepositoryProvider {
     @OptIn(ExperimentalCoroutinesApi::class)
-    override val selectedPiHoleRepositoryFlow =
-        userPreferencesRepository.selectedPiHoleFlow
+    override val selectedPiHoleRepository =
+        userPreferencesRepository.selectedPiHole
             .map { it?.let { piHoleRepositoryFactory.create(it) } }
             .stateIn(scope = MainScope(), started = SharingStarted.Lazily, initialValue = null)
             .filterNotNull()
             .mapLatest { it.authenticate() }
 
     override suspend fun getSelectedPiHoleRepository(): PiHoleV6Repository? {
-        return selectedPiHoleRepositoryFlow.firstOrNull()
+        return selectedPiHoleRepository.firstOrNull()
     }
 }
 

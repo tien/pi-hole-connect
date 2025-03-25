@@ -26,6 +26,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import com.tien.piholeconnect.util.showGenericPiHoleConnectionError
+import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,7 +35,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.runningFold
-import javax.inject.Inject
 
 open class ScreenViewModel
 @Inject
@@ -44,7 +44,7 @@ constructor(userPreferencesRepository: UserPreferencesRepository) : ViewModel() 
     @OptIn(ExperimentalCoroutinesApi::class)
     protected fun <T> Flow<T>.asRegisteredLoadState(): Flow<LoadState<T>> {
         return refreshCount
-            .flatMapLatest { this.asLoadState(it) }
+            .flatMapLatest { this.asLoadState() }
             .runningFold(LoadState.Loading<T>() as LoadState<T>) { prev, curr ->
                 when (curr) {
                     is LoadState.Loading -> prev.asLoading()
@@ -80,7 +80,7 @@ constructor(userPreferencesRepository: UserPreferencesRepository) : ViewModel() 
     }
 
     private val sensitiveData =
-        userPreferencesRepository.userPreferencesFlow.map { preferences ->
+        userPreferencesRepository.userPreferences.map { preferences ->
             preferences.piHoleConnectionsList
                 .flatMap { listOf(it.password, it.basicAuthPassword) }
                 .map { it.trim() }

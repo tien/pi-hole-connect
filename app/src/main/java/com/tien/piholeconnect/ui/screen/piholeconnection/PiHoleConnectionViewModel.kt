@@ -36,7 +36,7 @@ constructor(private val userPreferencesRepository: UserPreferencesRepository) : 
         private set
 
     suspend fun loadDataForId(piHoleConnectionId: String) {
-        val preferences = userPreferencesRepository.userPreferencesFlow.first()
+        val preferences = userPreferencesRepository.userPreferences.first()
         val connection =
             preferences.piHoleConnectionsList
                 .first { it.id == piHoleConnectionId }

@@ -29,7 +29,7 @@ constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val rules =
-        piHoleRepositoryProvider.selectedPiHoleRepositoryFlow
+        piHoleRepositoryProvider.selectedPiHoleRepository
             .filterNotNull()
             .mapLatest { it.domainManagementApi.getDomains().body().domains ?: listOf() }
             .asRegisteredLoadState()

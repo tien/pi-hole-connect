@@ -73,7 +73,7 @@ class SnackbarErrorViewModel
 @Inject
 constructor(userPreferencesRepository: UserPreferencesRepository) : ViewModel() {
     val sensitiveData =
-        userPreferencesRepository.userPreferencesFlow.map { preferences ->
+        userPreferencesRepository.userPreferences.map { preferences ->
             preferences.piHoleConnectionsList
                 .flatMap { listOf(it.password, it.basicAuthPassword) }
                 .map { it.trim() }

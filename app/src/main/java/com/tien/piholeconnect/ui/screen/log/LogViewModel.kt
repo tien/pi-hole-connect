@@ -58,7 +58,7 @@ constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     var logs =
-        piHoleRepositoryProvider.selectedPiHoleRepositoryFlow
+        piHoleRepositoryProvider.selectedPiHoleRepository
             .filterNotNull()
             .combine(limit) { piHole, limit -> Pair(piHole, limit) }
             .mapLatest { (piHole, limit) ->
