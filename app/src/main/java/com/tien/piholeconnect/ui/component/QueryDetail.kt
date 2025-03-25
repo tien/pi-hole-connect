@@ -47,6 +47,7 @@ import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 import com.tien.piholeconnect.ui.theme.info
 import com.tien.piholeconnect.ui.theme.success
 import java.text.DateFormat
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun QueryDetail(
@@ -131,12 +132,7 @@ fun QueryDetail(
                     overlineContent = { Text(stringResource(R.string.query_detail_response_time)) },
                     headlineContent = {
                         if (query.reply?.time != null) {
-                            SelectionContainer {
-                                Text(
-                                    stringResource(R.string.query_detail_response_time_ms)
-                                        .format(query.reply.time * 0.1)
-                                )
-                            }
+                            SelectionContainer { Text(query.reply.time.milliseconds.toString()) }
                         }
                     },
                 )

@@ -32,6 +32,7 @@ import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 import com.tien.piholeconnect.ui.theme.info
 import com.tien.piholeconnect.ui.theme.success
 import java.text.DateFormat
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun LogItem(log: QueryLog, modifier: Modifier = Modifier) {
@@ -78,7 +79,7 @@ fun LogItem(log: QueryLog, modifier: Modifier = Modifier) {
                     Text(dateFormat.format(log.time * 1000L))
                 }
                 if (log.reply?.time != null) {
-                    Text("%.1f ms".format(log.reply.time * 0.1))
+                    Text(log.reply.time.milliseconds.toString())
                 }
             }
         },
@@ -99,7 +100,7 @@ fun LogItemPreview() {
                         type = "IPv6",
                         domain = "google.com",
                         client = QueryLogClient(name = "android.router"),
-                        reply = QueryLogReply(time = 450.0),
+                        reply = QueryLogReply(time = 0.050610790252685547),
                     )
                 )
             }
