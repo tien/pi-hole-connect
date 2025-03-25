@@ -10,10 +10,10 @@ import com.tien.piholeconnect.repository.apis.DomainManagementApi
 import com.tien.piholeconnect.repository.models.GetDomainsInner
 import com.tien.piholeconnect.repository.models.Post
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.mapLatest
-import javax.inject.Inject
 
 @HiltViewModel
 class FilterRulesViewModel
@@ -58,7 +58,7 @@ constructor(
                     )
 
                 resetAddRuleDialogInputs()
-                refresh()
+                backgroundRefresh()
             }
             .onFailure(this::addError)
     }
@@ -86,7 +86,7 @@ constructor(
                     .getSelectedPiHoleRepository()
                     ?.domainManagementApi
                     ?.deleteDomain(type, kind, domain)
-                refresh()
+                backgroundRefresh()
             }
             .onFailure(this::addError)
     }

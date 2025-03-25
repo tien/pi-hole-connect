@@ -9,11 +9,11 @@ import com.tien.piholeconnect.repository.UserPreferencesRepository
 import com.tien.piholeconnect.repository.models.GetBlocking200Response
 import com.tien.piholeconnect.repository.models.SetBlockingRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import kotlin.time.Duration
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.mapLatest
-import javax.inject.Inject
-import kotlin.time.Duration
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -69,7 +69,7 @@ constructor(
                     )
                 )
 
-            refresh()
+            backgroundRefresh()
         } catch (error: Throwable) {
             addError(error)
         } finally {
