@@ -49,7 +49,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.LoadState
 import com.tien.piholeconnect.model.QueryLog
-import com.tien.piholeconnect.model.RuleType
 import com.tien.piholeconnect.model.Screen
 import com.tien.piholeconnect.ui.component.LogItem
 import com.tien.piholeconnect.ui.component.QueryDetail
@@ -74,29 +73,30 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
 
     viewModel.SnackBarErrorEffect(scaffoldState.snackbarHostState)
 
-    val modifiedFilterRuleState by viewModel.modifyFilterRuleState.collectAsStateWithLifecycle()
+    val addRuleSuccessMessage = stringResource(R.string.log_screen_add_filter_rule_success)
+    val addRuleFailureMessage = stringResource(R.string.log_screen_add_filter_rule_failure)
 
-    ChangedEffect(modifiedFilterRuleState) {
-        when (modifiedFilterRuleState) {
-            is LoadState.Success,
+    suspend fun handleLoadState(loadState: LoadState<*>) {
+        when (loadState) {
+            is LoadState.Success -> {
+                selectedLog = null
+                scaffoldState.snackbarHostState.showSnackbar(addRuleSuccessMessage)
+            }
             is LoadState.Failure -> {
                 selectedLog = null
+                scaffoldState.snackbarHostState.showSnackbar(addRuleFailureMessage)
             }
             else -> Unit
         }
     }
-    val addRuleSuccessMessage = stringResource(R.string.log_screen_add_filter_rule_success)
-    val addRuleFailureMessage = stringResource(R.string.log_screen_add_filter_rule_failure)
 
-    ChangedEffect(scaffoldState.snackbarHostState, modifiedFilterRuleState) {
-        when (modifiedFilterRuleState) {
-            is LoadState.Success ->
-                scaffoldState.snackbarHostState.showSnackbar(addRuleSuccessMessage)
-            is LoadState.Failure ->
-                scaffoldState.snackbarHostState.showSnackbar(addRuleFailureMessage)
-            else -> Unit
-        }
-    }
+    val addToAllowListLoadState by viewModel.addToAllowlistLoadState.collectAsStateWithLifecycle()
+
+    ChangedEffect(addToAllowListLoadState) { handleLoadState(addToAllowListLoadState) }
+
+    val addToDenyListLoadState by viewModel.addToDenyListLoadState.collectAsStateWithLifecycle()
+
+    ChangedEffect(addToDenyListLoadState) { handleLoadState(addToDenyListLoadState) }
 
     LaunchedEffect(Unit) { viewModel.backgroundRefresh() }
 
@@ -116,12 +116,8 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
                 }
             },
             onDismissRequest = { selectedLog = null },
-            addToWhitelistLoading =
-                modifiedFilterRuleState is LoadState.Loading &&
-                    modifiedFilterRuleState.data == RuleType.WHITE,
-            addToBlacklistLoading =
-                modifiedFilterRuleState is LoadState.Loading &&
-                    modifiedFilterRuleState.data == RuleType.BLACK,
+            addToWhitelistLoading = addToAllowListLoadState is LoadState.Loading,
+            addToBlacklistLoading = addToDenyListLoadState is LoadState.Loading,
         )
     }
 
@@ -265,9 +261,7 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
             ) {
                 Column {
                     Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(start = 16.dp),
+                        Modifier.fillMaxWidth().padding(start = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         if (logs is LoadState.Success) {

@@ -3,12 +3,12 @@ package com.tien.piholeconnect.ui.screen.log
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.R
-import com.tien.piholeconnect.model.LoadState
 import com.tien.piholeconnect.model.QueryStatus
 import com.tien.piholeconnect.model.QueryStatusType
-import com.tien.piholeconnect.model.RuleType
 import com.tien.piholeconnect.model.ScreenViewModel
+import com.tien.piholeconnect.model.UnitLoadState
 import com.tien.piholeconnect.model.fromStatusString
+import com.tien.piholeconnect.model.run
 import com.tien.piholeconnect.repository.PiHoleRepositoryProvider
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import com.tien.piholeconnect.repository.apis.DomainManagementApi
@@ -47,7 +47,9 @@ constructor(
         ),
     }
 
-    var modifyFilterRuleState = MutableStateFlow<LoadState<RuleType>>(LoadState.Idle<RuleType>())
+    val addToAllowlistLoadState = MutableStateFlow(UnitLoadState.Idle as UnitLoadState)
+
+    val addToDenyListLoadState = MutableStateFlow(UnitLoadState.Idle as UnitLoadState)
 
     val query = MutableStateFlow("")
     val sortBy = MutableStateFlow(Sort.DATE_DESC)
@@ -93,55 +95,39 @@ constructor(
             }
             .asViewModelFlowState()
 
-    fun addToWhiteList(domain: String) =
-        viewModelScope.launch {
-            modifyFilterRuleState.value = LoadState.Loading(RuleType.WHITE)
+    fun addToWhiteList(domain: String) {
+        addToAllowlistLoadState.run(scope = viewModelScope) {
+            val body =
+                piHoleRepositoryProvider
+                    .getSelectedPiHoleRepository()
+                    ?.domainManagementApi
+                    ?.addDomain(
+                        DomainManagementApi.TypeAddDomain.ALLOW,
+                        DomainManagementApi.KindAddDomain.EXACT,
+                        Post(domain = listOf(domain)),
+                    )
+                    ?.body()
 
-            try {
-                val body =
-                    piHoleRepositoryProvider
-                        .getSelectedPiHoleRepository()
-                        ?.domainManagementApi
-                        ?.addDomain(
-                            DomainManagementApi.TypeAddDomain.ALLOW,
-                            DomainManagementApi.KindAddDomain.EXACT,
-                            Post(domain = listOf(domain)),
-                        )
-                        ?.body()
-
-                modifyFilterRuleState.value =
-                    body?.processed?.errors?.firstOrNull()?.let {
-                        LoadState.Failure(Error(it.error), RuleType.WHITE)
-                    } ?: LoadState.Success(RuleType.WHITE)
-            } catch (error: Throwable) {
-                modifyFilterRuleState.value = LoadState.Failure(Error(error), RuleType.WHITE)
-            }
+            body?.processed?.errors?.firstOrNull()?.also { throw Error(it.error) }
         }
+    }
 
-    fun addToBlacklist(domain: String) =
-        viewModelScope.launch {
-            modifyFilterRuleState.value = LoadState.Loading(RuleType.BLACK)
+    fun addToBlacklist(domain: String) {
+        addToDenyListLoadState.run(scope = viewModelScope) {
+            val body =
+                piHoleRepositoryProvider
+                    .getSelectedPiHoleRepository()
+                    ?.domainManagementApi
+                    ?.addDomain(
+                        DomainManagementApi.TypeAddDomain.DENY,
+                        DomainManagementApi.KindAddDomain.EXACT,
+                        Post(domain = listOf(domain)),
+                    )
+                    ?.body()
 
-            try {
-                val body =
-                    piHoleRepositoryProvider
-                        .getSelectedPiHoleRepository()
-                        ?.domainManagementApi
-                        ?.addDomain(
-                            DomainManagementApi.TypeAddDomain.DENY,
-                            DomainManagementApi.KindAddDomain.EXACT,
-                            Post(domain = listOf(domain)),
-                        )
-                        ?.body()
-
-                modifyFilterRuleState.value =
-                    body?.processed?.errors?.firstOrNull()?.let {
-                        LoadState.Failure(Error(it.error), RuleType.BLACK)
-                    } ?: LoadState.Success(RuleType.BLACK)
-            } catch (error: Throwable) {
-                modifyFilterRuleState.value = LoadState.Failure(Error(error), RuleType.BLACK)
-            }
+            body?.processed?.errors?.firstOrNull()?.also { throw Error(it.error) }
         }
+    }
 
     fun changeLimit(limit: Int) {
         viewModelScope.launch { this@LogViewModel.limit.value = limit }
