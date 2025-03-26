@@ -70,8 +70,8 @@ constructor(
                 )
 
             backgroundRefresh()
-        } catch (error: Throwable) {
-            addError(error)
+        } catch (error: Exception) {
+            emitError(error)
         } finally {
             isPiHoleSwitchLoading = false
         }

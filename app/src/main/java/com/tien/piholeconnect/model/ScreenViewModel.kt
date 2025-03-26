@@ -14,8 +14,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -27,6 +25,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import com.tien.piholeconnect.util.showGenericPiHoleConnectionError
+import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -42,7 +41,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.runningFold
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 open class ScreenViewModel
 @Inject
@@ -76,7 +74,10 @@ constructor(userPreferencesRepository: UserPreferencesRepository) : ViewModel() 
             }
             .onEach {
                 if (it is LoadState.Failure) {
-                    addError(it.throwable)
+                    when (it.throwable) {
+                        is Error -> throw it.throwable
+                        is Exception -> emitError(it.throwable)
+                    }
                 }
             }
             .also { this@ScreenViewModel.flows.value += it }
@@ -93,7 +94,7 @@ constructor(userPreferencesRepository: UserPreferencesRepository) : ViewModel() 
             initialValue = false,
         )
 
-    private val refreshTrigger = MutableSharedFlow<Unit>(replay = 1)
+    private val refreshTrigger = MutableSharedFlow<Unit>(replay = 0)
 
     val refreshing = MutableStateFlow(false)
 
@@ -114,11 +115,13 @@ constructor(userPreferencesRepository: UserPreferencesRepository) : ViewModel() 
         loadingFlow.first { !it }
     }
 
-    private val errors = MutableStateFlow(listOf<Throwable>())
+    private val error = MutableSharedFlow<Exception>()
 
-    protected fun addError(throwable: Throwable) {
-        errors.value += throwable
+    protected suspend fun emitError(error: Exception) {
+        this.error.emit(error)
     }
+
+    private val errorToDisplay = MutableStateFlow<Exception?>(null)
 
     private val sensitiveData =
         userPreferencesRepository.userPreferences.map { preferences ->
@@ -138,28 +141,32 @@ constructor(userPreferencesRepository: UserPreferencesRepository) : ViewModel() 
             sensitiveData.fold(string) { acc, curr -> acc.replace(curr, "*".repeat(curr.length)) }
         }
 
-        var errorToDisplay by remember { mutableStateOf<Throwable?>(null) }
+        val currentError by error.collectAsStateWithLifecycle(null)
 
-        val errors by errors.collectAsStateWithLifecycle(listOf())
-
-        errors.lastOrNull()?.let {
+        currentError?.let {
             LaunchedEffect(snackbarHostState) {
                 val snackbarResult = snackbarHostState.showGenericPiHoleConnectionError(it, context)
 
-                if (snackbarResult == SnackbarResult.ActionPerformed) {
-                    errorToDisplay = it
+                when (snackbarResult) {
+                    SnackbarResult.ActionPerformed -> {
+                        errorToDisplay.value = it
+                    }
+                    SnackbarResult.Dismissed,
+                    null -> Unit
                 }
             }
         }
 
+        val errorToDisplay by errorToDisplay.collectAsStateWithLifecycle()
+
         errorToDisplay?.let {
             AlertDialog(
-                onDismissRequest = { errorToDisplay = null },
+                onDismissRequest = { this.errorToDisplay.value = null },
                 confirmButton = {
                     TextButton(
                         onClick = {
                             clipboard.setText(AnnotatedString(sanitize(it.stackTraceToString())))
-                            errorToDisplay = null
+                            this.errorToDisplay.value = null
                         }
                     ) {
                         Icon(
@@ -171,7 +178,7 @@ constructor(userPreferencesRepository: UserPreferencesRepository) : ViewModel() 
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = { errorToDisplay = null }) {
+                    TextButton(onClick = { this.errorToDisplay.value = null }) {
                         Text(stringResource(android.R.string.cancel))
                     }
                 },

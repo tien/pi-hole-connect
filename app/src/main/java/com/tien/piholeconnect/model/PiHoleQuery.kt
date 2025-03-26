@@ -42,7 +42,7 @@ enum class QueryStatus(val type: QueryStatusType) {
 fun QueryStatus.Companion.fromStatusString(status: String): QueryStatus {
     return try {
         enumValueOf<QueryStatus>(status)
-    } catch (error: Throwable) {
+    } catch (_: Exception) {
         QueryStatus.UNKNOWN
     }
 }

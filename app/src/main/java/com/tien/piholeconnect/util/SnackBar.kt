@@ -9,16 +9,16 @@ import io.ktor.client.plugins.ResponseException
 import java.util.concurrent.CancellationException
 
 suspend fun SnackbarHostState.showGenericPiHoleConnectionError(
-    throwable: Throwable,
+    error: Exception,
     context: Context,
 ): SnackbarResult? {
-    if (throwable is CancellationException) return null
+    if (error is CancellationException) return null
 
     val message =
         with(StringBuilder()) {
-            when (throwable) {
+            when (error) {
                 is ResponseException -> {
-                    append(throwable.response.status.toString())
+                    append(error.response.status.toString())
                     append(": ")
                 }
 

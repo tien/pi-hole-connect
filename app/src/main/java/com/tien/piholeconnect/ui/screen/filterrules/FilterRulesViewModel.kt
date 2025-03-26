@@ -40,27 +40,27 @@ constructor(
     var addRuleIsWildcardChecked by mutableStateOf(false)
 
     suspend fun addRule() {
-        kotlin
-            .runCatching {
-                piHoleRepositoryProvider
-                    .getSelectedPiHoleRepository()
-                    ?.domainManagementApi
-                    ?.addDomain(
-                        type =
-                            when (selectedTab) {
-                                Tab.WHITE -> DomainManagementApi.TypeAddDomain.ALLOW
-                                Tab.BLACK -> DomainManagementApi.TypeAddDomain.DENY
-                            },
-                        kind =
-                            if (addRuleIsWildcardChecked) DomainManagementApi.KindAddDomain.REGEX
-                            else DomainManagementApi.KindAddDomain.EXACT,
-                        Post(domain = listOf(addRuleInputValue.trim())),
-                    )
+        try {
+            piHoleRepositoryProvider
+                .getSelectedPiHoleRepository()
+                ?.domainManagementApi
+                ?.addDomain(
+                    type =
+                        when (selectedTab) {
+                            Tab.WHITE -> DomainManagementApi.TypeAddDomain.ALLOW
+                            Tab.BLACK -> DomainManagementApi.TypeAddDomain.DENY
+                        },
+                    kind =
+                        if (addRuleIsWildcardChecked) DomainManagementApi.KindAddDomain.REGEX
+                        else DomainManagementApi.KindAddDomain.EXACT,
+                    Post(domain = listOf(addRuleInputValue.trim())),
+                )
 
-                resetAddRuleDialogInputs()
-                backgroundRefresh()
-            }
-            .onFailure(this::addError)
+            resetAddRuleDialogInputs()
+            backgroundRefresh()
+        } catch (error: Exception) {
+            emitError(error)
+        }
     }
 
     suspend fun removeRule(domain: GetDomainsInner) {
@@ -80,15 +80,15 @@ constructor(
         type: DomainManagementApi.TypeDeleteDomain,
         kind: DomainManagementApi.KindDeleteDomain,
     ) {
-        kotlin
-            .runCatching {
-                piHoleRepositoryProvider
-                    .getSelectedPiHoleRepository()
-                    ?.domainManagementApi
-                    ?.deleteDomain(type, kind, domain)
-                backgroundRefresh()
-            }
-            .onFailure(this::addError)
+        try {
+            piHoleRepositoryProvider
+                .getSelectedPiHoleRepository()
+                ?.domainManagementApi
+                ?.deleteDomain(type, kind, domain)
+            backgroundRefresh()
+        } catch (error: Exception) {
+            emitError(error)
+        }
     }
 
     fun resetAddRuleDialogInputs() {

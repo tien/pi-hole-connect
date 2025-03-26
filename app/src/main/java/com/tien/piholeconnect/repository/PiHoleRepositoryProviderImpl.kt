@@ -31,6 +31,7 @@ import io.ktor.client.plugins.auth.providers.BasicAuthCredentials
 import io.ktor.client.plugins.auth.providers.basic
 import io.ktor.http.URLBuilder
 import io.ktor.http.encodedPath
+import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -41,7 +42,6 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import javax.inject.Inject
 
 class PiHoleRepositoryProviderImpl
 @Inject
@@ -184,13 +184,13 @@ constructor(
         val sessionResponse = authenticationApi.addAuth(Password(piHoleConnection.password))
 
         if (!sessionResponse.success) {
-            throw Error("Unable to login")
+            throw Exception("Unable to login")
         }
 
         val session = sessionResponse.body().session
 
         if (!session.valid) {
-            throw Error("Invalid session")
+            throw Exception("Invalid session")
         }
 
         authenticationDataStore.updateData {
