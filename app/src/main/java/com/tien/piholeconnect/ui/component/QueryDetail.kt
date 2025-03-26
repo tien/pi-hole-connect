@@ -19,9 +19,11 @@ import androidx.compose.material.icons.filled.GppGood
 import androidx.compose.material.icons.filled.HourglassBottom
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,17 +39,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tien.piholeconnect.R
-import com.tien.piholeconnect.model.AnswerCategory
-import com.tien.piholeconnect.model.AnswerType
-import com.tien.piholeconnect.model.PiHoleLog
+import com.tien.piholeconnect.model.QueryLog
+import com.tien.piholeconnect.model.QueryLogClient
+import com.tien.piholeconnect.model.QueryLogReply
+import com.tien.piholeconnect.model.QueryStatus
+import com.tien.piholeconnect.model.QueryStatusType
+import com.tien.piholeconnect.model.fromStatusString
 import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 import com.tien.piholeconnect.ui.theme.info
 import com.tien.piholeconnect.ui.theme.success
 import java.text.DateFormat
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun QueryDetail(
-    query: PiHoleLog,
+    query: QueryLog,
     onWhitelistClick: () -> Unit,
     onBlacklistClick: () -> Unit,
     onDismissRequest: () -> Unit,
@@ -56,15 +62,14 @@ fun QueryDetail(
 ) {
     val loading = addToWhitelistLoading || addToBlacklistLoading
     val dateFormat = remember { DateFormat.getDateTimeInstance() }
+    val status =
+        query.status?.let { QueryStatus.Companion.fromStatusString(it) } ?: QueryStatus.UNKNOWN
     val (icon, tint) =
-        when (query.answerType.category) {
-            AnswerCategory.BLOCK -> Pair(Icons.Default.GppBad, MaterialTheme.colorScheme.error)
-
-            AnswerCategory.ALLOW -> Pair(Icons.Default.GppGood, MaterialTheme.colorScheme.success)
-
-            AnswerCategory.CACHE -> Pair(Icons.Default.Cached, MaterialTheme.colorScheme.info)
-
-            AnswerCategory.UNKNOWN ->
+        when (status.type) {
+            QueryStatusType.BLOCK -> Pair(Icons.Default.GppBad, MaterialTheme.colorScheme.error)
+            QueryStatusType.ALLOW -> Pair(Icons.Default.GppGood, MaterialTheme.colorScheme.success)
+            QueryStatusType.CACHE -> Pair(Icons.Default.Cached, MaterialTheme.colorScheme.info)
+            QueryStatusType.UNKNOWN ->
                 Pair(Icons.AutoMirrored.Filled.Help, LocalContentColor.current.copy(alpha = 0.5f))
         }
 
@@ -72,39 +77,63 @@ fun QueryDetail(
         onDismissRequest = onDismissRequest,
         text = {
             Column(Modifier.padding(top = 8.dp)) {
+                val listItemColors =
+                    ListItemDefaults.colors(containerColor = AlertDialogDefaults.containerColor)
+
                 ListItem(
                     leadingContent = { Icon(icon, tint = tint, contentDescription = null) },
                     headlineContent = {
                         SelectionContainer {
-                            Text(query.answerType.name, fontWeight = FontWeight.Bold, color = tint)
+                            Text(status.name, fontWeight = FontWeight.Bold, color = tint)
                         }
                     },
+                    colors = listItemColors,
                 )
                 ListItem(
                     leadingContent = { Icon(Icons.Default.Schedule, contentDescription = null) },
                     overlineContent = { Text(stringResource(R.string.query_detail_timestamp)) },
                     headlineContent = {
-                        SelectionContainer { Text(dateFormat.format(query.timestamp * 1000L)) }
+                        SelectionContainer {
+                            if (query.time != null) {
+                                Text(dateFormat.format(query.time * 1000))
+                            }
+                        }
                     },
+                    colors = listItemColors,
                 )
                 ListItem(
                     leadingContent = { Icon(Icons.Default.Domain, contentDescription = null) },
                     overlineContent = {
                         Text(stringResource(R.string.query_detail_requested_domain))
                     },
-                    headlineContent = { SelectionContainer { Text(query.requestedDomain) } },
+                    headlineContent = {
+                        if (query.domain != null) {
+                            SelectionContainer { Text(query.domain) }
+                        }
+                    },
+                    colors = listItemColors,
                 )
                 ListItem(
                     leadingContent = { Icon(Icons.Default.Devices, contentDescription = null) },
                     overlineContent = { Text(stringResource(R.string.query_detail_client)) },
-                    headlineContent = { SelectionContainer { Text(query.client) } },
+                    headlineContent = {
+                        if (query.client?.name != null) {
+                            SelectionContainer { Text(query.client.name) }
+                        }
+                    },
+                    colors = listItemColors,
                 )
                 ListItem(
                     leadingContent = { Icon(Icons.Default.Dns, contentDescription = null) },
                     overlineContent = {
                         Text(stringResource(R.string.query_detail_dns_record_type))
                     },
-                    headlineContent = { SelectionContainer { Text(query.queryType) } },
+                    headlineContent = {
+                        if (query.type != null) {
+                            SelectionContainer { Text(query.type) }
+                        }
+                    },
+                    colors = listItemColors,
                 )
                 ListItem(
                     leadingContent = {
@@ -112,13 +141,11 @@ fun QueryDetail(
                     },
                     overlineContent = { Text(stringResource(R.string.query_detail_response_time)) },
                     headlineContent = {
-                        SelectionContainer {
-                            Text(
-                                stringResource(R.string.query_detail_response_time_ms)
-                                    .format(query.responseTime * 0.1)
-                            )
+                        if (query.reply?.time != null) {
+                            SelectionContainer { Text(query.reply.time.milliseconds.toString()) }
                         }
                     },
+                    colors = listItemColors,
                 )
             }
         },
@@ -169,13 +196,13 @@ fun QueryDetail(
 fun QueryDetailPreview() {
     PiHoleConnectTheme {
         QueryDetail(
-            PiHoleLog(
-                timestamp = 1616407649532,
-                queryType = "AAAA",
-                requestedDomain = "google.com",
-                client = "android.router",
-                answerType = AnswerType.UPSTREAM,
-                responseTime = 450,
+            QueryLog(
+                time = 1616407649532.0,
+                type = "IPv6",
+                status = "FORWARDED",
+                domain = "google.com",
+                client = QueryLogClient(name = "android.router"),
+                reply = QueryLogReply(time = 450.0),
             ),
             onWhitelistClick = {},
             onBlacklistClick = {},
@@ -190,13 +217,13 @@ fun QueryDetailPreview() {
 fun QueryDetailLoadingPreview() {
     PiHoleConnectTheme {
         QueryDetail(
-            PiHoleLog(
-                timestamp = 1616407649532,
-                queryType = "AAAA",
-                requestedDomain = "google.com",
-                client = "android.router",
-                answerType = AnswerType.UPSTREAM,
-                responseTime = 450,
+            QueryLog(
+                time = 1616407649532.0,
+                type = "IPv6",
+                status = "FORWARDED",
+                domain = "google.com",
+                client = QueryLogClient(name = "android.router"),
+                reply = QueryLogReply(time = 450.0),
             ),
             onWhitelistClick = {},
             onBlacklistClick = {},

@@ -8,9 +8,9 @@ import kotlinx.coroutines.withContext
 
 class UserPreferencesRepositoryImpl(private val dataStore: DataStore<UserPreferences>) :
     UserPreferencesRepository {
-    override val userPreferencesFlow = dataStore.data
+    override val userPreferences = dataStore.data
 
-    override val selectedPiHoleFlow =
+    override val selectedPiHole =
         dataStore.data.map { userPreferences ->
             userPreferences.piHoleConnectionsList.firstOrNull {
                 it.id == userPreferences.selectedPiHoleConnectionId

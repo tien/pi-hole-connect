@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option java_package = "com.tien.piholeconnect.model";
+option java_multiple_files = true;
+
+message Session {
+  string sid = 1;
+}
+
+message Authentication {
+  map<string, Session> sessions = 1;
+}

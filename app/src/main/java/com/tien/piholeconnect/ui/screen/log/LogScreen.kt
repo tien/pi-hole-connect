@@ -23,6 +23,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SearchBar
@@ -33,7 +34,6 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,17 +46,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tien.piholeconnect.R
-import com.tien.piholeconnect.model.AsyncState
-import com.tien.piholeconnect.model.ModifyFilterRuleResponse
-import com.tien.piholeconnect.model.PiHoleLog
-import com.tien.piholeconnect.model.RuleType
+import com.tien.piholeconnect.model.LoadState
+import com.tien.piholeconnect.model.QueryLog
 import com.tien.piholeconnect.model.Screen
 import com.tien.piholeconnect.ui.component.LogItem
 import com.tien.piholeconnect.ui.component.QueryDetail
+import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
 import com.tien.piholeconnect.util.ChangedEffect
-import com.tien.piholeconnect.util.SnackbarErrorEffect
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,71 +65,68 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
     val scaffoldState = rememberBottomSheetScaffoldState()
 
     var searchActive by remember { mutableStateOf(false) }
-    val query by viewModel.query.collectAsState()
-    val logs by viewModel.logs.collectAsState(initial = listOf())
-    val enabledStatuses by viewModel.enabledStatuses.collectAsState()
-    val sortBy by viewModel.sortBy.collectAsState()
+    val query by viewModel.query.collectAsStateWithLifecycle()
+    val logs by viewModel.logs.collectAsStateWithLifecycle()
+    val enabledStatuses by viewModel.enabledStatuses.collectAsStateWithLifecycle()
+    val sortBy by viewModel.sortBy.collectAsStateWithLifecycle()
 
-    var selectedLog: PiHoleLog? by remember { mutableStateOf(null) }
+    var selectedLog: QueryLog? by remember { mutableStateOf(null) }
 
-    viewModel.RefreshOnConnectionChangeEffect()
+    viewModel.SnackBarErrorEffect(scaffoldState.snackbarHostState)
 
-    SnackbarErrorEffect(viewModel.error, scaffoldState.snackbarHostState)
+    val addRuleSuccessMessage = stringResource(R.string.log_screen_add_filter_rule_success)
+    val addRuleFailureMessage = stringResource(R.string.log_screen_add_filter_rule_failure)
 
-    ChangedEffect(viewModel.modifyFilterRuleState) {
-        (viewModel.modifyFilterRuleState.second as? AsyncState.Settled)?.let { selectedLog = null }
-    }
-
-    ChangedEffect(scaffoldState.snackbarHostState, viewModel.modifyFilterRuleState) {
-        when (viewModel.modifyFilterRuleState.second) {
-            is AsyncState.Settled -> {
-                (viewModel.modifyFilterRuleState.second
-                        as? AsyncState.Settled<ModifyFilterRuleResponse>)
-                    ?.let { asyncState ->
-                        when {
-                            asyncState.result.isSuccess ->
-                                asyncState.result.getOrNull()?.message?.let {
-                                    scaffoldState.snackbarHostState.showSnackbar(it)
-                                }
-
-                            asyncState.result.isFailure ->
-                                asyncState.result.exceptionOrNull()?.localizedMessage?.let {
-                                    scaffoldState.snackbarHostState.showSnackbar(it)
-                                }
-
-                            else -> Unit
-                        }
-                    }
+    suspend fun handleLoadState(loadState: LoadState<*>) {
+        when (loadState) {
+            is LoadState.Success -> {
+                selectedLog = null
+                scaffoldState.snackbarHostState.showSnackbar(addRuleSuccessMessage)
             }
-
+            is LoadState.Failure -> {
+                selectedLog = null
+                scaffoldState.snackbarHostState.showSnackbar(addRuleFailureMessage)
+            }
             else -> Unit
         }
     }
 
-    LaunchedEffect(Unit) { viewModel.viewModelScope.launch { viewModel.apply { refresh() } } }
+    val addToAllowListLoadState by viewModel.addToAllowlistLoadState.collectAsStateWithLifecycle()
+
+    ChangedEffect(addToAllowListLoadState) { handleLoadState(addToAllowListLoadState) }
+
+    val addToDenyListLoadState by viewModel.addToDenyListLoadState.collectAsStateWithLifecycle()
+
+    ChangedEffect(addToDenyListLoadState) { handleLoadState(addToDenyListLoadState) }
+
+    LaunchedEffect(Unit) { viewModel.backgroundRefresh() }
 
     LaunchedEffect(logs) { lazyListState.scrollToItem(0) }
 
     selectedLog?.let { logQuery ->
         QueryDetail(
             logQuery,
-            onWhitelistClick = { viewModel.addToWhiteList(logQuery.requestedDomain) },
-            onBlacklistClick = { viewModel.addToBlacklist(logQuery.requestedDomain) },
+            onWhitelistClick = {
+                if (logQuery.domain != null) {
+                    viewModel.addToWhiteList(logQuery.domain)
+                }
+            },
+            onBlacklistClick = {
+                if (logQuery.domain != null) {
+                    viewModel.addToBlacklist(logQuery.domain)
+                }
+            },
             onDismissRequest = { selectedLog = null },
-            addToWhitelistLoading =
-                viewModel.modifyFilterRuleState.first == RuleType.WHITE &&
-                    viewModel.modifyFilterRuleState.second is AsyncState.Pending,
-            addToBlacklistLoading =
-                viewModel.modifyFilterRuleState.first == RuleType.BLACK &&
-                    viewModel.modifyFilterRuleState.second is AsyncState.Pending,
+            addToWhitelistLoading = addToAllowListLoadState is LoadState.Loading,
+            addToBlacklistLoading = addToDenyListLoadState is LoadState.Loading,
         )
     }
 
     @Composable
     fun LogList(state: LazyListState = rememberLazyListState()) {
         LazyColumn(state = state) {
-            if (viewModel.hasBeenLoaded) {
-                logs.forEachIndexed { index, log ->
+            if (logs is LoadState.Success) {
+                (logs as LoadState.Success).data.forEachIndexed { index, log ->
                     item(key = index) {
                         LogItem(log, modifier = Modifier.clickable { selectedLog = log })
                     }
@@ -201,18 +196,23 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
                 @Composable { HorizontalDivider(paddingModifier.padding(vertical = 16.dp)) }
 
             Text(stringResource(R.string.log_screen_number_of_queries), modifier = paddingModifier)
+
+            val limit by viewModel.limit.collectAsStateWithLifecycle()
+
+            val listItemColors =
+                ListItemDefaults.colors(containerColor = BottomSheetDefaults.ContainerColor)
+
             viewModel.limits.forEach {
                 ListItem(
                     modifier =
                         Modifier.selectable(
-                            selected = viewModel.limit == it,
+                            selected = limit == it,
                             onClick = { viewModel.changeLimit(it) },
                             role = Role.RadioButton,
                         ),
-                    leadingContent = {
-                        RadioButton(selected = viewModel.limit == it, onClick = null)
-                    },
+                    leadingContent = { RadioButton(selected = limit == it, onClick = null) },
                     headlineContent = { Text(it.toString()) },
+                    colors = listItemColors,
                 )
             }
             styledDivider()
@@ -234,6 +234,7 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
                         ),
                     leadingContent = { Checkbox(checked = checked, onCheckedChange = null) },
                     headlineContent = { Text(stringResource(status.labelResourceId)) },
+                    colors = listItemColors,
                 )
             }
             styledDivider()
@@ -249,35 +250,34 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
                         ),
                     leadingContent = { RadioButton(selected = selected, onClick = null) },
                     headlineContent = { Text(stringResource(sort.labelResourceId)) },
+                    colors = listItemColors,
                 )
             }
         },
         content = {
-            var isRefreshing by remember { mutableStateOf(false) }
+            val loading by viewModel.loading.collectAsStateWithLifecycle()
+            val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
             val pullToRefreshState = rememberPullToRefreshState()
+
+            TopBarProgressIndicator(visible = loading && !refreshing)
 
             PullToRefreshBox(
                 state = pullToRefreshState,
-                isRefreshing = isRefreshing,
-                onRefresh = {
-                    isRefreshing = true
-                    viewModel.viewModelScope.launch {
-                        viewModel.refresh()
-                        isRefreshing = false
-                    }
-                },
+                isRefreshing = refreshing,
+                onRefresh = { viewModel.refresh() },
             ) {
                 Column {
                     Row(
                         Modifier.fillMaxWidth().padding(start = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        if (viewModel.hasBeenLoaded) {
+                        if (logs is LoadState.Success) {
+                            val loadedLogs = logs as LoadState.Success
                             Text(
                                 pluralStringResource(
                                     R.plurals.log_screen_results,
-                                    logs.count(),
-                                    logs.count(),
+                                    loadedLogs.data.count(),
+                                    loadedLogs.data.count(),
                                 ),
                                 style = MaterialTheme.typography.bodySmall,
                             )

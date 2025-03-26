@@ -1,27 +1,55 @@
 package com.tien.piholeconnect.ui.screen.statistics
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import com.tien.piholeconnect.model.PiHoleConnectionAwareViewModel
-import com.tien.piholeconnect.model.PiHoleStatistics
-import com.tien.piholeconnect.repository.PiHoleRepository
-import com.tien.piholeconnect.repository.UserPreferencesRepository
+import com.tien.piholeconnect.service.PiHoleRepositoryProvider
+import com.tien.piholeconnect.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.mapLatest
 import javax.inject.Inject
 
 @HiltViewModel
-class StatisticsViewModel
-@Inject
-constructor(
-    private val piHoleRepository: PiHoleRepository,
-    val userPreferencesRepository: UserPreferencesRepository,
-) : PiHoleConnectionAwareViewModel(userPreferencesRepository) {
-    var statistics: PiHoleStatistics by mutableStateOf(PiHoleStatistics())
-        private set
+class StatisticsViewModel @Inject constructor(piHoleRepositoryProvider: PiHoleRepositoryProvider) :
+    BaseViewModel() {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val topDomains =
+        piHoleRepositoryProvider.selectedPiHoleRepository
+            .filterNotNull()
+            .mapLatest {
+                it.metricsApi
+                    .getMetricsTopDomains(blocked = false)
+                    .body()
+                    .domains
+                    ?.map { (it.domain ?: "") to (it.count ?: 0) }
+                    ?.toMap()
+            }
+            .asViewFlowState()
 
-    override suspend fun queueRefresh() {
-        val result = piHoleRepository.getStatistics()
-        statistics = result.copy(topSources = result.topSources.mapKeys { it.key.split('|')[0] })
-    }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val topBlockedDomains =
+        piHoleRepositoryProvider.selectedPiHoleRepository
+            .filterNotNull()
+            .mapLatest {
+                it.metricsApi
+                    .getMetricsTopDomains(blocked = true)
+                    .body()
+                    .domains
+                    ?.map { (it.domain ?: "") to (it.count ?: 0) }
+                    ?.toMap()
+            }
+            .asViewFlowState()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val topClients =
+        piHoleRepositoryProvider.selectedPiHoleRepository
+            .filterNotNull()
+            .mapLatest {
+                it.metricsApi
+                    .getMetricsTopClients()
+                    .body()
+                    .clients
+                    ?.map { (it.name ?: "") to (it.count ?: 0) }
+                    ?.toMap()
+            }
+            .asViewFlowState()
 }

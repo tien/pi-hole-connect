@@ -20,7 +20,7 @@
     <string name="enable_dialog_button_confirm">Włączać</string>
     <string name="enable_dialog_msg">Umożliwi to blokowanie reklam Pi-hole.</string>
     <string name="enable_dialog_title">Włączyć blokowanie reklam?</string>
-    <string name="error_pi_hole_connection_generic">Sprawdź swoje połączenie internetowe lub czy klucz API został ustawiony.</string>
+    <string name="error_pi_hole_connection_generic">Sprawdź połączenie internetowe lub czy ustawiono prawidłowe hasło.</string>
     <string name="error_pi_hole_connection_generic_error_prefix">Wystąpił błąd</string>
     <string name="error_show_details">Szczegóły</string>
     <string name="filter_rules_blacklist">Czarna lista</string>
@@ -51,6 +51,8 @@
     <string name="label_preferences">Ustawienia</string>
     <string name="label_statistics">Statystyki</string>
     <string name="label_tip_jar">Rzuć monetą</string>
+    <string name="log_screen_add_filter_rule_failure">Nie można dodać reguły filtru</string>
+    <string name="log_screen_add_filter_rule_success">Pomyślnie dodano regułę filtru</string>
     <string name="log_screen_label_allowed">Dozwolone</string>
     <string name="log_screen_label_blocked">Zablokowane</string>
     <string name="log_screen_label_date_sort_asc">Data (najstarsza)</string>
@@ -71,7 +73,7 @@
     <string name="pi_hole_connection_desc_scanner">Zeskanuj kod QR</string>
     <string name="pi_hole_connection_hint_scanner"><![CDATA[Można to znaleźć w \"Ustawienia > API / Interfejs sieciowy > Pokaż token API"]]></string>
     <string name="pi_hole_connection_label_api_path">Ścieżka interfejsu API</string>
-    <string name="pi_hole_connection_label_api_token">Token API</string>
+    <string name="pi_hole_connection_label_password">Hasło</string>
     <string name="pi_hole_connection_label_basic_auth_password">Podstawowe hasło uwierzytelniające</string>
     <string name="pi_hole_connection_label_basic_auth_realm">Podstawowa przestrzeń uwierzytelniania</string>
     <string name="pi_hole_connection_label_basic_auth_username">Podstawowa nazwa użytkownika uwierzytelniania</string>

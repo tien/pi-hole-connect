@@ -9,12 +9,6 @@ enum Theme {
   DARK = 2;
 }
 
-enum TemperatureUnit {
-  CELSIUS = 0;
-  FAHRENHEIT = 1;
-  KELVIN = 2;
-}
-
 enum URLProtocol {
   HTTP = 0;
   HTTPS = 1;
@@ -28,7 +22,7 @@ message PiHoleConnection {
   string host = 5;
   string apiPath = 6;
   uint32 port = 7;
-  optional string apiToken = 8;
+  optional string password = 8;
   optional string basicAuthUsername = 9;
   optional string basicAuthPassword = 10;
   optional string basicAuthRealm = 11;
@@ -36,10 +30,8 @@ message PiHoleConnection {
 }
 
 message UserPreferences {
-  reserved 3;
-  optional Theme theme = 1;
-  optional bool useDynamicColor = 6;
-  optional TemperatureUnit temperatureUnit = 2;
-  repeated PiHoleConnection piHoleConnections = 4;
-  optional string selectedPiHoleConnectionId = 5;
+  repeated PiHoleConnection piHoleConnections = 1;
+  optional string selectedPiHoleConnectionId = 2;
+  optional Theme theme = 3;
+  optional bool useDynamicColor = 4;
 }

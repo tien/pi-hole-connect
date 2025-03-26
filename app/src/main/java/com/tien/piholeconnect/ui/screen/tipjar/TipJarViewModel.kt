@@ -1,22 +1,21 @@
 package com.tien.piholeconnect.ui.screen.tipjar
 
 import android.app.Activity
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.queryProductDetails
-import com.tien.piholeconnect.model.RefreshableViewModel
 import com.tien.piholeconnect.service.InAppPurchase
+import com.tien.piholeconnect.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 @HiltViewModel
 class TipJarViewModel @Inject constructor(private val inAppPurchase: InAppPurchase) :
-    RefreshableViewModel() {
+    BaseViewModel() {
     private val productList =
         listOf("coin", "coffee", "beer", "dinner")
             .map { "com.tien.piholeconnect.tip.$it" }
@@ -27,16 +26,21 @@ class TipJarViewModel @Inject constructor(private val inAppPurchase: InAppPurcha
                     .build()
             }
 
-    var tipOptions by mutableStateOf(listOf<ProductDetails>())
-        private set
-
-    override suspend fun queueRefresh() {
-        val params = QueryProductDetailsParams.newBuilder().setProductList(productList).build()
-        tipOptions =
-            inAppPurchase.billingClient.queryProductDetails(params).productDetailsList?.sortedBy {
-                it.oneTimePurchaseOfferDetails?.priceAmountMicros
-            } ?: listOf()
-    }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val tipOptions =
+        flow {
+                emit(
+                    inAppPurchase.billingClient
+                        .queryProductDetails(
+                            QueryProductDetailsParams.newBuilder()
+                                .setProductList(productList)
+                                .build()
+                        )
+                        .productDetailsList
+                        ?.sortedBy { it.oneTimePurchaseOfferDetails?.priceAmountMicros } ?: listOf()
+                )
+            }
+            .asViewFlowState()
 
     fun launchBillingFlow(activity: Activity, productDetails: ProductDetails) {
         val params =

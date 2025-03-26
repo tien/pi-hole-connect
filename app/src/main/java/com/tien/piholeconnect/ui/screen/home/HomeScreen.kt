@@ -38,6 +38,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.LineChartData
@@ -51,43 +52,48 @@ import com.tien.piholeconnect.ui.theme.infoContainer
 import com.tien.piholeconnect.ui.theme.success
 import com.tien.piholeconnect.ui.theme.successContainer
 import com.tien.piholeconnect.ui.theme.warningContainer
-import com.tien.piholeconnect.util.SnackbarErrorEffect
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.text.DateFormat.getTimeInstance
 import java.util.Date
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlin.math.max
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
-    val snackbarHostState = remember { SnackbarHostState() }
+    val metrics by viewModel.metricSummary.collectAsStateWithLifecycle()
 
-    var isDisableDialogVisible by rememberSaveable { mutableStateOf(false) }
+    val totalQueries by
+        animateIntAsState(metrics.data?.queries?.total ?: 0, label = "Total queries")
 
-    val totalQueries: Int by animateIntAsState(viewModel.totalQueries, label = "Total queries")
-    val totalBlockedQueries: Int by
-        animateIntAsState(viewModel.totalBlockedQueries, label = "Total blocked queries")
-    val queryBlockingPercentage: Float by
+    val totalBlockedQueries by
+        animateIntAsState(metrics.data?.queries?.blocked ?: 0, label = "Total blocked queries")
+
+    val queryBlockingPercentage by
         animateFloatAsState(
-            viewModel.queryBlockingPercentage.toFloat(),
+            metrics.data?.queries?.percentBlocked?.toFloat() ?: 0f,
             label = "Query blocking percentage",
         )
-    val blockedDomainListCount: Int by
-        animateIntAsState(viewModel.blockedDomainListCount, label = "Blocked domain list count")
+
+    val blockedDomainListCount by
+        animateIntAsState(
+            metrics.data?.queries?.uniqueDomains ?: 0,
+            label = "Blocked domain list count",
+        )
 
     val successColor = MaterialTheme.colorScheme.success
     val errorColor = MaterialTheme.colorScheme.error
 
-    viewModel.RefreshOnConnectionChangeEffect()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    SnackbarErrorEffect(viewModel.error, snackbarHostState)
+    viewModel.SnackBarErrorEffect(snackbarHostState)
 
     DisposableEffect(Unit) {
         val job =
             viewModel.viewModelScope.launch {
                 while (true) {
-                    viewModel.refresh()
+                    viewModel.backgroundRefresh()
                     delay(10_000)
                 }
             }
@@ -95,10 +101,13 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
         onDispose { job.cancel() }
     }
 
-    TopBarProgressIndicator(visible = !viewModel.hasBeenLoaded && viewModel.isRefreshing)
+    val isAdsBlockingEnabled =
+        viewModel.isAdsBlockingEnabled.collectAsStateWithLifecycle().value.data == true
+
+    var isDisableDialogVisible by rememberSaveable { mutableStateOf(false) }
 
     if (isDisableDialogVisible) {
-        if (viewModel.isAdsBlockingEnabled) {
+        if (isAdsBlockingEnabled) {
             DisableAdsBlockingAlertDialog(
                 onDismissRequest = { isDisableDialogVisible = false },
                 onDurationButtonClick = {
@@ -121,15 +130,18 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
         }
     }
 
-    var isRefreshing by remember { mutableStateOf(false) }
+    val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
     val pullToRefreshState = rememberPullToRefreshState()
+    val loading by viewModel.loading.collectAsStateWithLifecycle()
+
+    TopBarProgressIndicator(visible = loading && !refreshing)
 
     Scaffold(
         Modifier.fillMaxHeight(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             PiHoleSwitchFloatingActionButton(
-                isAdsBlockingEnabled = viewModel.isAdsBlockingEnabled,
+                isAdsBlockingEnabled = isAdsBlockingEnabled,
                 isLoading = viewModel.isPiHoleSwitchLoading,
                 onClick = { isDisableDialogVisible = true },
             )
@@ -137,14 +149,8 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     ) {
         PullToRefreshBox(
             state = pullToRefreshState,
-            isRefreshing = isRefreshing,
-            onRefresh = {
-                isRefreshing = true
-                viewModel.viewModelScope.launch {
-                    viewModel.refresh()
-                    isRefreshing = false
-                }
-            },
+            isRefreshing = refreshing,
+            onRefresh = { viewModel.refresh() },
         ) {
             Column(
                 Modifier.fillMaxHeight()
@@ -168,13 +174,15 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                                                 baselineShift = BaselineShift.Superscript,
                                             )
                                         ) {
-                                            append(
-                                                pluralStringResource(
-                                                    R.plurals.home_unique_clients,
-                                                    viewModel.uniqueClients,
-                                                    viewModel.uniqueClients,
+                                            (metrics.data?.clients?.total ?: 0).let {
+                                                append(
+                                                    pluralStringResource(
+                                                        R.plurals.home_unique_clients,
+                                                        it,
+                                                        it,
+                                                    )
                                                 )
-                                            )
+                                            }
                                         }
                                     },
                                     maxLines = 1,
@@ -226,22 +234,32 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                     }
                 }
 
+                val history by viewModel.history.collectAsStateWithLifecycle()
+
                 val queriesOverTimeLabel = stringResource(R.string.home_queries_over_time)
                 val queriesOverTimeData =
-                    remember(viewModel.queriesOverTime) {
+                    remember(history.data) {
                         LineChartData(
                             label = queriesOverTimeLabel,
-                            data = viewModel.queriesOverTime.map { Pair(it.key, it.value) },
+                            data =
+                                history.data?.map {
+                                    Pair(
+                                        it.timestamp ?: 0,
+                                        max((it.total ?: 0) - (it.blocked ?: 0), 0),
+                                    )
+                                } ?: listOf(),
                             color = successColor,
                         )
                     }
 
                 val adsOverTimeLabel = stringResource(R.string.home_ads_over_time)
                 val adsOverTimeData =
-                    remember(viewModel.adsOverTime) {
+                    remember(history) {
                         LineChartData(
                             label = adsOverTimeLabel,
-                            data = viewModel.adsOverTime.map { Pair(it.key, it.value) },
+                            data =
+                                history.data?.map { Pair(it.timestamp ?: 0, it.blocked ?: 0) }
+                                    ?: listOf(),
                             color = errorColor,
                         )
                     }

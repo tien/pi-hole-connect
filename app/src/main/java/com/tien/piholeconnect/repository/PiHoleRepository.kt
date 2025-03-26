@@ -1,24 +1,189 @@
 package com.tien.piholeconnect.repository
 
-import com.tien.piholeconnect.model.*
-import kotlin.time.Duration
+import androidx.datastore.core.DataStore
+import com.tien.piholeconnect.di.DefaultHttpClient
+import com.tien.piholeconnect.di.TrustAllCertificatesHttpClient
+import com.tien.piholeconnect.model.Authentication
+import com.tien.piholeconnect.model.PiHoleConnection
+import com.tien.piholeconnect.model.Session
+import com.tien.piholeconnect.repository.apis.ActionsApi
+import com.tien.piholeconnect.repository.apis.AuthenticationApi
+import com.tien.piholeconnect.repository.apis.ClientManagementApi
+import com.tien.piholeconnect.repository.apis.DHCPApi
+import com.tien.piholeconnect.repository.apis.DNSControlApi
+import com.tien.piholeconnect.repository.apis.DocumentationApi
+import com.tien.piholeconnect.repository.apis.DomainManagementApi
+import com.tien.piholeconnect.repository.apis.FTLInformationApi
+import com.tien.piholeconnect.repository.apis.GroupManagementApi
+import com.tien.piholeconnect.repository.apis.ListManagementApi
+import com.tien.piholeconnect.repository.apis.MetricsApi
+import com.tien.piholeconnect.repository.apis.NetworkInformationApi
+import com.tien.piholeconnect.repository.apis.PiHoleConfigurationApi
+import com.tien.piholeconnect.repository.models.Password
+import com.tien.piholeconnect.repository.models.SessionSession
+import com.tien.piholeconnect.util.toKtorURLProtocol
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.BasicAuthCredentials
+import io.ktor.client.plugins.auth.providers.basic
+import io.ktor.http.URLBuilder
+import io.ktor.http.encodedPath
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
-interface PiHoleRepository {
-    suspend fun getStatusSummary(): PiHoleSummary
+class PiHoleRepository
+@AssistedInject
+constructor(
+    @DefaultHttpClient private val httpClient: HttpClient,
+    @TrustAllCertificatesHttpClient private val trustAllCertificatesHttpClient: HttpClient,
+    @Assisted private val piHoleConnection: PiHoleConnection,
+    private val authenticationDataStore: DataStore<Authentication>,
+) {
+    @AssistedFactory
+    interface Factory {
+        fun create(piHoleConnection: PiHoleConnection): PiHoleRepository
+    }
 
-    suspend fun getOverTimeData10Minutes(): PiHoleOverTimeData
+    private val client = run {
+        val baseClient =
+            if (piHoleConnection.trustAllCertificates) trustAllCertificatesHttpClient
+            else httpClient
 
-    suspend fun getStatistics(): PiHoleStatistics
+        if (
+            piHoleConnection.basicAuthUsername.isBlank() &&
+                piHoleConnection.basicAuthPassword.isBlank()
+        ) {
+            return@run baseClient
+        }
 
-    suspend fun getLogs(limit: Int): PiHoleLogs
+        baseClient.config {
+            install(Auth) {
+                basic {
+                    credentials {
+                        BasicAuthCredentials(
+                            username = piHoleConnection.basicAuthUsername,
+                            password = piHoleConnection.basicAuthPassword,
+                        )
+                    }
 
-    suspend fun getFilterRules(ruleType: RuleType): PiHoleFilterRules
+                    if (piHoleConnection.basicAuthRealm.isNotBlank()) {
+                        realm = piHoleConnection.basicAuthRealm
+                    }
+                }
+            }
+        }
+    }
 
-    suspend fun addFilterRule(rule: String, ruleType: RuleType): ModifyFilterRuleResponse
+    private val baseUrl =
+        URLBuilder()
+            .apply {
+                protocol = piHoleConnection.protocol.toKtorURLProtocol()
+                host = piHoleConnection.host
+                encodedPath = piHoleConnection.apiPath
+                port = piHoleConnection.port
+            }
+            .buildString()
 
-    suspend fun removeFilterRule(rule: String, ruleType: RuleType): ModifyFilterRuleResponse
+    val actionsApi = ActionsApi(baseUrl, client)
 
-    suspend fun disable(duration: Duration): PiHoleStatusResponse
+    val authenticationApi = AuthenticationApi(baseUrl, client)
 
-    suspend fun enable(): PiHoleStatusResponse
+    val clientManagementApi = ClientManagementApi(baseUrl, client)
+
+    val dhcpApi = DHCPApi(baseUrl, client)
+
+    val dnsControlApi = DNSControlApi(baseUrl, client)
+
+    val documentationApi = DocumentationApi(baseUrl, client)
+
+    val domainManagementApi = DomainManagementApi(baseUrl, client)
+
+    val ftlInformationApi = FTLInformationApi(baseUrl, client)
+
+    val groupManagementApi = GroupManagementApi(baseUrl, client)
+
+    val listManagementApi = ListManagementApi(baseUrl, client)
+
+    val metricsApi = MetricsApi(baseUrl, client)
+
+    val networkInformationApi = NetworkInformationApi(baseUrl, client)
+
+    val piHoleConfigurationApi = PiHoleConfigurationApi(baseUrl, client)
+
+    val authenticationMutex = Mutex()
+
+    suspend fun authenticate(): PiHoleRepository {
+        val alreadyLocked = !authenticationMutex.tryLock()
+
+        if (alreadyLocked) {
+            authenticationMutex.withLock {
+                return this
+            }
+        }
+
+        try {
+            authenticationDataStore.data
+                .firstOrNull()
+                ?.getSessionsOrDefault(piHoleConnection.id, null)
+                ?.also { setSessionId(it.sid) }
+
+            val currentSessionResponse = authenticationApi.getAuth()
+
+            val currentSession =
+                if (!currentSessionResponse.success) null else currentSessionResponse.body().session
+
+            val validSession =
+                if (currentSession != null && currentSession.valid) currentSession else login()
+
+            if (validSession.sid != null) {
+                setSessionId(validSession.sid)
+            }
+
+            return this
+        } finally {
+            authenticationMutex.unlock()
+        }
+    }
+
+    suspend fun login(): SessionSession {
+        val sessionResponse = authenticationApi.addAuth(Password(piHoleConnection.password))
+
+        if (!sessionResponse.success) {
+            throw Exception("Unable to login")
+        }
+
+        val session = sessionResponse.body().session
+
+        if (!session.valid) {
+            throw Exception("Invalid session")
+        }
+
+        authenticationDataStore.updateData {
+            it.toBuilder()
+                .putSessions(piHoleConnection.id, Session.newBuilder().setSid(session.sid).build())
+                .build()
+        }
+
+        return session
+    }
+
+    private fun setSessionId(sid: String) {
+        actionsApi.setApiKey(sid, "X-FTL-SID")
+        authenticationApi.setApiKey(sid, "X-FTL-SID")
+        clientManagementApi.setApiKey(sid, "X-FTL-SID")
+        dhcpApi.setApiKey(sid, "X-FTL-SID")
+        dnsControlApi.setApiKey(sid, "X-FTL-SID")
+        documentationApi.setApiKey(sid, "X-FTL-SID")
+        domainManagementApi.setApiKey(sid, "X-FTL-SID")
+        ftlInformationApi.setApiKey(sid, "X-FTL-SID")
+        groupManagementApi.setApiKey(sid, "X-FTL-SID")
+        listManagementApi.setApiKey(sid, "X-FTL-SID")
+        metricsApi.setApiKey(sid, "X-FTL-SID")
+        networkInformationApi.setApiKey(sid, "X-FTL-SID")
+        piHoleConfigurationApi.setApiKey(sid, "X-FTL-SID")
+    }
 }

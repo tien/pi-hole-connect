@@ -55,15 +55,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.R
-import com.tien.piholeconnect.model.RuleType
+import com.tien.piholeconnect.repository.models.GetDomainsInner
 import com.tien.piholeconnect.ui.component.AddFilterRuleDialog
 import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
-import com.tien.piholeconnect.util.SnackbarErrorEffect
+import kotlinx.coroutines.launch
 import java.text.DateFormat
 import kotlin.math.roundToInt
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -71,17 +71,11 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
     val snackbarHostState = remember { SnackbarHostState() }
 
     val dateTimeInstance = remember { DateFormat.getDateInstance() }
-    val whiteListTabRules = rememberSaveable { listOf(RuleType.WHITE, RuleType.REGEX_WHITE) }
-    val blackListTabRules = rememberSaveable { listOf(RuleType.BLACK, RuleType.REGEX_BLACK) }
     var isAddDialogVisible by rememberSaveable { mutableStateOf(false) }
 
-    viewModel.RefreshOnConnectionChangeEffect()
+    viewModel.SnackBarErrorEffect(snackbarHostState)
 
-    SnackbarErrorEffect(viewModel.error, snackbarHostState)
-
-    LaunchedEffect(Unit) { viewModel.refresh() }
-
-    TopBarProgressIndicator(visible = !viewModel.hasBeenLoaded && viewModel.isRefreshing)
+    LaunchedEffect(Unit) { viewModel.backgroundRefresh() }
 
     if (isAddDialogVisible) {
         AddFilterRuleDialog(
@@ -101,8 +95,11 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
         )
     }
 
-    var isRefreshing by remember { mutableStateOf(false) }
+    val loading by viewModel.loading.collectAsStateWithLifecycle()
+    val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
     val pullToRefreshState = rememberPullToRefreshState()
+
+    TopBarProgressIndicator(visible = loading && !refreshing)
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -117,14 +114,8 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
     ) {
         PullToRefreshBox(
             state = pullToRefreshState,
-            isRefreshing = isRefreshing,
-            onRefresh = {
-                isRefreshing = true
-                viewModel.viewModelScope.launch {
-                    viewModel.refresh()
-                    isRefreshing = false
-                }
-            },
+            isRefreshing = refreshing,
+            onRefresh = { viewModel.refresh() },
         ) {
             Column(Modifier.padding(it)) {
                 TabRow(selectedTabIndex = viewModel.selectedTab.ordinal) {
@@ -144,18 +135,20 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
                     )
                 }
 
-                if (viewModel.hasBeenLoaded) {
+                val rulesState by viewModel.rules.collectAsStateWithLifecycle()
+
+                if (rulesState.data != null) {
                     LazyColumn(contentPadding = PaddingValues(bottom = 80.dp)) {
-                        viewModel.rules
-                            .filter {
+                        rulesState.data
+                            ?.filter {
                                 when (viewModel.selectedTab) {
                                     FilterRulesViewModel.Tab.BLACK ->
-                                        blackListTabRules.contains(it.type)
+                                        it.type === GetDomainsInner.Type.DENY
                                     FilterRulesViewModel.Tab.WHITE ->
-                                        whiteListTabRules.contains(it.type)
+                                        it.type === GetDomainsInner.Type.ALLOW
                                 }
                             }
-                            .forEach { rule ->
+                            ?.forEach { rule ->
                                 item(rule.id) {
                                     val localDensity = LocalDensity.current
                                     val iconSize = with(localDensity) { 48.dp.toPx() }
@@ -196,10 +189,7 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
                                                     modifier = Modifier.fillMaxHeight(),
                                                     onClick = {
                                                         viewModel.viewModelScope.launch {
-                                                            viewModel.removeRule(
-                                                                rule.domain,
-                                                                ruleType = rule.type,
-                                                            )
+                                                            viewModel.removeRule(rule)
                                                         }
                                                     },
                                                 ) {
@@ -232,24 +222,26 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
                                                         MaterialTheme.colorScheme.background
                                                     ),
                                             overlineContent =
-                                                when (rule.type) {
-                                                    RuleType.REGEX_BLACK,
-                                                    RuleType.REGEX_WHITE -> ({
+                                                when (rule.kind) {
+                                                    GetDomainsInner.Kind.REGEX -> ({
                                                             Text(
                                                                 stringResource(
                                                                     R.string.filter_rules_reg_exr
                                                                 )
                                                             )
                                                         })
-
                                                     else -> null
                                                 },
-                                            headlineContent = { Text(rule.domain) },
+                                            headlineContent = {
+                                                if (rule.domain != null) {
+                                                    Text(rule.domain)
+                                                }
+                                            },
                                             supportingContent = {
                                                 Text(
                                                     buildString {
                                                         rule.comment?.let { append(it) }
-                                                        if (rule.enabled == 0) {
+                                                        if (rule.enabled == false) {
                                                             if (rule.comment != null) append(" ")
                                                             append("(")
                                                             append(
@@ -266,12 +258,14 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
                                                 )
                                             },
                                             trailingContent = {
-                                                Text(
-                                                    text =
-                                                        dateTimeInstance.format(
-                                                            rule.dateAdded * 1000L
-                                                        )
-                                                )
+                                                if (rule.dateAdded != null) {
+                                                    Text(
+                                                        text =
+                                                            dateTimeInstance.format(
+                                                                rule.dateAdded * 1000L
+                                                            )
+                                                    )
+                                                }
                                             },
                                         )
                                     }
