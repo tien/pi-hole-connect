@@ -8,7 +8,7 @@ import com.tien.piholeconnect.model.QueryStatusType
 import com.tien.piholeconnect.model.UnitLoadState
 import com.tien.piholeconnect.model.fromStatusString
 import com.tien.piholeconnect.model.run
-import com.tien.piholeconnect.repository.PiHoleRepositoryProvider
+import com.tien.piholeconnect.service.PiHoleRepositoryProvider
 import com.tien.piholeconnect.repository.apis.DomainManagementApi
 import com.tien.piholeconnect.repository.models.Post
 import com.tien.piholeconnect.viewmodel.BaseViewModel

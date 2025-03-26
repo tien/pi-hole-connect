@@ -10,8 +10,8 @@ import com.tien.piholeconnect.data.UserPreferencesSerializer
 import com.tien.piholeconnect.model.Authentication
 import com.tien.piholeconnect.model.PiHoleSerializer
 import com.tien.piholeconnect.model.UserPreferences
-import com.tien.piholeconnect.repository.PiHoleRepositoryProvider
-import com.tien.piholeconnect.repository.PiHoleRepositoryProviderImpl
+import com.tien.piholeconnect.service.PiHoleRepositoryProvider
+import com.tien.piholeconnect.service.PiHoleRepositoryProviderImpl
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import com.tien.piholeconnect.repository.UserPreferencesRepositoryImpl
 import com.tien.piholeconnect.service.InAppPurchase

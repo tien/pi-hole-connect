@@ -3,7 +3,7 @@ package com.tien.piholeconnect.ui.screen.filterrules
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.tien.piholeconnect.repository.PiHoleRepositoryProvider
+import com.tien.piholeconnect.service.PiHoleRepositoryProvider
 import com.tien.piholeconnect.repository.apis.DomainManagementApi
 import com.tien.piholeconnect.repository.models.GetDomainsInner
 import com.tien.piholeconnect.repository.models.Post

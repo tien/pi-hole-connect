@@ -1,6 +1,6 @@
 package com.tien.piholeconnect.ui.screen.statistics
 
-import com.tien.piholeconnect.repository.PiHoleRepositoryProvider
+import com.tien.piholeconnect.service.PiHoleRepositoryProvider
 import com.tien.piholeconnect.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
