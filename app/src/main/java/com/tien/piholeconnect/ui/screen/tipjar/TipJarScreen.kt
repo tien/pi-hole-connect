@@ -9,31 +9,40 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tien.piholeconnect.R
+import com.tien.piholeconnect.model.LoadState
 
 @Composable
 fun TipJarScreen(viewModel: TipJarViewModel = hiltViewModel()) {
     val activity = LocalActivity.current as Activity
+    val tipOptions by viewModel.tipOptions.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) { viewModel.refresh() }
+    LaunchedEffect(Unit) { viewModel.backgroundRefresh() }
 
     Column {
         Text(stringResource(R.string.tip_jar_msg), modifier = Modifier.padding(15.dp))
-        viewModel.tipOptions.forEach { tipOption ->
-            ListItem(
-                modifier = Modifier.clickable { viewModel.launchBillingFlow(activity, tipOption) },
-                headlineContent = {
-                    Text(tipOption.title.slice(IntRange(0, tipOption.title.indexOf(" ("))))
-                },
-                supportingContent = { Text(tipOption.description) },
-                trailingContent = {
-                    Text(tipOption.oneTimePurchaseOfferDetails?.formattedPrice ?: "")
-                },
-            )
+        when (val tipOptions = tipOptions) {
+            is LoadState.Success ->
+                tipOptions.data.forEach { tipOption ->
+                    ListItem(
+                        modifier =
+                            Modifier.clickable { viewModel.launchBillingFlow(activity, tipOption) },
+                        headlineContent = {
+                            Text(tipOption.title.slice(IntRange(0, tipOption.title.indexOf(" ("))))
+                        },
+                        supportingContent = { Text(tipOption.description) },
+                        trailingContent = {
+                            Text(tipOption.oneTimePurchaseOfferDetails?.formattedPrice ?: "")
+                        },
+                    )
+                }
+            else -> Unit
         }
     }
 }
