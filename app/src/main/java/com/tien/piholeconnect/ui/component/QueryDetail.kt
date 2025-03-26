@@ -19,9 +19,11 @@ import androidx.compose.material.icons.filled.GppGood
 import androidx.compose.material.icons.filled.HourglassBottom
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -75,6 +77,9 @@ fun QueryDetail(
         onDismissRequest = onDismissRequest,
         text = {
             Column(Modifier.padding(top = 8.dp)) {
+                val listItemColors =
+                    ListItemDefaults.colors(containerColor = AlertDialogDefaults.containerColor)
+
                 ListItem(
                     leadingContent = { Icon(icon, tint = tint, contentDescription = null) },
                     headlineContent = {
@@ -82,6 +87,7 @@ fun QueryDetail(
                             Text(status.name, fontWeight = FontWeight.Bold, color = tint)
                         }
                     },
+                    colors = listItemColors,
                 )
                 ListItem(
                     leadingContent = { Icon(Icons.Default.Schedule, contentDescription = null) },
@@ -93,6 +99,7 @@ fun QueryDetail(
                             }
                         }
                     },
+                    colors = listItemColors,
                 )
                 ListItem(
                     leadingContent = { Icon(Icons.Default.Domain, contentDescription = null) },
@@ -104,6 +111,7 @@ fun QueryDetail(
                             SelectionContainer { Text(query.domain) }
                         }
                     },
+                    colors = listItemColors,
                 )
                 ListItem(
                     leadingContent = { Icon(Icons.Default.Devices, contentDescription = null) },
@@ -113,6 +121,7 @@ fun QueryDetail(
                             SelectionContainer { Text(query.client.name) }
                         }
                     },
+                    colors = listItemColors,
                 )
                 ListItem(
                     leadingContent = { Icon(Icons.Default.Dns, contentDescription = null) },
@@ -124,6 +133,7 @@ fun QueryDetail(
                             SelectionContainer { Text(query.type) }
                         }
                     },
+                    colors = listItemColors,
                 )
                 ListItem(
                     leadingContent = {
@@ -135,6 +145,7 @@ fun QueryDetail(
                             SelectionContainer { Text(query.reply.time.milliseconds.toString()) }
                         }
                     },
+                    colors = listItemColors,
                 )
             }
         },

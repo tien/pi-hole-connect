@@ -23,6 +23,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SearchBar
@@ -198,6 +199,9 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
 
             val limit by viewModel.limit.collectAsStateWithLifecycle()
 
+            val listItemColors =
+                ListItemDefaults.colors(containerColor = BottomSheetDefaults.ContainerColor)
+
             viewModel.limits.forEach {
                 ListItem(
                     modifier =
@@ -208,6 +212,7 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
                         ),
                     leadingContent = { RadioButton(selected = limit == it, onClick = null) },
                     headlineContent = { Text(it.toString()) },
+                    colors = listItemColors,
                 )
             }
             styledDivider()
@@ -229,6 +234,7 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
                         ),
                     leadingContent = { Checkbox(checked = checked, onCheckedChange = null) },
                     headlineContent = { Text(stringResource(status.labelResourceId)) },
+                    colors = listItemColors,
                 )
             }
             styledDivider()
@@ -244,6 +250,7 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
                         ),
                     leadingContent = { RadioButton(selected = selected, onClick = null) },
                     headlineContent = { Text(stringResource(sort.labelResourceId)) },
+                    colors = listItemColors,
                 )
             }
         },
