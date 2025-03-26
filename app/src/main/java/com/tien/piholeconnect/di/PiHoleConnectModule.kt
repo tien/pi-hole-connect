@@ -100,7 +100,7 @@ abstract class PiHoleConnectModule {
                 serializer = UserPreferencesSerializer,
                 migrations = listOf(),
                 scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
-                produceFile = { appContext.dataStoreFile("userPreferences.pb") },
+                produceFile = { appContext.dataStoreFile("preferences.pb") },
             )
 
         @Provides
