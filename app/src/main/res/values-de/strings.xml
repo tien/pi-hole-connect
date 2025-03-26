@@ -49,6 +49,8 @@
     <string name="label_preferences">Einstellungen</string>
     <string name="label_statistics">Statistiken</string>
     <string name="label_tip_jar">Trinkgeld geben</string>
+    <string name="log_screen_add_filter_rule_failure">Filterregel kann nicht hinzugefügt werden</string>
+    <string name="log_screen_add_filter_rule_success">Erfolgreich hinzugefügte Filterregel</string>
     <string name="log_screen_label_allowed">Erlaubt</string>
     <string name="log_screen_label_blocked">Blockiert</string>
     <string name="log_screen_label_date_sort_asc">Datum (ältestes zuerst)</string>

@@ -50,6 +50,8 @@
     <string name="label_preferences">Preferințe</string>
     <string name="label_statistics">Statistici</string>
     <string name="label_tip_jar">Lasă-mi ciubuc</string>
+    <string name="log_screen_add_filter_rule_failure">Nu se poate adăuga o regulă de filtrare</string>
+    <string name="log_screen_add_filter_rule_success">Adăugarea cu succes a regulii de filtrare</string>
     <string name="log_screen_label_allowed">Permise</string>
     <string name="log_screen_label_blocked">Blocate</string>
     <string name="log_screen_label_date_sort_asc">Dată (cel mai vechi)</string>

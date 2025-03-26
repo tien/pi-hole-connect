@@ -51,6 +51,8 @@
     <string name="label_preferences">Ustawienia</string>
     <string name="label_statistics">Statystyki</string>
     <string name="label_tip_jar">Rzuć monetą</string>
+    <string name="log_screen_add_filter_rule_failure">Nie można dodać reguły filtru</string>
+    <string name="log_screen_add_filter_rule_success">Pomyślnie dodano regułę filtru</string>
     <string name="log_screen_label_allowed">Dozwolone</string>
     <string name="log_screen_label_blocked">Zablokowane</string>
     <string name="log_screen_label_date_sort_asc">Data (najstarsza)</string>
