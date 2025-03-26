@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.QueryStatus
 import com.tien.piholeconnect.model.QueryStatusType
-import com.tien.piholeconnect.model.BaseViewModel
+import com.tien.piholeconnect.viewmodel.BaseViewModel
 import com.tien.piholeconnect.model.UnitLoadState
 import com.tien.piholeconnect.model.fromStatusString
 import com.tien.piholeconnect.model.run

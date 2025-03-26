@@ -1,5 +1,6 @@
-package com.tien.piholeconnect.model
+package com.tien.piholeconnect.viewmodel
 
+import android.R
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -22,9 +23,12 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
+import com.tien.piholeconnect.model.LoadState
+import com.tien.piholeconnect.model.asFailure
+import com.tien.piholeconnect.model.asLoadState
+import com.tien.piholeconnect.model.asLoading
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import com.tien.piholeconnect.util.showGenericPiHoleConnectionError
-import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -40,6 +44,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.runningFold
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 open class BaseViewModel
 @Inject
@@ -170,15 +175,15 @@ constructor(userPreferencesRepository: UserPreferencesRepository) : ViewModel() 
                     ) {
                         Icon(
                             Icons.Default.ContentCopy,
-                            contentDescription = stringResource(android.R.string.copy),
+                            contentDescription = stringResource(R.string.copy),
                         )
                         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                        Text(stringResource(android.R.string.copy))
+                        Text(stringResource(R.string.copy))
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { this.errorToDisplay.value = null }) {
-                        Text(stringResource(android.R.string.cancel))
+                        Text(stringResource(R.string.cancel))
                     }
                 },
                 text = { Text(it.localizedMessage?.let(sanitize) ?: "") },

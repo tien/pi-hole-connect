@@ -3,7 +3,7 @@ package com.tien.piholeconnect.ui.screen.home
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.tien.piholeconnect.model.BaseViewModel
+import com.tien.piholeconnect.viewmodel.BaseViewModel
 import com.tien.piholeconnect.repository.PiHoleRepositoryProvider
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import com.tien.piholeconnect.repository.models.GetBlocking200Response

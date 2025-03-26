@@ -6,7 +6,7 @@ import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.queryProductDetails
-import com.tien.piholeconnect.model.BaseViewModel
+import com.tien.piholeconnect.viewmodel.BaseViewModel
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import com.tien.piholeconnect.service.InAppPurchase
 import dagger.hilt.android.lifecycle.HiltViewModel
