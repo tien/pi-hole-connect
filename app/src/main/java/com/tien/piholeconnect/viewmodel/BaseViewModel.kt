@@ -46,9 +46,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-open class BaseViewModel
-@Inject
-constructor(userPreferencesRepository: UserPreferencesRepository) : ViewModel() {
+open class BaseViewModel : ViewModel() {
     protected var flows = MutableStateFlow(listOf<Flow<LoadState<*>>>())
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -127,13 +125,17 @@ constructor(userPreferencesRepository: UserPreferencesRepository) : ViewModel() 
 
     private val errorToDisplay = MutableStateFlow<Exception?>(null)
 
-    private val sensitiveData =
+    // TODO: figure out a way to inject this without lateinit
+    @Inject lateinit var userPreferencesRepository: UserPreferencesRepository
+
+    private val sensitiveData by lazy {
         userPreferencesRepository.userPreferences.map { preferences ->
             preferences.piHoleConnectionsList
                 .flatMap { listOf(it.password, it.basicAuthPassword) }
                 .map { it.trim() }
                 .filter { it.isNotBlank() }
         }
+    }
 
     @Composable
     fun SnackBarErrorEffect(snackbarHostState: SnackbarHostState) {

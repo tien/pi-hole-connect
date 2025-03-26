@@ -4,24 +4,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.tien.piholeconnect.repository.PiHoleRepositoryProvider
-import com.tien.piholeconnect.repository.UserPreferencesRepository
 import com.tien.piholeconnect.repository.apis.DomainManagementApi
 import com.tien.piholeconnect.repository.models.GetDomainsInner
 import com.tien.piholeconnect.repository.models.Post
 import com.tien.piholeconnect.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.mapLatest
+import javax.inject.Inject
 
 @HiltViewModel
 class FilterRulesViewModel
 @Inject
-constructor(
-    private val piHoleRepositoryProvider: PiHoleRepositoryProvider,
-    val userPreferencesRepository: UserPreferencesRepository,
-) : BaseViewModel(userPreferencesRepository) {
+constructor(private val piHoleRepositoryProvider: PiHoleRepositoryProvider) : BaseViewModel() {
     enum class Tab {
         BLACK,
         WHITE,

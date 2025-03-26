@@ -6,21 +6,16 @@ import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.queryProductDetails
-import com.tien.piholeconnect.viewmodel.BaseViewModel
-import com.tien.piholeconnect.repository.UserPreferencesRepository
 import com.tien.piholeconnect.service.InAppPurchase
+import com.tien.piholeconnect.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 
 @HiltViewModel
-class TipJarViewModel
-@Inject
-constructor(
-    private val inAppPurchase: InAppPurchase,
-    userPreferencesRepository: UserPreferencesRepository,
-) : BaseViewModel(userPreferencesRepository) {
+class TipJarViewModel @Inject constructor(private val inAppPurchase: InAppPurchase) :
+    BaseViewModel() {
     private val productList =
         listOf("coin", "coffee", "beer", "dinner")
             .map { "com.tien.piholeconnect.tip.$it" }

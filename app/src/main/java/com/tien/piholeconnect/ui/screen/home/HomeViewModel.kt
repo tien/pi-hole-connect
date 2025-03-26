@@ -3,26 +3,22 @@ package com.tien.piholeconnect.ui.screen.home
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.tien.piholeconnect.viewmodel.BaseViewModel
 import com.tien.piholeconnect.repository.PiHoleRepositoryProvider
-import com.tien.piholeconnect.repository.UserPreferencesRepository
 import com.tien.piholeconnect.repository.models.GetBlocking200Response
 import com.tien.piholeconnect.repository.models.SetBlockingRequest
+import com.tien.piholeconnect.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
-import kotlin.time.Duration
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.mapLatest
+import javax.inject.Inject
+import kotlin.time.Duration
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HomeViewModel
 @Inject
-constructor(
-    private val piHoleRepositoryProvider: PiHoleRepositoryProvider,
-    userPreferencesRepository: UserPreferencesRepository,
-) : BaseViewModel(userPreferencesRepository) {
+constructor(private val piHoleRepositoryProvider: PiHoleRepositoryProvider) : BaseViewModel() {
     val isAdsBlockingEnabled =
         piHoleRepositoryProvider.selectedPiHoleRepository
             .filterNotNull()

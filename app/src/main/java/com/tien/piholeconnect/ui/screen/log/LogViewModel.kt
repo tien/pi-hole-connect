@@ -5,30 +5,26 @@ import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.QueryStatus
 import com.tien.piholeconnect.model.QueryStatusType
-import com.tien.piholeconnect.viewmodel.BaseViewModel
 import com.tien.piholeconnect.model.UnitLoadState
 import com.tien.piholeconnect.model.fromStatusString
 import com.tien.piholeconnect.model.run
 import com.tien.piholeconnect.repository.PiHoleRepositoryProvider
-import com.tien.piholeconnect.repository.UserPreferencesRepository
 import com.tien.piholeconnect.repository.apis.DomainManagementApi
 import com.tien.piholeconnect.repository.models.Post
+import com.tien.piholeconnect.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class LogViewModel
 @Inject
-constructor(
-    private val piHoleRepositoryProvider: PiHoleRepositoryProvider,
-    userPreferencesRepository: UserPreferencesRepository,
-) : BaseViewModel(userPreferencesRepository) {
+constructor(private val piHoleRepositoryProvider: PiHoleRepositoryProvider) : BaseViewModel() {
     enum class Sort(@StringRes val labelResourceId: Int) {
         DATE_DESC(R.string.log_screen_label_date_sort_desc),
         DATE_ASC(R.string.log_screen_label_date_sort_asc),
