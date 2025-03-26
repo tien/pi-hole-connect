@@ -47,9 +47,9 @@ constructor(
         ),
     }
 
-    val addToAllowlistLoadState = MutableStateFlow(UnitLoadState.Idle as UnitLoadState)
+    val addToAllowlistLoadState = MutableStateFlow<UnitLoadState>(UnitLoadState.Idle)
 
-    val addToDenyListLoadState = MutableStateFlow(UnitLoadState.Idle as UnitLoadState)
+    val addToDenyListLoadState = MutableStateFlow<UnitLoadState>(UnitLoadState.Idle)
 
     val query = MutableStateFlow("")
     val sortBy = MutableStateFlow(Sort.DATE_DESC)

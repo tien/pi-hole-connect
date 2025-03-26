@@ -50,17 +50,17 @@ fun <T> Flow<T>.asLoadState(): Flow<LoadState<T>> {
         .catch { emit(LoadState.Failure(it)) }
 }
 
-fun MutableStateFlow<UnitLoadState>.run(
+fun <T> MutableStateFlow<LoadState<T>>.run(
     scope: CoroutineScope,
-    block: suspend CoroutineScope.() -> Unit,
+    block: suspend CoroutineScope.() -> T,
 ) {
-    value = UnitLoadState.Loading
+    value = LoadState.Loading<T>()
     scope.launch {
-        try {
-            block()
-            value = UnitLoadState.Success
-        } catch (error: Throwable) {
-            value = UnitLoadState.Failure(error)
-        }
+        value =
+            try {
+                LoadState.Success(block())
+            } catch (error: Throwable) {
+                LoadState.Failure(error)
+            }
     }
 }
