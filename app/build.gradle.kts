@@ -98,7 +98,6 @@ openApiGenerate {
         "https://raw.githubusercontent.com/tien/FTL/refs/heads/fix/batch-delete-request-body/src/api/docs/content/specs/main.yaml"
     outputDir = openApiOutput.absolutePath
     ignoreFileOverride = "${projectDir.path}/openapi-generator-ignore"
-    templateDir = "${projectDir.path}/templates"
     library = "multiplatform"
     packageName = "${android.namespace}.repository"
     additionalProperties =
