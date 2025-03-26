@@ -23,7 +23,7 @@ constructor(
             .map { it?.let { piHoleRepositoryFactory.create(it) } }
             .stateIn(
                 scope = MainScope(),
-                started = SharingStarted.WhileSubscribed(5_000),
+                started = SharingStarted.WhileSubscribed(5_000, 0),
                 initialValue = null,
             )
             .mapLatest { it?.authenticate() }
@@ -32,4 +32,3 @@ constructor(
         return selectedPiHoleRepository.firstOrNull()
     }
 }
-
