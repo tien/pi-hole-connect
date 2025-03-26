@@ -69,7 +69,7 @@
     <string name="pi_hole_connection_desc_scanner">Scanează cod QR</string>
     <string name="pi_hole_connection_hint_scanner"><![CDATA[Poate fi găsit la \"Setări > API / Interfață Web > Arată cheia API\"]]></string>
     <string name="pi_hole_connection_label_api_path">Cale API</string>
-    <string name="pi_hole_connection_label_api_token">Cheia API</string>
+    <string name="pi_hole_connection_label_password">Parolă</string>
     <string name="pi_hole_connection_label_basic_auth_password">Parola de autentificare de bază</string>
     <string name="pi_hole_connection_label_basic_auth_realm">Domeniu pentru autentificare de bază</string>
     <string name="pi_hole_connection_label_basic_auth_username">Utilizator pentru autentificare de bază</string>

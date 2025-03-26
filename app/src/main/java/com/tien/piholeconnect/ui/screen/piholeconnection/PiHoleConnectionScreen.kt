@@ -203,7 +203,7 @@ fun PiHoleConnectionScreen(
                             }
                         }
                     },
-            label = { Text(stringResource(R.string.pi_hole_connection_label_api_token)) },
+            label = { Text(stringResource(R.string.pi_hole_connection_label_password)) },
             value = viewModel.password,
             onValueChange = { viewModel.password = it },
             visualTransformation = PasswordVisualTransformation(),

@@ -71,7 +71,7 @@
     <string name="pi_hole_connection_desc_scanner">Zeskanuj kod QR</string>
     <string name="pi_hole_connection_hint_scanner"><![CDATA[Można to znaleźć w \"Ustawienia > API / Interfejs sieciowy > Pokaż token API"]]></string>
     <string name="pi_hole_connection_label_api_path">Ścieżka interfejsu API</string>
-    <string name="pi_hole_connection_label_api_token">Token API</string>
+    <string name="pi_hole_connection_label_password">Hasło</string>
     <string name="pi_hole_connection_label_basic_auth_password">Podstawowe hasło uwierzytelniające</string>
     <string name="pi_hole_connection_label_basic_auth_realm">Podstawowa przestrzeń uwierzytelniania</string>
     <string name="pi_hole_connection_label_basic_auth_username">Podstawowa nazwa użytkownika uwierzytelniania</string>

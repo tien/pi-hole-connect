@@ -67,7 +67,7 @@
     <string name="pi_hole_connection_desc_scanner">QR-Code scannen</string>
     <string name="pi_hole_connection_hint_scanner"><![CDATA[Dies ist in \"Settings > API / Web Interface > Show API token\" zu finden]]></string>
     <string name="pi_hole_connection_label_api_path">API-Pfad</string>
-    <string name="pi_hole_connection_label_api_token">API-Token</string>
+    <string name="pi_hole_connection_label_password">Passwort</string>
     <string name="pi_hole_connection_label_basic_auth_password">Basisauthentifizierung Passwort</string>
     <string name="pi_hole_connection_label_basic_auth_realm">Basisauthentifizierung Realm</string>
     <string name="pi_hole_connection_label_basic_auth_username">Basisauthentifizierung Benutzername</string>
