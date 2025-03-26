@@ -19,7 +19,6 @@ import com.tien.piholeconnect.repository.apis.ListManagementApi
 import com.tien.piholeconnect.repository.apis.MetricsApi
 import com.tien.piholeconnect.repository.apis.NetworkInformationApi
 import com.tien.piholeconnect.repository.apis.PiHoleConfigurationApi
-import com.tien.piholeconnect.repository.infrastructure.ApiClient
 import com.tien.piholeconnect.repository.models.Password
 import com.tien.piholeconnect.repository.models.SessionSession
 import com.tien.piholeconnect.util.toKtorURLProtocol
@@ -27,6 +26,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.BasicAuthCredentials
+import io.ktor.client.plugins.auth.providers.basic
 import io.ktor.http.URLBuilder
 import io.ktor.http.encodedPath
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -53,7 +55,7 @@ constructor(
             .map { it?.let { piHoleRepositoryFactory.create(it) } }
             .stateIn(
                 scope = MainScope(),
-                started = SharingStarted.WhileSubscribed(),
+                started = SharingStarted.WhileSubscribed(5_000),
                 initialValue = null,
             )
             .filterNotNull()
@@ -77,8 +79,35 @@ constructor(
         fun create(piHoleConnection: PiHoleConnection): PiHoleV6Repository
     }
 
-    private val client =
-        if (piHoleConnection.trustAllCertificates) trustAllCertificatesHttpClient else httpClient
+    private val client = run {
+        val baseClient =
+            if (piHoleConnection.trustAllCertificates) trustAllCertificatesHttpClient
+            else httpClient
+
+        if (
+            piHoleConnection.basicAuthUsername.isBlank() &&
+                piHoleConnection.basicAuthPassword.isBlank()
+        ) {
+            return@run baseClient
+        }
+
+        baseClient.config {
+            install(Auth) {
+                basic {
+                    credentials {
+                        BasicAuthCredentials(
+                            username = piHoleConnection.basicAuthUsername,
+                            password = piHoleConnection.basicAuthPassword,
+                        )
+                    }
+
+                    if (piHoleConnection.basicAuthRealm.isNotBlank()) {
+                        realm = piHoleConnection.basicAuthRealm
+                    }
+                }
+            }
+        }
+    }
 
     private val baseUrl =
         URLBuilder()
@@ -90,31 +119,31 @@ constructor(
             }
             .buildString()
 
-    val actionsApi = ActionsApi(baseUrl, client).apply(::configure)
+    val actionsApi = ActionsApi(baseUrl, client)
 
-    val authenticationApi = AuthenticationApi(baseUrl, client).apply(::configure)
+    val authenticationApi = AuthenticationApi(baseUrl, client)
 
-    val clientManagementApi = ClientManagementApi(baseUrl, client).apply(::configure)
+    val clientManagementApi = ClientManagementApi(baseUrl, client)
 
-    val dhcpApi = DHCPApi(baseUrl, client).apply(::configure)
+    val dhcpApi = DHCPApi(baseUrl, client)
 
-    val dnsControlApi = DNSControlApi(baseUrl, client).apply(::configure)
+    val dnsControlApi = DNSControlApi(baseUrl, client)
 
-    val documentationApi = DocumentationApi(baseUrl, client).apply(::configure)
+    val documentationApi = DocumentationApi(baseUrl, client)
 
-    val domainManagementApi = DomainManagementApi(baseUrl, client).apply(::configure)
+    val domainManagementApi = DomainManagementApi(baseUrl, client)
 
-    val ftlInformationApi = FTLInformationApi(baseUrl, client).apply(::configure)
+    val ftlInformationApi = FTLInformationApi(baseUrl, client)
 
-    val groupManagementApi = GroupManagementApi(baseUrl, client).apply(::configure)
+    val groupManagementApi = GroupManagementApi(baseUrl, client)
 
-    val listManagementApi = ListManagementApi(baseUrl, client).apply(::configure)
+    val listManagementApi = ListManagementApi(baseUrl, client)
 
-    val metricsApi = MetricsApi(baseUrl, client).apply(::configure)
+    val metricsApi = MetricsApi(baseUrl, client)
 
-    val networkInformationApi = NetworkInformationApi(baseUrl, client).apply(::configure)
+    val networkInformationApi = NetworkInformationApi(baseUrl, client)
 
-    val piHoleConfigurationApi = PiHoleConfigurationApi(baseUrl, client).apply(::configure)
+    val piHoleConfigurationApi = PiHoleConfigurationApi(baseUrl, client)
 
     val authenticationMutex = Mutex()
 
@@ -187,15 +216,5 @@ constructor(
         metricsApi.setApiKey(sid, "X-FTL-SID")
         networkInformationApi.setApiKey(sid, "X-FTL-SID")
         piHoleConfigurationApi.setApiKey(sid, "X-FTL-SID")
-    }
-
-    private fun configure(apiClient: ApiClient) {
-        if (piHoleConnection.basicAuthUsername.isNotBlank()) {
-            apiClient.setUsername(piHoleConnection.basicAuthUsername)
-        }
-
-        if (piHoleConnection.basicAuthPassword.isNotBlank()) {
-            apiClient.setPassword(piHoleConnection.basicAuthPassword)
-        }
     }
 }

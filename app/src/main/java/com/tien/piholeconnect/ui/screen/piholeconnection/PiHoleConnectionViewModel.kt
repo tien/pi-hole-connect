@@ -8,7 +8,6 @@ import com.tien.piholeconnect.model.PiHoleConnection
 import com.tien.piholeconnect.model.URLProtocol
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import com.tien.piholeconnect.util.populateDefaultValues
-import com.tien.piholeconnect.util.toKtorURLProtocol
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import java.util.*
@@ -62,20 +61,35 @@ constructor(private val userPreferencesRepository: UserPreferencesRepository) : 
         userPreferencesRepository.updateUserPreferences { userPreferences ->
             val builder = userPreferences.toBuilder()
 
-            val connectionBuilder =
+            var connectionBuilder =
                 PiHoleConnection.newBuilder()
                     .setId(id ?: UUID.randomUUID().toString())
                     .setName(name)
-                    .setDescription(description)
+                    .let { if (description.isNotBlank()) it.setDescription(description) else it }
                     .setProtocol(protocol)
                     .setHost(host)
                     .setApiPath(apiPath)
-                    .setPort(port.toIntOrNull() ?: protocol.toKtorURLProtocol().defaultPort)
-                    .setPassword(password)
-                    .setBasicAuthUsername(basicAuthUsername)
-                    .setBasicAuthPassword(basicAuthPassword)
-                    .setBasicAuthRealm(basicAuthRealm)
-                    .setTrustAllCertificates(trustAllCertificates)
+                    .let { port.toIntOrNull()?.let { port -> it.setPort(port) } ?: it }
+                    .let { if (password.isNotBlank()) it.setPassword(password) else it }
+                    .let {
+                        if (it.trustAllCertificates != trustAllCertificates)
+                            it.setTrustAllCertificates(trustAllCertificates)
+                        else it
+                    }
+                    .let {
+                        if (basicAuthUsername.isNotBlank())
+                            it.setBasicAuthUsername(basicAuthUsername)
+                        else it
+                    }
+                    .let {
+                        if (basicAuthPassword.isNotBlank())
+                            it.setBasicAuthPassword(basicAuthPassword)
+                        else it
+                    }
+                    .let {
+                        if (basicAuthRealm.isNotBlank()) it.setBasicAuthRealm(basicAuthRealm)
+                        else it
+                    }
 
             if (id == null) {
                 return@updateUserPreferences builder.addPiHoleConnections(connectionBuilder).build()
