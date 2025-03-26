@@ -1,6 +1,6 @@
 package com.tien.piholeconnect.ui.screen.statistics
 
-import com.tien.piholeconnect.model.ScreenViewModel
+import com.tien.piholeconnect.model.BaseViewModel
 import com.tien.piholeconnect.repository.PiHoleRepositoryProvider
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +15,7 @@ class StatisticsViewModel
 constructor(
     piHoleRepositoryProvider: PiHoleRepositoryProvider,
     userPreferencesRepository: UserPreferencesRepository,
-) : ScreenViewModel(userPreferencesRepository) {
+) : BaseViewModel(userPreferencesRepository) {
     @OptIn(ExperimentalCoroutinesApi::class)
     val topDomains =
         piHoleRepositoryProvider.selectedPiHoleRepository
@@ -28,7 +28,7 @@ constructor(
                     ?.map { (it.domain ?: "") to (it.count ?: 0) }
                     ?.toMap()
             }
-            .asViewModelFlowState()
+            .asViewFlowState()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val topBlockedDomains =
@@ -42,7 +42,7 @@ constructor(
                     ?.map { (it.domain ?: "") to (it.count ?: 0) }
                     ?.toMap()
             }
-            .asViewModelFlowState()
+            .asViewFlowState()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val topClients =
@@ -56,5 +56,5 @@ constructor(
                     ?.map { (it.name ?: "") to (it.count ?: 0) }
                     ?.toMap()
             }
-            .asViewModelFlowState()
+            .asViewFlowState()
 }

@@ -14,7 +14,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
@@ -42,16 +41,16 @@ import kotlinx.coroutines.flow.runningFold
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-open class ScreenViewModel
+open class BaseViewModel
 @Inject
 constructor(userPreferencesRepository: UserPreferencesRepository) : ViewModel() {
     protected var flows = MutableStateFlow(listOf<Flow<LoadState<*>>>())
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    protected fun <T> Flow<T>.asViewModelFlowState(
+    protected fun <T> Flow<T>.asViewFlowState(
         initialValue: LoadState<T> = LoadState.Idle()
     ): StateFlow<LoadState<T>> {
-        return this.asViewModelFlowState()
+        return this.asViewFlowState()
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(),
@@ -60,7 +59,7 @@ constructor(userPreferencesRepository: UserPreferencesRepository) : ViewModel() 
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun <T> Flow<T>.asViewModelFlowState(): Flow<LoadState<T>> {
+    private fun <T> Flow<T>.asViewFlowState(): Flow<LoadState<T>> {
         return refreshTrigger
             .onStart { emit(Unit) }
             .flatMapLatest { this.asLoadState() }
@@ -80,7 +79,7 @@ constructor(userPreferencesRepository: UserPreferencesRepository) : ViewModel() 
                     }
                 }
             }
-            .also { this@ScreenViewModel.flows.value += it }
+            .also { this@BaseViewModel.flows.value += it }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

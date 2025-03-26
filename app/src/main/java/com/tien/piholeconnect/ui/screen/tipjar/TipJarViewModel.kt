@@ -6,7 +6,7 @@ import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.queryProductDetails
-import com.tien.piholeconnect.model.ScreenViewModel
+import com.tien.piholeconnect.model.BaseViewModel
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import com.tien.piholeconnect.service.InAppPurchase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +20,7 @@ class TipJarViewModel
 constructor(
     private val inAppPurchase: InAppPurchase,
     userPreferencesRepository: UserPreferencesRepository,
-) : ScreenViewModel(userPreferencesRepository) {
+) : BaseViewModel(userPreferencesRepository) {
     private val productList =
         listOf("coin", "coffee", "beer", "dinner")
             .map { "com.tien.piholeconnect.tip.$it" }
@@ -45,7 +45,7 @@ constructor(
                         ?.sortedBy { it.oneTimePurchaseOfferDetails?.priceAmountMicros } ?: listOf()
                 )
             }
-            .asViewModelFlowState()
+            .asViewFlowState()
 
     fun launchBillingFlow(activity: Activity, productDetails: ProductDetails) {
         val params =

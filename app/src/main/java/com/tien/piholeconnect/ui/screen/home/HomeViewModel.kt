@@ -3,7 +3,7 @@ package com.tien.piholeconnect.ui.screen.home
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.tien.piholeconnect.model.ScreenViewModel
+import com.tien.piholeconnect.model.BaseViewModel
 import com.tien.piholeconnect.repository.PiHoleRepositoryProvider
 import com.tien.piholeconnect.repository.UserPreferencesRepository
 import com.tien.piholeconnect.repository.models.GetBlocking200Response
@@ -22,7 +22,7 @@ class HomeViewModel
 constructor(
     private val piHoleRepositoryProvider: PiHoleRepositoryProvider,
     userPreferencesRepository: UserPreferencesRepository,
-) : ScreenViewModel(userPreferencesRepository) {
+) : BaseViewModel(userPreferencesRepository) {
     val isAdsBlockingEnabled =
         piHoleRepositoryProvider.selectedPiHoleRepository
             .filterNotNull()
@@ -30,19 +30,19 @@ constructor(
                 it.dnsControlApi.getBlocking().body().blocking ==
                     GetBlocking200Response.Blocking.ENABLED
             }
-            .asViewModelFlowState()
+            .asViewFlowState()
 
     val metricSummary =
         piHoleRepositoryProvider.selectedPiHoleRepository
             .filterNotNull()
             .mapLatest { it.metricsApi.getMetricsSummary().body() }
-            .asViewModelFlowState()
+            .asViewFlowState()
 
     val history =
         piHoleRepositoryProvider.selectedPiHoleRepository
             .filterNotNull()
             .mapLatest { it.metricsApi.getActivityMetrics().body().history ?: listOf() }
-            .asViewModelFlowState()
+            .asViewFlowState()
 
     var isPiHoleSwitchLoading by mutableStateOf(false)
         private set

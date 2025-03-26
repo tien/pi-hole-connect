@@ -21,7 +21,7 @@ class FilterRulesViewModel
 constructor(
     private val piHoleRepositoryProvider: PiHoleRepositoryProvider,
     val userPreferencesRepository: UserPreferencesRepository,
-) : ScreenViewModel(userPreferencesRepository) {
+) : BaseViewModel(userPreferencesRepository) {
     enum class Tab {
         BLACK,
         WHITE,
@@ -32,7 +32,7 @@ constructor(
         piHoleRepositoryProvider.selectedPiHoleRepository
             .filterNotNull()
             .mapLatest { it.domainManagementApi.getDomains().body().domains ?: listOf() }
-            .asViewModelFlowState()
+            .asViewFlowState()
 
     var selectedTab by mutableStateOf(Tab.BLACK)
 

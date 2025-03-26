@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.QueryStatus
 import com.tien.piholeconnect.model.QueryStatusType
-import com.tien.piholeconnect.model.ScreenViewModel
+import com.tien.piholeconnect.model.BaseViewModel
 import com.tien.piholeconnect.model.UnitLoadState
 import com.tien.piholeconnect.model.fromStatusString
 import com.tien.piholeconnect.model.run
@@ -28,7 +28,7 @@ class LogViewModel
 constructor(
     private val piHoleRepositoryProvider: PiHoleRepositoryProvider,
     userPreferencesRepository: UserPreferencesRepository,
-) : ScreenViewModel(userPreferencesRepository) {
+) : BaseViewModel(userPreferencesRepository) {
     enum class Sort(@StringRes val labelResourceId: Int) {
         DATE_DESC(R.string.log_screen_label_date_sort_desc),
         DATE_ASC(R.string.log_screen_label_date_sort_asc),
@@ -93,7 +93,7 @@ constructor(
                     Sort.RESPONSE_TIME_DESC -> logs.sortedByDescending { it.reply?.time }
                 }
             }
-            .asViewModelFlowState()
+            .asViewFlowState()
 
     fun addToWhiteList(domain: String) {
         addToAllowlistLoadState.run(scope = viewModelScope) {
