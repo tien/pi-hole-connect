@@ -20,7 +20,7 @@
     <string name="enable_dialog_button_confirm">Włączać</string>
     <string name="enable_dialog_msg">Umożliwi to blokowanie reklam Pi-hole.</string>
     <string name="enable_dialog_title">Włączyć blokowanie reklam?</string>
-    <string name="error_pi_hole_connection_generic">Sprawdź swoje połączenie internetowe lub czy klucz API został ustawiony.</string>
+    <string name="error_pi_hole_connection_generic">Sprawdź połączenie internetowe lub czy ustawiono prawidłowe hasło.</string>
     <string name="error_pi_hole_connection_generic_error_prefix">Wystąpił błąd</string>
     <string name="error_show_details">Szczegóły</string>
     <string name="filter_rules_blacklist">Czarna lista</string>

@@ -20,7 +20,7 @@
     <string name="enable_dialog_button_confirm">Confirm</string>
     <string name="enable_dialog_msg">Funcția de blocare a reclamelor va fi activată.</string>
     <string name="enable_dialog_title">Activare blocare reclame?</string>
-    <string name="error_pi_hole_connection_generic">Te rog verifică conexiunea la internet sau dacă cheia API a fost setată.</string>
+    <string name="error_pi_hole_connection_generic">Vă rugăm să verificați conexiunea dvs. la internet sau dacă a fost setată parola corectă.</string>
     <string name="error_pi_hole_connection_generic_error_prefix">A intervenit o eroare</string>
     <string name="error_show_details">Detalii</string>
     <string name="filter_rules_blacklist">Listă blocate</string>

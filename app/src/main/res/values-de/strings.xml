@@ -20,7 +20,7 @@
     <string name="enable_dialog_button_confirm">Übernehmen</string>
     <string name="enable_dialog_msg">Durch die Aktivierung von Pi-hole werden Werbung, Tracker, etc. blockiert.</string>
     <string name="enable_dialog_title">Pi-hole aktivieren?</string>
-    <string name="error_pi_hole_connection_generic">Bitte Netzwerkverbindung und den API-Token auf Korrektheit überprüfen.</string>
+    <string name="error_pi_hole_connection_generic">Bitte überprüfen Sie Ihre Internetverbindung oder ob das richtige Passwort eingestellt ist.</string>
     <string name="error_pi_hole_connection_generic_error_prefix">Ein Fehler ist aufgetreten</string>
     <string name="error_show_details">Einzelheiten</string>
     <string name="filter_rules_blacklist">Blacklist</string>
