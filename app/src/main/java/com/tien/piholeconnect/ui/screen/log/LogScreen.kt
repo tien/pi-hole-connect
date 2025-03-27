@@ -123,11 +123,9 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
     @Composable
     fun LogList(state: LazyListState = rememberLazyListState()) {
         LazyColumn(state = state) {
-            if (logs is LoadState.Success) {
-                (logs as LoadState.Success).data.forEachIndexed { index, log ->
-                    item(key = index) {
-                        LogItem(log, modifier = Modifier.clickable { selectedLog = log })
-                    }
+            logs.data?.forEachIndexed { index, log ->
+                item(key = index) {
+                    LogItem(log, modifier = Modifier.clickable { selectedLog = log })
                 }
             }
         }
@@ -269,14 +267,9 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
                         Modifier.fillMaxWidth().padding(start = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        if (logs is LoadState.Success) {
-                            val loadedLogs = logs as LoadState.Success
+                        logs.data?.count()?.let {
                             Text(
-                                pluralStringResource(
-                                    R.plurals.log_screen_results,
-                                    loadedLogs.data.count(),
-                                    loadedLogs.data.count(),
-                                ),
+                                pluralStringResource(R.plurals.log_screen_results, it, it),
                                 style = MaterialTheme.typography.bodySmall,
                             )
                         }
