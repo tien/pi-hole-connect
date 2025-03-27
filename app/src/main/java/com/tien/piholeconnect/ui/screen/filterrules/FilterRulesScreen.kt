@@ -42,7 +42,6 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,9 +60,9 @@ import com.tien.piholeconnect.R
 import com.tien.piholeconnect.repository.models.GetDomainsInner
 import com.tien.piholeconnect.ui.component.AddFilterRuleDialog
 import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
-import kotlinx.coroutines.launch
 import java.text.DateFormat
 import kotlin.math.roundToInt
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -74,8 +73,6 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
     var isAddDialogVisible by rememberSaveable { mutableStateOf(false) }
 
     viewModel.SnackBarErrorEffect(snackbarHostState)
-
-    LaunchedEffect(Unit) { viewModel.backgroundRefresh() }
 
     if (isAddDialogVisible) {
         AddFilterRuleDialog(

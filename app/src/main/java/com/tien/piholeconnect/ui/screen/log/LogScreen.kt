@@ -99,8 +99,6 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
 
     ChangedEffect(addToDenyListLoadState) { handleLoadState(addToDenyListLoadState) }
 
-    LaunchedEffect(Unit) { viewModel.backgroundRefresh() }
-
     LaunchedEffect(logs) { lazyListState.scrollToItem(0) }
 
     selectedLog?.let { logQuery ->

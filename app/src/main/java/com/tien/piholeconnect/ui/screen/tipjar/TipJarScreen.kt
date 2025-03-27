@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -22,8 +21,6 @@ import com.tien.piholeconnect.model.LoadState
 fun TipJarScreen(viewModel: TipJarViewModel = hiltViewModel()) {
     val activity = LocalActivity.current as Activity
     val tipOptions by viewModel.tipOptions.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) { viewModel.backgroundRefresh() }
 
     Column {
         Text(stringResource(R.string.tip_jar_msg), modifier = Modifier.padding(15.dp))
