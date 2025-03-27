@@ -127,7 +127,6 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.bundles.accompanist)
-    implementation(libs.bundles.camerax)
     implementation(libs.bundles.compose)
     implementation(libs.bundles.kotlin)
     implementation(libs.bundles.ktor)
@@ -136,7 +135,6 @@ dependencies {
     implementation(libs.google.android.material)
     implementation(libs.google.dagger.hilt)
     implementation(libs.google.protobuf.javalite)
-    implementation(libs.google.mlkit.barcodeScanning)
 
     ksp(libs.google.dagger.hilt.compiler)
 
