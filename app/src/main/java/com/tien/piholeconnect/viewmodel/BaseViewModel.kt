@@ -56,7 +56,7 @@ open class BaseViewModel : ViewModel() {
         initialValue: LoadState<T> = LoadState.Idle()
     ): StateFlow<LoadState<T>> {
         val sharedThis =
-            this.shareIn(viewModelScope, SharingStarted.WhileSubscribed()).asLoadState()
+            this.asLoadState().shareIn(viewModelScope, SharingStarted.WhileSubscribed())
 
         return refreshTrigger
             .onStart { emit(Unit) }
