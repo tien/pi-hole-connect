@@ -43,6 +43,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.runningFold
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -54,19 +55,12 @@ open class BaseViewModel : ViewModel() {
     protected fun <T> Flow<T>.asViewFlowState(
         initialValue: LoadState<T> = LoadState.Idle()
     ): StateFlow<LoadState<T>> {
-        return this.asViewFlowState()
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(),
-                initialValue = initialValue,
-            )
-    }
+        val sharedThis =
+            this.shareIn(viewModelScope, SharingStarted.WhileSubscribed()).asLoadState()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private fun <T> Flow<T>.asViewFlowState(): Flow<LoadState<T>> {
         return refreshTrigger
             .onStart { emit(Unit) }
-            .flatMapLatest { this.asLoadState() }
+            .flatMapLatest { sharedThis }
             .runningFold(LoadState.Loading<T>() as LoadState<T>) { prev, curr ->
                 when (curr) {
                     is LoadState.Loading -> prev.asLoading()
@@ -84,6 +78,11 @@ open class BaseViewModel : ViewModel() {
                 }
             }
             .also { this@BaseViewModel.flows.value += it }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(),
+                initialValue = initialValue,
+            )
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
