@@ -69,11 +69,11 @@ fun TopBar(
 
 @Composable
 fun OptionsMenu(
-    selectedPiHoleConnectionId: String,
-    piHoleConnections: Iterable<PiHoleConnection>,
+    selectedPiHoleConnectionId: String?,
+    piHoleConnections: Map<String, PiHoleConnection>,
     optionsMenuItems: Iterable<TopBarOptionsMenuItem>,
     onOptionsMenuItemClick: (TopBarOptionsMenuItem) -> Unit,
-    onPiHoleConnectionClick: (PiHoleConnection) -> Unit,
+    onPiHoleConnectionClick: (id: String) -> Unit,
 ) {
     Box {
         var isOptionsMenuExpanded by remember { mutableStateOf(false) }
@@ -115,22 +115,20 @@ fun OptionsMenu(
 
 @Composable
 private fun Menu(
-    piHoleConnections: Iterable<PiHoleConnection>,
-    selectedPiHoleConnectionId: String,
+    piHoleConnections: Map<String, PiHoleConnection>,
+    selectedPiHoleConnectionId: String?,
     optionsMenuItems: Iterable<TopBarOptionsMenuItem>,
     onOptionsMenuItemClick: (TopBarOptionsMenuItem) -> Unit,
-    onPiHoleConnectionClick: (PiHoleConnection) -> Unit,
+    onPiHoleConnectionClick: (id: String) -> Unit,
 ) {
-    val selectedId = selectedPiHoleConnectionId.ifBlank { piHoleConnections.firstOrNull()?.id }
+    val selectedId = selectedPiHoleConnectionId ?: piHoleConnections.keys.firstOrNull()
 
     if (piHoleConnections.count() > 1) {
-        piHoleConnections.forEach { connection ->
+        piHoleConnections.forEach { (id, connection) ->
             DropdownMenuItem(
-                leadingIcon = {
-                    RadioButton(selected = connection.id == selectedId, onClick = null)
-                },
-                text = { Text("${connection.name}@${connection.host}") },
-                onClick = { onPiHoleConnectionClick(connection) },
+                leadingIcon = { RadioButton(selected = id == selectedId, onClick = null) },
+                text = { Text("${connection.metadata.name}@${connection.configuration.host}") },
+                onClick = { onPiHoleConnectionClick(id) },
             )
         }
         HorizontalDivider()
@@ -181,12 +179,13 @@ fun MenuPreview() {
     PiHoleConnectTheme {
         Column {
             val piHoleConnections =
-                listOf((0..4)).flatten().map {
-                    PiHoleConnection.newBuilder().populateDefaultValues().build()
+                listOf((0..4)).flatten().associate {
+                    it.toString() to PiHoleConnection.newBuilder().populateDefaultValues().build()
                 }
+
             Menu(
                 piHoleConnections = piHoleConnections,
-                selectedPiHoleConnectionId = piHoleConnections.first().id,
+                selectedPiHoleConnectionId = piHoleConnections.entries.first().key,
                 optionsMenuItems =
                     listOf(
                         TopBarOptionsMenuItem(

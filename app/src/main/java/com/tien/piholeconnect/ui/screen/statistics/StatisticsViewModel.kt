@@ -1,6 +1,6 @@
 package com.tien.piholeconnect.ui.screen.statistics
 
-import com.tien.piholeconnect.service.PiHoleRepositoryProvider
+import com.tien.piholeconnect.repository.PiHoleRepositoryManager
 import com.tien.piholeconnect.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.mapLatest
 import javax.inject.Inject
 
 @HiltViewModel
-class StatisticsViewModel @Inject constructor(piHoleRepositoryProvider: PiHoleRepositoryProvider) :
+class StatisticsViewModel @Inject constructor(piHoleRepositoryManager: PiHoleRepositoryManager) :
     BaseViewModel() {
     @OptIn(ExperimentalCoroutinesApi::class)
     val topDomains =
-        piHoleRepositoryProvider.selectedPiHoleRepository
+        piHoleRepositoryManager.selectedPiHoleRepository
             .filterNotNull()
             .mapLatest {
                 it.metricsApi
@@ -27,7 +27,7 @@ class StatisticsViewModel @Inject constructor(piHoleRepositoryProvider: PiHoleRe
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val topBlockedDomains =
-        piHoleRepositoryProvider.selectedPiHoleRepository
+        piHoleRepositoryManager.selectedPiHoleRepository
             .filterNotNull()
             .mapLatest {
                 it.metricsApi
@@ -41,7 +41,7 @@ class StatisticsViewModel @Inject constructor(piHoleRepositoryProvider: PiHoleRe
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val topClients =
-        piHoleRepositoryProvider.selectedPiHoleRepository
+        piHoleRepositoryManager.selectedPiHoleRepository
             .filterNotNull()
             .mapLatest {
                 it.metricsApi

@@ -3,9 +3,9 @@ package com.tien.piholeconnect.repository
 import androidx.datastore.core.DataStore
 import com.tien.piholeconnect.di.DefaultHttpClient
 import com.tien.piholeconnect.di.TrustAllCertificatesHttpClient
-import com.tien.piholeconnect.model.Authentication
-import com.tien.piholeconnect.model.PiHoleConnection
-import com.tien.piholeconnect.model.Session
+import com.tien.piholeconnect.model.PiHoleConfiguration
+import com.tien.piholeconnect.model.PiHoleConnections
+import com.tien.piholeconnect.model.PiHoleSession
 import com.tien.piholeconnect.repository.apis.ActionsApi
 import com.tien.piholeconnect.repository.apis.AuthenticationApi
 import com.tien.piholeconnect.repository.apis.ClientManagementApi
@@ -31,31 +31,30 @@ import io.ktor.client.plugins.auth.providers.BasicAuthCredentials
 import io.ktor.client.plugins.auth.providers.basic
 import io.ktor.http.URLBuilder
 import io.ktor.http.encodedPath
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 class PiHoleRepository
 @AssistedInject
 constructor(
+    @Assisted private val id: String,
+    @Assisted private val configuration: PiHoleConfiguration,
     @DefaultHttpClient private val httpClient: HttpClient,
     @TrustAllCertificatesHttpClient private val trustAllCertificatesHttpClient: HttpClient,
-    @Assisted private val piHoleConnection: PiHoleConnection,
-    private val authenticationDataStore: DataStore<Authentication>,
+    private val piHoleConnectionDataStore: DataStore<PiHoleConnections>,
 ) {
     @AssistedFactory
     interface Factory {
-        fun create(piHoleConnection: PiHoleConnection): PiHoleRepository
+        fun create(id: String, configuration: PiHoleConfiguration): PiHoleRepository
     }
 
     private val client = run {
         val baseClient =
-            if (piHoleConnection.trustAllCertificates) trustAllCertificatesHttpClient
-            else httpClient
+            if (configuration.trustAllCertificates) trustAllCertificatesHttpClient else httpClient
 
         if (
-            piHoleConnection.basicAuthUsername.isBlank() &&
-                piHoleConnection.basicAuthPassword.isBlank()
+            configuration.basicAuthUsername.isBlank() && configuration.basicAuthPassword.isBlank()
         ) {
             return@run baseClient
         }
@@ -65,13 +64,13 @@ constructor(
                 basic {
                     credentials {
                         BasicAuthCredentials(
-                            username = piHoleConnection.basicAuthUsername,
-                            password = piHoleConnection.basicAuthPassword,
+                            username = configuration.basicAuthUsername,
+                            password = configuration.basicAuthPassword,
                         )
                     }
 
-                    if (piHoleConnection.basicAuthRealm.isNotBlank()) {
-                        realm = piHoleConnection.basicAuthRealm
+                    if (configuration.basicAuthRealm.isNotBlank()) {
+                        realm = configuration.basicAuthRealm
                     }
                 }
             }
@@ -81,10 +80,10 @@ constructor(
     private val baseUrl =
         URLBuilder()
             .apply {
-                protocol = piHoleConnection.protocol.toKtorURLProtocol()
-                host = piHoleConnection.host
-                encodedPath = piHoleConnection.apiPath
-                port = piHoleConnection.port
+                protocol = configuration.protocol.toKtorURLProtocol()
+                host = configuration.host
+                encodedPath = configuration.apiPath
+                port = configuration.port
             }
             .buildString()
 
@@ -126,10 +125,11 @@ constructor(
         }
 
         try {
-            authenticationDataStore.data
-                .firstOrNull()
-                ?.getSessionsOrDefault(piHoleConnection.id, null)
-                ?.also { setSessionId(it.sid) }
+            piHoleConnectionDataStore.data.first().connectionsMap[id]?.also {
+                if (it.hasSession()) {
+                    setSessionId(it.session.sid)
+                }
+            }
 
             val currentSessionResponse = authenticationApi.getAuth()
 
@@ -150,7 +150,7 @@ constructor(
     }
 
     suspend fun login(): SessionSession {
-        val sessionResponse = authenticationApi.addAuth(Password(piHoleConnection.password))
+        val sessionResponse = authenticationApi.addAuth(Password(configuration.password))
 
         if (!sessionResponse.success) {
             throw Exception("Unable to login")
@@ -162,9 +162,15 @@ constructor(
             throw Exception("Invalid session")
         }
 
-        authenticationDataStore.updateData {
+        piHoleConnectionDataStore.updateData {
             it.toBuilder()
-                .putSessions(piHoleConnection.id, Session.newBuilder().setSid(session.sid).build())
+                .putConnections(
+                    id,
+                    it.getConnectionsOrThrow(id)
+                        .toBuilder()
+                        .setSession(PiHoleSession.newBuilder().setSid(session.sid))
+                        .build(),
+                )
                 .build()
         }
 

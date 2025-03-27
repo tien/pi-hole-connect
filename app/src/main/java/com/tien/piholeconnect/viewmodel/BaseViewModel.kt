@@ -20,14 +20,15 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.model.LoadState
+import com.tien.piholeconnect.model.PiHoleConnections
 import com.tien.piholeconnect.model.asFailure
 import com.tien.piholeconnect.model.asLoadState
 import com.tien.piholeconnect.model.asLoading
-import com.tien.piholeconnect.repository.UserPreferencesRepository
 import com.tien.piholeconnect.util.showGenericPiHoleConnectionError
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -126,12 +127,17 @@ open class BaseViewModel : ViewModel() {
     private val errorToDisplay = MutableStateFlow<Exception?>(null)
 
     // TODO: figure out a way to inject this without lateinit
-    @Inject lateinit var userPreferencesRepository: UserPreferencesRepository
+    @Inject lateinit var piHoleConnectionsDataStore: DataStore<PiHoleConnections>
 
     private val sensitiveData by lazy {
-        userPreferencesRepository.userPreferences.map { preferences ->
-            preferences.piHoleConnectionsList
-                .flatMap { listOf(it.password, it.basicAuthPassword) }
+        piHoleConnectionsDataStore.data.map { connections ->
+            connections.connectionsMap
+                .flatMap { (_, connection) ->
+                    listOf(
+                        connection.configuration.password,
+                        connection.configuration.basicAuthPassword,
+                    )
+                }
                 .map { it.trim() }
                 .filter { it.isNotBlank() }
         }

@@ -8,7 +8,7 @@ import com.tien.piholeconnect.model.QueryStatusType
 import com.tien.piholeconnect.model.UnitLoadState
 import com.tien.piholeconnect.model.fromStatusString
 import com.tien.piholeconnect.model.run
-import com.tien.piholeconnect.service.PiHoleRepositoryProvider
+import com.tien.piholeconnect.repository.PiHoleRepositoryManager
 import com.tien.piholeconnect.repository.apis.DomainManagementApi
 import com.tien.piholeconnect.repository.models.Post
 import com.tien.piholeconnect.viewmodel.BaseViewModel
@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class LogViewModel
 @Inject
-constructor(private val piHoleRepositoryProvider: PiHoleRepositoryProvider) : BaseViewModel() {
+constructor(private val piHoleRepositoryManager: PiHoleRepositoryManager) : BaseViewModel() {
     enum class Sort(@StringRes val labelResourceId: Int) {
         DATE_DESC(R.string.log_screen_label_date_sort_desc),
         DATE_ASC(R.string.log_screen_label_date_sort_asc),
@@ -56,7 +56,7 @@ constructor(private val piHoleRepositoryProvider: PiHoleRepositoryProvider) : Ba
 
     @OptIn(ExperimentalCoroutinesApi::class)
     var logs =
-        piHoleRepositoryProvider.selectedPiHoleRepository
+        piHoleRepositoryManager.selectedPiHoleRepository
             .filterNotNull()
             .combine(limit) { piHole, limit -> Pair(piHole, limit) }
             .mapLatest { (piHole, limit) ->
@@ -94,7 +94,7 @@ constructor(private val piHoleRepositoryProvider: PiHoleRepositoryProvider) : Ba
     fun addToWhiteList(domain: String) {
         addToAllowlistLoadState.run(scope = viewModelScope) {
             val body =
-                piHoleRepositoryProvider
+                piHoleRepositoryManager
                     .getSelectedPiHoleRepository()
                     ?.domainManagementApi
                     ?.addDomain(
@@ -111,7 +111,7 @@ constructor(private val piHoleRepositoryProvider: PiHoleRepositoryProvider) : Ba
     fun addToBlacklist(domain: String) {
         addToDenyListLoadState.run(scope = viewModelScope) {
             val body =
-                piHoleRepositoryProvider
+                piHoleRepositoryManager
                     .getSelectedPiHoleRepository()
                     ?.domainManagementApi
                     ?.addDomain(

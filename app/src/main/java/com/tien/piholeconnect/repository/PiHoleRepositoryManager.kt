@@ -1,10 +1,11 @@
-package com.tien.piholeconnect.service
+package com.tien.piholeconnect.repository
 
-import com.tien.piholeconnect.repository.PiHoleRepository
 import kotlinx.coroutines.flow.Flow
 
-interface PiHoleRepositoryProvider {
+interface PiHoleRepositoryManager {
     val selectedPiHoleRepository: Flow<PiHoleRepository?>
 
     suspend fun getSelectedPiHoleRepository(): PiHoleRepository?
+
+    suspend fun setSelectedPiHole(id: String)
 }

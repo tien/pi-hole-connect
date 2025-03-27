@@ -40,7 +40,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -66,25 +65,21 @@ import com.tien.piholeconnect.ui.screen.tipjar.TipJarScreen
 import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 import com.tien.piholeconnect.util.toKtorURLProtocol
 import io.ktor.http.URLBuilder
-import kotlinx.coroutines.launch
 
 @Composable
-fun App(preferencesViewModel: AppViewModel = hiltViewModel()) {
+fun App(viewModel: AppViewModel = hiltViewModel()) {
     val context = LocalContext.current
 
-    val userPreferences by
-        preferencesViewModel.userPreferencesFlow.collectAsStateWithLifecycle(null)
-
-    val selectedPiHole by preferencesViewModel.selectedPiHoleFlow.collectAsStateWithLifecycle(null)
-
-    if (userPreferences == null) return
+    val userPreferences by viewModel.userPreferences.collectAsStateWithLifecycle()
+    val piHoleConnections by viewModel.piHoleConnections.collectAsStateWithLifecycle()
+    val selectedPiHole by viewModel.selectedPiHole.collectAsStateWithLifecycle()
 
     val snackbarHostState = remember { SnackbarHostState() }
     val navController = rememberNavController()
     val systemUiController = rememberSystemUiController()
 
     val isDarkTheme =
-        when (userPreferences!!.theme) {
+        when (userPreferences?.theme) {
             Theme.DARK -> true
             Theme.LIGHT -> false
             else -> isSystemInDarkTheme()
@@ -99,15 +94,15 @@ fun App(preferencesViewModel: AppViewModel = hiltViewModel()) {
             )
         )
 
-    selectedPiHole?.let {
+    selectedPiHole?.second?.let {
         optionsMenuItems.add(
             TopBarOptionsMenuItem(
                 URLBuilder(
-                        protocol = it.protocol.toKtorURLProtocol(),
-                        host = it.host,
-                        port = it.port,
-                        user = it.basicAuthUsername.ifBlank { null },
-                        password = it.basicAuthPassword.ifBlank { null },
+                        protocol = it.configuration.protocol.toKtorURLProtocol(),
+                        host = it.configuration.host,
+                        port = it.configuration.port,
+                        user = it.configuration.basicAuthUsername.ifBlank { null },
+                        password = it.configuration.basicAuthPassword.ifBlank { null },
                         pathSegments = listOf("admin"),
                     )
                     .buildString(),
@@ -151,8 +146,8 @@ fun App(preferencesViewModel: AppViewModel = hiltViewModel()) {
     val defaultOptionsMenu =
         @Composable {
             OptionsMenu(
-                selectedPiHoleConnectionId = userPreferences!!.selectedPiHoleConnectionId,
-                piHoleConnections = userPreferences!!.piHoleConnectionsList,
+                selectedPiHoleConnectionId = selectedPiHole?.first,
+                piHoleConnections = piHoleConnections,
                 optionsMenuItems = optionsMenuItems,
                 onOptionsMenuItemClick = {
                     if (!it.isExternalLink) {
@@ -162,15 +157,7 @@ fun App(preferencesViewModel: AppViewModel = hiltViewModel()) {
                         runCatching { context.startActivity(intent) }
                     }
                 },
-                onPiHoleConnectionClick = { piHoleConnection ->
-                    preferencesViewModel.viewModelScope.launch {
-                        preferencesViewModel.updateUserPreferences {
-                            it.toBuilder()
-                                .setSelectedPiHoleConnectionId(piHoleConnection.id)
-                                .build()
-                        }
-                    }
-                },
+                onPiHoleConnectionClick = { viewModel.setSelectedPiHole(it) },
             )
         }
 
@@ -204,7 +191,7 @@ fun App(preferencesViewModel: AppViewModel = hiltViewModel()) {
 
     PiHoleConnectTheme(
         useDarkTheme = isDarkTheme,
-        useDynamicColor = userPreferences?.useDynamicColor ?: false,
+        useDynamicColor = userPreferences?.useDynamicColor == true,
     ) {
         val themeColors = MaterialTheme.colorScheme
 
@@ -223,7 +210,7 @@ fun App(preferencesViewModel: AppViewModel = hiltViewModel()) {
                 if (currentScreen?.options?.showTopAppBar != false) {
                     TopBar(
                         title = title,
-                        backButtonEnabled = currentScreen?.options?.showBackButton ?: false,
+                        backButtonEnabled = currentScreen?.options?.showBackButton == true,
                         onBackButtonClick = { navController.navigateUp() },
                         actions = {
                             if (currentScreen?.options?.showMenus != false) {

@@ -5,15 +5,13 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
-import com.tien.piholeconnect.data.AuthenticationSerializer
+import com.tien.piholeconnect.data.PiHoleConnectionsSerializer
 import com.tien.piholeconnect.data.UserPreferencesSerializer
-import com.tien.piholeconnect.model.Authentication
+import com.tien.piholeconnect.model.PiHoleConnections
 import com.tien.piholeconnect.model.PiHoleSerializer
 import com.tien.piholeconnect.model.UserPreferences
-import com.tien.piholeconnect.service.PiHoleRepositoryProvider
-import com.tien.piholeconnect.service.PiHoleRepositoryProviderImpl
-import com.tien.piholeconnect.repository.UserPreferencesRepository
-import com.tien.piholeconnect.repository.UserPreferencesRepositoryImpl
+import com.tien.piholeconnect.repository.PiHoleRepositoryManager
+import com.tien.piholeconnect.repository.PiHoleRepositoryManagerImpl
 import com.tien.piholeconnect.service.InAppPurchase
 import com.tien.piholeconnect.service.InAppPurchaseImpl
 import com.tien.piholeconnect.util.Ipv4FirstDns
@@ -48,9 +46,9 @@ import javax.net.ssl.SSLContext
 abstract class PiHoleConnectModule {
     @Binds
     @Singleton
-    abstract fun bindPiHoleRepositoryProvider(
-        piHoleRepositoryProviderImpl: PiHoleRepositoryProviderImpl
-    ): PiHoleRepositoryProvider
+    abstract fun bindPiHoleRepositoryManager(
+        piHoleRepositoryManager: PiHoleRepositoryManagerImpl
+    ): PiHoleRepositoryManager
 
     companion object {
         @Provides
@@ -105,21 +103,15 @@ abstract class PiHoleConnectModule {
 
         @Provides
         @Singleton
-        fun provideAuthenticationDataStore(
+        fun providePiHoleConnectionsDataStore(
             @ApplicationContext appContext: Context
-        ): DataStore<Authentication> =
+        ): DataStore<PiHoleConnections> =
             DataStoreFactory.create(
-                serializer = AuthenticationSerializer,
+                serializer = PiHoleConnectionsSerializer,
                 migrations = listOf(),
                 scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
-                produceFile = { appContext.dataStoreFile("authentication.pb") },
+                produceFile = { appContext.dataStoreFile("pi_hole_connections.pb") },
             )
-
-        @Provides
-        @Singleton
-        fun provideUserPreferencesRepository(
-            dataStore: DataStore<UserPreferences>
-        ): UserPreferencesRepository = UserPreferencesRepositoryImpl(dataStore)
     }
 }
 

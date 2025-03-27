@@ -9,29 +9,7 @@ enum Theme {
   DARK = 2;
 }
 
-enum URLProtocol {
-  HTTP = 0;
-  HTTPS = 1;
-}
-
-message PiHoleConnection {
-  string id = 1;
-  string name = 2;
-  optional string description = 3;
-  URLProtocol protocol = 4;
-  string host = 5;
-  string apiPath = 6;
-  uint32 port = 7;
-  optional string password = 8;
-  optional string basicAuthUsername = 9;
-  optional string basicAuthPassword = 10;
-  optional string basicAuthRealm = 11;
-  optional bool trustAllCertificates = 12;
-}
-
 message UserPreferences {
-  repeated PiHoleConnection piHoleConnections = 1;
-  optional string selectedPiHoleConnectionId = 2;
-  optional Theme theme = 3;
-  optional bool useDynamicColor = 4;
+  optional Theme theme = 1;
+  optional bool useDynamicColor = 2;
 }

@@ -3,7 +3,7 @@ package com.tien.piholeconnect.ui.screen.filterrules
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.tien.piholeconnect.service.PiHoleRepositoryProvider
+import com.tien.piholeconnect.repository.PiHoleRepositoryManager
 import com.tien.piholeconnect.repository.apis.DomainManagementApi
 import com.tien.piholeconnect.repository.models.GetDomainsInner
 import com.tien.piholeconnect.repository.models.Post
@@ -17,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FilterRulesViewModel
 @Inject
-constructor(private val piHoleRepositoryProvider: PiHoleRepositoryProvider) : BaseViewModel() {
+constructor(private val piHoleRepositoryManager: PiHoleRepositoryManager) : BaseViewModel() {
     enum class Tab {
         BLACK,
         WHITE,
@@ -25,7 +25,7 @@ constructor(private val piHoleRepositoryProvider: PiHoleRepositoryProvider) : Ba
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val rules =
-        piHoleRepositoryProvider.selectedPiHoleRepository
+        piHoleRepositoryManager.selectedPiHoleRepository
             .filterNotNull()
             .mapLatest { it.domainManagementApi.getDomains().body().domains ?: listOf() }
             .asViewFlowState()
@@ -37,7 +37,7 @@ constructor(private val piHoleRepositoryProvider: PiHoleRepositoryProvider) : Ba
 
     suspend fun addRule() {
         try {
-            piHoleRepositoryProvider
+            piHoleRepositoryManager
                 .getSelectedPiHoleRepository()
                 ?.domainManagementApi
                 ?.addDomain(
@@ -77,7 +77,7 @@ constructor(private val piHoleRepositoryProvider: PiHoleRepositoryProvider) : Ba
         kind: DomainManagementApi.KindDeleteDomain,
     ) {
         try {
-            piHoleRepositoryProvider
+            piHoleRepositoryManager
                 .getSelectedPiHoleRepository()
                 ?.domainManagementApi
                 ?.deleteDomain(type, kind, domain)

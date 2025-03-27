@@ -3,7 +3,7 @@ package com.tien.piholeconnect.ui.screen.home
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.tien.piholeconnect.service.PiHoleRepositoryProvider
+import com.tien.piholeconnect.repository.PiHoleRepositoryManager
 import com.tien.piholeconnect.repository.models.GetBlocking200Response
 import com.tien.piholeconnect.repository.models.SetBlockingRequest
 import com.tien.piholeconnect.viewmodel.BaseViewModel
@@ -18,9 +18,9 @@ import kotlin.time.Duration
 @HiltViewModel
 class HomeViewModel
 @Inject
-constructor(private val piHoleRepositoryProvider: PiHoleRepositoryProvider) : BaseViewModel() {
+constructor(private val piHoleRepositoryManager: PiHoleRepositoryManager) : BaseViewModel() {
     val isAdsBlockingEnabled =
-        piHoleRepositoryProvider.selectedPiHoleRepository
+        piHoleRepositoryManager.selectedPiHoleRepository
             .filterNotNull()
             .mapLatest {
                 it.dnsControlApi.getBlocking().body().blocking ==
@@ -29,13 +29,13 @@ constructor(private val piHoleRepositoryProvider: PiHoleRepositoryProvider) : Ba
             .asViewFlowState()
 
     val metricSummary =
-        piHoleRepositoryProvider.selectedPiHoleRepository
+        piHoleRepositoryManager.selectedPiHoleRepository
             .filterNotNull()
             .mapLatest { it.metricsApi.getMetricsSummary().body() }
             .asViewFlowState()
 
     val history =
-        piHoleRepositoryProvider.selectedPiHoleRepository
+        piHoleRepositoryManager.selectedPiHoleRepository
             .filterNotNull()
             .mapLatest { it.metricsApi.getActivityMetrics().body().history ?: listOf() }
             .asViewFlowState()
@@ -55,7 +55,7 @@ constructor(private val piHoleRepositoryProvider: PiHoleRepositoryProvider) : Ba
         try {
             isPiHoleSwitchLoading = true
 
-            piHoleRepositoryProvider
+            piHoleRepositoryManager
                 .getSelectedPiHoleRepository()
                 ?.dnsControlApi
                 ?.setBlocking(
