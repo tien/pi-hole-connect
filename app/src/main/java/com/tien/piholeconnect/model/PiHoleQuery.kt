@@ -36,7 +36,7 @@ enum class QueryStatus(val type: QueryStatusType) {
     SPECIAL_DOMAIN(QueryStatusType.BLOCK),
     UNKNOWN(QueryStatusType.UNKNOWN);
 
-    companion object {}
+    companion object
 }
 
 fun QueryStatus.Companion.fromStatusString(status: String): QueryStatus {

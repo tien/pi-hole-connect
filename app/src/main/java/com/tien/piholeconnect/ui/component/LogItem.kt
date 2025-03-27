@@ -21,7 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.tien.piholeconnect.model.AnswerType
 import com.tien.piholeconnect.model.QueryLog
 import com.tien.piholeconnect.model.QueryLogClient
 import com.tien.piholeconnect.model.QueryLogReply
@@ -92,11 +91,11 @@ fun LogItem(log: QueryLog, modifier: Modifier = Modifier) {
 fun LogItemPreview() {
     PiHoleConnectTheme {
         Column(Modifier.verticalScroll(rememberScrollState())) {
-            AnswerType.entries.forEach {
+            listOf("FORWARDED", "GRAVITY", "CACHE", "UNKNOWN").forEach {
                 LogItem(
                     QueryLog(
                         time = 1616407649532.0,
-                        status = "FORWARDED",
+                        status = it,
                         type = "IPv6",
                         domain = "google.com",
                         client = QueryLogClient(name = "android.router"),
