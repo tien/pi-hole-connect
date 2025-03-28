@@ -53,11 +53,11 @@ android {
     kotlinOptions {
         jvmTarget = "17"
         freeCompilerArgs +=
-                listOf(
-                    "-opt-in=kotlin.RequiresOptIn",
-                    "-opt-in=kotlin.time.ExperimentalTime",
-                    "-opt-in=io.ktor.utils.io.InternalAPI",
-                )
+            listOf(
+                "-opt-in=kotlin.RequiresOptIn",
+                "-opt-in=kotlin.time.ExperimentalTime",
+                "-opt-in=io.ktor.utils.io.InternalAPI",
+            )
     }
 
     buildFeatures { compose = true }
@@ -121,12 +121,10 @@ dependencies {
 
     implementation(libs.android.billingclient.ktx)
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.bundles.accompanist)
     implementation(libs.bundles.compose)
     implementation(libs.bundles.kotlin)
     implementation(libs.bundles.ktor)
