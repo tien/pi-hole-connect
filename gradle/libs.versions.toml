@@ -12,10 +12,8 @@ protoBufJavaLite = "4.29.3"
 vico = "1.15.0"
 
 [libraries]
-accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanist" }
 android-billingclient-ktx = { module = "com.android.billingclient:billing-ktx", version = "7.1.1" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.10.1" }
-androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.7.0" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidx-compose-bom" }
 androidx-compose-iconsExtended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
@@ -46,7 +44,6 @@ vico-compose-material3 = { module = "com.patrykandpatrick.vico:compose-m3", vers
 vico-core = { module = "com.patrykandpatrick.vico:core", version.ref = "vico" }
 
 [bundles]
-accompanist = ["accompanist-systemuicontroller"]
 androidTest = ["androidx-test-espresso-core", "androidx-test-ext-junit"]
 compose = ["androidx-compose-iconsExtended", "androidx-compose-material3", "androidx-compose-ui-tooling"]
 kotlin = ["kotlin-reflect", "kotlin-serialization"]

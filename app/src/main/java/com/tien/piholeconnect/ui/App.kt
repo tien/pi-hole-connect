@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,14 +24,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -45,7 +43,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.BottomTabItem
 import com.tien.piholeconnect.model.Screen
@@ -76,7 +73,6 @@ fun App(viewModel: AppViewModel = hiltViewModel()) {
 
     val snackbarHostState = remember { SnackbarHostState() }
     val navController = rememberNavController()
-    val systemUiController = rememberSystemUiController()
 
     val isDarkTheme =
         when (userPreferences?.theme) {
@@ -193,17 +189,6 @@ fun App(viewModel: AppViewModel = hiltViewModel()) {
         useDarkTheme = isDarkTheme,
         useDynamicColor = userPreferences?.useDynamicColor == true,
     ) {
-        val themeColors = MaterialTheme.colorScheme
-
-        SideEffect {
-            systemUiController.apply {
-                setStatusBarColor(themeColors.background)
-                setNavigationBarColor(
-                    themeColors.surfaceColorAtElevation(NavigationBarDefaults.Elevation)
-                )
-            }
-        }
-
         Scaffold(
             snackbarHost = { SnackbarHost(snackbarHostState) },
             topBar = {
@@ -241,7 +226,7 @@ fun App(viewModel: AppViewModel = hiltViewModel()) {
             NavHost(
                 navController = navController,
                 startDestination = Screen.Home.route,
-                modifier = Modifier.padding(padding),
+                modifier = Modifier.padding(padding).consumeWindowInsets(padding),
             ) {
                 composable(Screen.Home.route) { ConnectionGuard { HomeScreen() } }
                 composable(Screen.Statistics.route) {
