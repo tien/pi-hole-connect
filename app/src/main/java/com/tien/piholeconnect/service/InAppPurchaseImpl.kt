@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LifecycleOwner
 import com.android.billingclient.api.*
 import com.android.billingclient.api.BillingClient.BillingResponseCode
+import com.android.billingclient.api.PendingPurchasesParams
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -14,7 +15,12 @@ class InAppPurchaseImpl @Inject constructor(@ApplicationContext private val cont
 
     override fun onCreate(owner: LifecycleOwner) {
         billingClient =
-            BillingClient.newBuilder(context).enablePendingPurchases().setListener(this).build()
+            BillingClient.newBuilder(context)
+                .enablePendingPurchases(
+                    PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
+                )
+                .setListener(this)
+                .build()
 
         if (!billingClient.isReady) {
             billingClient.startConnection(this)
