@@ -78,7 +78,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
 
     val blockedDomainListCount by
         animateIntAsState(
-            metrics.data?.queries?.uniqueDomains ?: 0,
+            metrics.data?.gravity?.domainsBeingBlocked ?: 0,
             label = "Blocked domain list count",
         )
 
