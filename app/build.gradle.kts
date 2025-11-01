@@ -6,7 +6,7 @@ val openApiOutput = file("${layout.buildDirectory.asFile.get().path}/generated/s
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
@@ -61,10 +61,6 @@ android {
     }
 
     buildFeatures { compose = true }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get()
-    }
 
     packaging { resources { excludes.add("/META-INF/{AL2.0,LGPL2.1}") } }
 
