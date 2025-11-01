@@ -19,12 +19,12 @@ plugins {
 android {
     namespace = "com.tien.piholeconnect"
 
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.tien.piholeconnect"
         minSdk = 21
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "SNAPSHOT"
 
