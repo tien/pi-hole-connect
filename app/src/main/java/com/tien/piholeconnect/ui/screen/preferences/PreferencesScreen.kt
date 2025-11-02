@@ -68,7 +68,7 @@ fun PreferencesScreen(
                         contentDescription = "Pi-hole ${connection.metadata.name}",
                     )
                 },
-                headlineContent = { Text(connection.metadata.name) },
+                headlineContent = { Text(connection.metadata.name.ifBlank { "Pi-hole" }) },
                 supportingContent = { Text(connection.configuration.host) },
             )
         }
