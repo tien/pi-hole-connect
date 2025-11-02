@@ -30,6 +30,7 @@ import com.tien.piholeconnect.model.asFailure
 import com.tien.piholeconnect.model.asLoadState
 import com.tien.piholeconnect.model.asLoading
 import com.tien.piholeconnect.util.showGenericPiHoleConnectionError
+import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -41,12 +42,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.onSubscription
 import kotlinx.coroutines.flow.runningFold
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 open class BaseViewModel : ViewModel() {
     protected var flows = MutableStateFlow(listOf<Flow<LoadState<*>>>())
@@ -55,11 +54,10 @@ open class BaseViewModel : ViewModel() {
     protected fun <T> Flow<T>.asViewFlowState(
         initialValue: LoadState<T> = LoadState.Idle()
     ): StateFlow<LoadState<T>> {
-        val sharedThis =
-            this.asLoadState().shareIn(viewModelScope, SharingStarted.WhileSubscribed())
+        val sharedThis = this.asLoadState()
 
         return refreshTrigger
-            .onStart { emit(Unit) }
+            .onSubscription { emit(Unit) }
             .flatMapLatest { sharedThis }
             .runningFold(LoadState.Loading<T>() as LoadState<T>) { prev, curr ->
                 when (curr) {
@@ -96,7 +94,7 @@ open class BaseViewModel : ViewModel() {
             initialValue = false,
         )
 
-    private val refreshTrigger = MutableSharedFlow<Unit>(replay = 0)
+    private val refreshTrigger = MutableSharedFlow<Unit>()
 
     val refreshing = MutableStateFlow(false)
 
@@ -108,11 +106,7 @@ open class BaseViewModel : ViewModel() {
         }
     }
 
-    fun backgroundRefresh() {
-        viewModelScope.launch { doRefresh() }
-    }
-
-    private suspend fun doRefresh() {
+    suspend fun doRefresh() {
         refreshTrigger.emit(Unit)
         loadingFlow.first { !it }
     }
