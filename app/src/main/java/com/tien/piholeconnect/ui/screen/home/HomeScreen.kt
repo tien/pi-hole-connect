@@ -52,12 +52,12 @@ import com.tien.piholeconnect.ui.theme.infoContainer
 import com.tien.piholeconnect.ui.theme.success
 import com.tien.piholeconnect.ui.theme.successContainer
 import com.tien.piholeconnect.ui.theme.warningContainer
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.text.DateFormat.getTimeInstance
 import java.util.Date
 import kotlin.math.max
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,7 +94,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
             viewModel.viewModelScope.launch {
                 while (true) {
                     delay(10_000)
-                    viewModel.backgroundRefresh()
+                    viewModel.doRefresh()
                 }
             }
 

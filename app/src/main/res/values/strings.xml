@@ -30,7 +30,6 @@
     <string name="filter_rules_desc_delete_filter">Delete filter</string>
     <string name="filter_rules_reg_exr">RegEx</string>
     <string name="filter_rules_whitelist">Whitelist</string>
-    <string name="filter_rules_disabled">disabled</string>
     <string name="home_ads_over_time">blocked</string>
     <string name="home_blocklist">Blocklist</string>
     <string name="home_percent_blocked">Percent Blocked</string>

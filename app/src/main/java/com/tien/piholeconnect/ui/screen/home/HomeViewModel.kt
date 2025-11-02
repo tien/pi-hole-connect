@@ -65,7 +65,7 @@ constructor(private val piHoleRepositoryManager: PiHoleRepositoryManager) : Base
                     )
                 )
 
-            backgroundRefresh()
+            doRefresh()
         } catch (error: Exception) {
             emitError(error)
         } finally {

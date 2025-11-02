@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.CheckCircleOutline
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -35,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -45,6 +47,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -55,14 +58,13 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.repository.models.GetDomainsInner
 import com.tien.piholeconnect.ui.component.AddFilterRuleDialog
 import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
+import kotlinx.coroutines.launch
 import java.text.DateFormat
 import kotlin.math.roundToInt
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -83,7 +85,7 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
             onDismissRequest = { isAddDialogVisible = false },
             onConfirmClick = {
                 isAddDialogVisible = false
-                viewModel.viewModelScope.launch { viewModel.addRule() }
+                viewModel.addRule()
             },
             onCancelClick = {
                 isAddDialogVisible = false
@@ -184,11 +186,7 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
                                             ) {
                                                 IconButton(
                                                     modifier = Modifier.fillMaxHeight(),
-                                                    onClick = {
-                                                        viewModel.viewModelScope.launch {
-                                                            viewModel.removeRule(rule)
-                                                        }
-                                                    },
+                                                    onClick = { viewModel.removeRule(rule) },
                                                 ) {
                                                     Icon(
                                                         Icons.Default.Delete,
@@ -235,32 +233,40 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
                                                 }
                                             },
                                             supportingContent = {
-                                                Text(
-                                                    buildString {
-                                                        rule.comment?.let { append(it) }
-                                                        if (rule.enabled == false) {
-                                                            if (rule.comment != null) append(" ")
-                                                            append("(")
-                                                            append(
-                                                                Text(
-                                                                    stringResource(
-                                                                        R.string
-                                                                            .filter_rules_disabled
-                                                                    )
-                                                                )
-                                                            )
-                                                            append(")")
-                                                        }
-                                                    }
-                                                )
-                                            },
-                                            trailingContent = {
                                                 if (rule.dateAdded != null) {
                                                     Text(
                                                         text =
                                                             dateTimeInstance.format(
                                                                 rule.dateAdded * 1000L
                                                             )
+                                                    )
+                                                }
+                                            },
+                                            trailingContent = {
+                                                if (rule.enabled != null) {
+                                                    val scope = rememberCoroutineScope()
+                                                    var loading by remember {
+                                                        mutableStateOf(false)
+                                                    }
+
+                                                    Switch(
+                                                        rule.enabled,
+                                                        {
+                                                            scope.launch {
+                                                                loading = true
+                                                                try {
+                                                                    viewModel.doToggleRule(rule)
+                                                                } finally {
+                                                                    loading = false
+                                                                }
+                                                            }
+                                                        },
+                                                        thumbContent = {
+                                                            if (loading) {
+                                                                CircularProgressIndicator()
+                                                            }
+                                                        },
+                                                        enabled = !loading,
                                                     )
                                                 }
                                             },
