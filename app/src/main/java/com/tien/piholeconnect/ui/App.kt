@@ -1,7 +1,6 @@
 package com.tien.piholeconnect.ui
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -36,7 +35,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.core.net.toUri
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -149,7 +149,7 @@ fun App(viewModel: AppViewModel = hiltViewModel()) {
                     if (!it.isExternalLink) {
                         navController.navigate(it.key)
                     } else {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it.key))
+                        val intent = Intent(Intent.ACTION_VIEW, it.key.toUri())
                         runCatching { context.startActivity(intent) }
                     }
                 },

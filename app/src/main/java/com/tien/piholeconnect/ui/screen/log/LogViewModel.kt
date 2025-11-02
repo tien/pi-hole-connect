@@ -13,26 +13,26 @@ import com.tien.piholeconnect.repository.apis.DomainManagementApi
 import com.tien.piholeconnect.repository.models.Post
 import com.tien.piholeconnect.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class LogViewModel
 @Inject
 constructor(private val piHoleRepositoryManager: PiHoleRepositoryManager) : BaseViewModel() {
-    enum class Sort(@StringRes val labelResourceId: Int) {
+    enum class Sort(@param:StringRes val labelResourceId: Int) {
         DATE_DESC(R.string.log_screen_label_date_sort_desc),
         DATE_ASC(R.string.log_screen_label_date_sort_asc),
         RESPONSE_TIME_ASC(R.string.log_screen_label_response_time_sort_asc),
         RESPONSE_TIME_DESC(R.string.log_screen_label_response_time_sort_desc),
     }
 
-    enum class Status(@StringRes val labelResourceId: Int, val contains: Set<QueryStatusType>) {
+    enum class Status(@param:StringRes val labelResourceId: Int, val contains: Set<QueryStatusType>) {
         ALLOWED(
             R.string.log_screen_label_allowed,
             setOf(QueryStatusType.ALLOW, QueryStatusType.CACHE),

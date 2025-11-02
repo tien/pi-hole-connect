@@ -18,7 +18,7 @@ private val TabScreenOptions =
 
 sealed class Screen(
     val route: String,
-    @StringRes val labelResourceId: Int,
+    @param:StringRes val labelResourceId: Int,
     val options: ScreenOptions,
 ) {
     data object Home : Screen("home", R.string.label_home, TabScreenOptions)
@@ -49,7 +49,7 @@ data class BottomTabItem(val screen: Screen, val icon: ImageVector)
 
 data class TopBarOptionsMenuItem(
     val key: String,
-    @StringRes val labelResourceId: Int,
+    @param:StringRes val labelResourceId: Int,
     val icon: ImageVector,
     val isExternalLink: Boolean = false,
 )

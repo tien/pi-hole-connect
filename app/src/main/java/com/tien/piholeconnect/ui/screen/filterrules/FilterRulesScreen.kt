@@ -33,12 +33,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -56,7 +56,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.repository.models.GetDomainsInner
@@ -117,7 +117,7 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
             onRefresh = { viewModel.refresh() },
         ) {
             Column(Modifier.padding(it)) {
-                TabRow(selectedTabIndex = viewModel.selectedTab.ordinal) {
+                PrimaryTabRow(selectedTabIndex = viewModel.selectedTab.ordinal) {
                     Tab(
                         selected = viewModel.selectedTab == FilterRulesViewModel.Tab.BLACK,
                         onClick = { viewModel.selectedTab = FilterRulesViewModel.Tab.BLACK },
