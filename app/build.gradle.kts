@@ -1,6 +1,5 @@
 import com.google.protobuf.gradle.id
-import org.gradle.configurationcache.extensions.capitalized
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 val openApiOutput = file("${layout.buildDirectory.asFile.get().path}/generated/source/open-api")
 
@@ -23,7 +22,7 @@ android {
 
     defaultConfig {
         applicationId = "com.tien.piholeconnect"
-        minSdk = 21
+        minSdk = 23
         targetSdk = 36
         versionCode = 1
         versionName = "SNAPSHOT"
@@ -51,14 +50,15 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-        freeCompilerArgs +=
-            listOf(
+    kotlin {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_17
+            freeCompilerArgs.addAll(
                 "-opt-in=kotlin.RequiresOptIn",
                 "-opt-in=kotlin.time.ExperimentalTime",
                 "-opt-in=io.ktor.utils.io.InternalAPI",
             )
+        }
     }
 
     buildFeatures { compose = true }
@@ -68,19 +68,6 @@ android {
     sourceSets.getByName("main") { kotlin { srcDir(File(openApiOutput, "debug/kotlin")) } }
 
     tasks { preBuild { dependsOn(openApiGenerate) } }
-}
-
-// Temporary workaround
-// https://github.com/google/ksp/issues/1590
-androidComponents {
-    onVariants(selector().all()) { variant ->
-        afterEvaluate {
-            val capName = variant.name.capitalized()
-            tasks.getByName<KotlinCompile>("ksp${capName}Kotlin") {
-                setSource(tasks.getByName("generate${capName}Proto").outputs)
-            }
-        }
-    }
 }
 
 protobuf {
