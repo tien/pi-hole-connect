@@ -45,6 +45,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.tien.piholeconnect.R
 import com.tien.piholeconnect.model.BottomTabItem
+import com.tien.piholeconnect.model.LoadState
 import com.tien.piholeconnect.model.Screen
 import com.tien.piholeconnect.model.Theme
 import com.tien.piholeconnect.model.TopBarOptionsMenuItem
@@ -90,24 +91,30 @@ fun App(viewModel: AppViewModel = hiltViewModel()) {
             )
         )
 
-    selectedPiHole?.second?.let {
-        optionsMenuItems.add(
-            TopBarOptionsMenuItem(
-                URLBuilder(
-                        protocol = it.configuration.protocol.toKtorURLProtocol(),
-                        host = it.configuration.host,
-                        port = it.configuration.port,
-                        user = it.configuration.basicAuthUsername.ifBlank { null },
-                        password = it.configuration.basicAuthPassword.ifBlank { null },
-                        pathSegments = listOf("admin"),
+    when (val selectedPiHole = selectedPiHole) {
+        is LoadState.Success<*> -> {
+            selectedPiHole.data?.second?.let {
+                optionsMenuItems.add(
+                    TopBarOptionsMenuItem(
+                        URLBuilder(
+                                protocol = it.configuration.protocol.toKtorURLProtocol(),
+                                host = it.configuration.host,
+                                port = it.configuration.port,
+                                user = it.configuration.basicAuthUsername.ifBlank { null },
+                                password = it.configuration.basicAuthPassword.ifBlank { null },
+                                pathSegments = listOf("admin"),
+                            )
+                            .buildString(),
+                        R.string.options_menu_web_dashboard,
+                        Icons.AutoMirrored.TwoTone.OpenInNew,
+                        isExternalLink = true,
                     )
-                    .buildString(),
-                R.string.options_menu_web_dashboard,
-                Icons.AutoMirrored.TwoTone.OpenInNew,
-                isExternalLink = true,
-            )
-        )
+                )
+            }
+        }
+        else -> Unit
     }
+
     optionsMenuItems.add(
         TopBarOptionsMenuItem(
             Screen.TipJar.route,
@@ -142,7 +149,7 @@ fun App(viewModel: AppViewModel = hiltViewModel()) {
     val defaultOptionsMenu =
         @Composable {
             OptionsMenu(
-                selectedPiHoleConnectionId = selectedPiHole?.first,
+                selectedPiHoleConnectionId = selectedPiHole.data?.first,
                 piHoleConnections = piHoleConnections,
                 optionsMenuItems = optionsMenuItems,
                 onOptionsMenuItemClick = {
@@ -159,29 +166,37 @@ fun App(viewModel: AppViewModel = hiltViewModel()) {
 
     @Composable
     fun ConnectionGuard(content: @Composable () -> Unit) {
-        if (selectedPiHole == null) {
-            Box(Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
-                Button(
-                    onClick = { navController.navigate(Screen.PiHoleConnection.route) },
-                    Modifier.fillMaxWidth(),
-                ) {
-                    Icon(
-                        Icons.Default.AddCircleOutline,
-                        null,
-                        Modifier.size(ButtonDefaults.IconSize * 2),
-                    )
-                    Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                    Text(
-                        stringResource(R.string.add_pi_hole_button),
-                        style =
-                            MaterialTheme.typography.labelLarge.copy(
-                                fontSize = MaterialTheme.typography.labelLarge.fontSize * 2
-                            ),
-                    )
+        when (val selectedPiHole = selectedPiHole) {
+            is LoadState.Success -> {
+                if (selectedPiHole.data != null) {
+                    content()
+                } else {
+                    Box(
+                        Modifier.fillMaxSize().padding(24.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Button(
+                            onClick = { navController.navigate(Screen.PiHoleConnection.route) },
+                            Modifier.fillMaxWidth(),
+                        ) {
+                            Icon(
+                                Icons.Default.AddCircleOutline,
+                                null,
+                                Modifier.size(ButtonDefaults.IconSize * 2),
+                            )
+                            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                            Text(
+                                stringResource(R.string.add_pi_hole_button),
+                                style =
+                                    MaterialTheme.typography.labelLarge.copy(
+                                        fontSize = MaterialTheme.typography.labelLarge.fontSize * 2
+                                    ),
+                            )
+                        }
+                    }
                 }
             }
-        } else {
-            content()
+            else -> Unit
         }
     }
 

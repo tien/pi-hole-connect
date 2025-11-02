@@ -3,8 +3,10 @@ package com.tien.piholeconnect.ui
 import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tien.piholeconnect.model.LoadState
 import com.tien.piholeconnect.model.PiHoleConnections
 import com.tien.piholeconnect.model.UserPreferences
+import com.tien.piholeconnect.model.asLoadState
 import com.tien.piholeconnect.util.getSelectedConnection
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -39,10 +41,11 @@ constructor(
     val selectedPiHole =
         piHoleConnectionsDataStore.data
             .map { it.getSelectedConnection() }
+            .asLoadState()
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(),
-                initialValue = null,
+                initialValue = LoadState.Loading(),
             )
 
     fun setSelectedPiHole(id: String) {
