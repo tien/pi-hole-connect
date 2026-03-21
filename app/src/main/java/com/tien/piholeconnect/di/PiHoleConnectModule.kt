@@ -24,17 +24,17 @@ import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import dagger.hilt.components.SingletonComponent
-import io.ktor.client.*
-import io.ktor.client.engine.okhttp.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.serialization.kotlinx.json.*
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import okhttp3.OkHttpClient
-import org.apache.http.conn.ssl.AllowAllHostnameVerifier
 import javax.inject.Qualifier
 import javax.inject.Singleton
+import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLContext
 
 @Qualifier @Retention(AnnotationRetention.BINARY) annotation class DefaultHttpClient
@@ -83,7 +83,7 @@ abstract class PiHoleConnectModule {
                                 sslSocketFactory = sslContext.socketFactory,
                                 trustManager = trustManager,
                             )
-                            .hostnameVerifier(AllowAllHostnameVerifier())
+                            .hostnameVerifier(HostnameVerifier { _, _ -> true })
                             .build()
                 }
                 install(ContentNegotiation) { json(PiHoleSerializer.DefaultJson) }
