@@ -50,16 +50,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlin {
-        compilerOptions {
-            jvmTarget = JvmTarget.JVM_17
-            freeCompilerArgs.addAll(
-                "-opt-in=kotlin.RequiresOptIn",
-                "-opt-in=kotlin.time.ExperimentalTime",
-                "-opt-in=io.ktor.utils.io.InternalAPI",
-            )
-        }
-    }
+    kotlin { compilerOptions { jvmTarget = JvmTarget.JVM_17 } }
 
     buildFeatures { compose = true }
 
