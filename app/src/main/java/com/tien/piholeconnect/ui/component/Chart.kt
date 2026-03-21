@@ -6,25 +6,32 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
-import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
-import com.patrykandpatrick.vico.compose.axis.vertical.rememberEndAxis
-import com.patrykandpatrick.vico.compose.chart.Chart
-import com.patrykandpatrick.vico.compose.chart.layout.fullWidth
-import com.patrykandpatrick.vico.compose.chart.line.lineChart
-import com.patrykandpatrick.vico.compose.chart.scroll.rememberChartScrollSpec
-import com.patrykandpatrick.vico.compose.m3.style.m3ChartStyle
-import com.patrykandpatrick.vico.compose.style.ProvideChartStyle
-import com.patrykandpatrick.vico.core.axis.AxisItemPlacer
-import com.patrykandpatrick.vico.core.axis.vertical.VerticalAxis
-import com.patrykandpatrick.vico.core.chart.layout.HorizontalLayout
-import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
-import com.tien.piholeconnect.model.Entry
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
+import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
+import com.patrykandpatrick.vico.compose.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.compose.cartesian.data.CartesianValueFormatter
+import com.patrykandpatrick.vico.compose.cartesian.data.lineSeries
+import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.marker.DefaultCartesianMarker
+import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
+import com.patrykandpatrick.vico.compose.common.Fill
+import com.patrykandpatrick.vico.compose.common.ProvideVicoTheme
+import com.patrykandpatrick.vico.compose.common.data.ExtraStore
+import com.patrykandpatrick.vico.compose.m3.common.rememberM3VicoTheme
 import com.tien.piholeconnect.model.LineChartData
 import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 import com.tien.piholeconnect.ui.theme.success
 import java.text.DateFormat
 import java.text.DecimalFormat
+
+private val XAxisLabelKey = ExtraStore.Key<Map<Double, String>>()
+private val BottomAxisSpacingKey = ExtraStore.Key<Int>()
 
 @Composable
 fun LineChart(
@@ -38,65 +45,135 @@ fun LineChart(
     modifier: Modifier = Modifier,
     data: Iterable<LineChartData>,
     xAxisFormatter: ((y: Number) -> String)? = null,
-) =
-    ProvideChartStyle(
-        m3ChartStyle(entityColors = data.map { it.color ?: MaterialTheme.colorScheme.primary })
-    ) {
-        val entries =
-            remember(data) {
-                data.map { lineData ->
-                    lineData.data.mapIndexed { index, coordinate ->
-                        Entry(
-                            if (xAxisFormatter == null) coordinate.first.toFloat()
-                            else index.toFloat(),
-                            coordinate.second.toFloat(),
-                            xDisplayValue = xAxisFormatter?.invoke(coordinate.first),
-                            yLabel = lineData.label,
-                        )
+) {
+    ProvideVicoTheme(rememberM3VicoTheme()) {
+        val modelProducer = remember { CartesianChartModelProducer() }
+        val dataList = remember(data) { data.toList() }
+
+        LaunchedEffect(dataList) {
+            val nonEmpty = dataList.filter { it.data.any() }
+            if (nonEmpty.isEmpty()) return@LaunchedEffect
+
+            modelProducer.runTransaction {
+                extras { extraStore ->
+                    extraStore[BottomAxisSpacingKey] =
+                        maxOf(nonEmpty.maxOf { it.data.count() / 4 }, 1)
+
+                    if (xAxisFormatter != null) {
+                        extraStore[XAxisLabelKey] =
+                            nonEmpty
+                                .first()
+                                .data
+                                .mapIndexed { index, coordinate ->
+                                    index.toDouble() to xAxisFormatter(coordinate.first)
+                                }
+                                .toMap()
+                    }
+                }
+
+                lineSeries {
+                    nonEmpty.forEach { lineData ->
+                        if (xAxisFormatter != null) {
+                            series(
+                                x = lineData.data.mapIndexed { index, _ -> index },
+                                y = lineData.data.map { it.second },
+                            )
+                        } else {
+                            series(
+                                x = lineData.data.map { it.first },
+                                y = lineData.data.map { it.second },
+                            )
+                        }
                     }
                 }
             }
+        }
 
-        val chartModelProducer = remember { ChartEntryModelProducer(entries) }
+        val defaultColor = MaterialTheme.colorScheme.primary
+        val lineProvider =
+            LineCartesianLayer.LineProvider.series(
+                dataList.map { lineData ->
+                    LineCartesianLayer.rememberLine(
+                        fill =
+                            LineCartesianLayer.LineFill.single(
+                                Fill(lineData.color ?: defaultColor)
+                            ),
+                        areaFill = null,
+                    )
+                }
+            )
 
-        LaunchedEffect(entries) { chartModelProducer.setEntries(entries) }
+        val bottomAxisValueFormatter =
+            remember(xAxisFormatter) {
+                if (xAxisFormatter != null) {
+                    CartesianValueFormatter { context, value, _ ->
+                        context.model.extraStore.getOrNull(XAxisLabelKey)?.get(value)
+                            ?: value.toInt().toString()
+                    }
+                } else {
+                    CartesianValueFormatter.decimal()
+                }
+            }
 
-        Chart(
+        val endAxisValueFormatter = remember {
+            CartesianValueFormatter { _, value, _ ->
+                DecimalFormat("#.##;\u2212#.##").format(value)
+            }
+        }
+
+        val bottomAxisItemPlacer = remember {
+            HorizontalAxis.ItemPlacer.aligned(
+                spacing = { extraStore -> extraStore.getOrNull(BottomAxisSpacingKey) ?: 1 },
+                shiftExtremeLines = false,
+                addExtremeLabelPadding = false,
+            )
+        }
+
+        val markerValueFormatter = remember {
+            val defaultFormatter = DefaultCartesianMarker.ValueFormatter.default()
+            DefaultCartesianMarker.ValueFormatter { context, targets ->
+                val defaultText = defaultFormatter.format(context, targets)
+                val x = targets.firstOrNull()?.x ?: return@ValueFormatter defaultText
+                val timeLabel =
+                    context.model.extraStore.getOrNull(XAxisLabelKey)?.get(x)
+                        ?: return@ValueFormatter defaultText
+                buildAnnotatedString {
+                    append(timeLabel)
+                    append(" (")
+                    append(defaultText)
+                    append(")")
+                }
+            }
+        }
+
+        CartesianChartHost(
+            chart =
+                rememberCartesianChart(
+                    rememberLineCartesianLayer(lineProvider = lineProvider),
+                    bottomAxis =
+                        HorizontalAxis.rememberBottom(
+                            line = null,
+                            guideline = null,
+                            itemPlacer = bottomAxisItemPlacer,
+                            valueFormatter = bottomAxisValueFormatter,
+                        ),
+                    endAxis =
+                        VerticalAxis.rememberEnd(
+                            line = null,
+                            tick = null,
+                            guideline = null,
+                            valueFormatter = endAxisValueFormatter,
+                            horizontalLabelPosition = VerticalAxis.HorizontalLabelPosition.Inside,
+                            itemPlacer = remember { VerticalAxis.ItemPlacer.count(count = { 3 }) },
+                        ),
+                    marker = rememberMarker(valueFormatter = markerValueFormatter),
+                ),
+            modelProducer = modelProducer,
             modifier = modifier,
-            chart = lineChart(),
-            chartModelProducer = chartModelProducer,
-            bottomAxis =
-                rememberBottomAxis(
-                    axis = null,
-                    guideline = null,
-                    itemPlacer =
-                        remember(data) {
-                            AxisItemPlacer.Horizontal.default(
-                                spacing = maxOf(data.maxOf { it.data.count() / 4 }, 1)
-                            )
-                        },
-                    valueFormatter = { value, chartValues ->
-                        (chartValues.chartEntryModel.entries.firstOrNull()?.getOrNull(value.toInt())
-                                as Entry?)
-                            ?.xDisplayValue ?: value.toString()
-                    },
-                ),
-            endAxis =
-                rememberEndAxis(
-                    axis = null,
-                    tick = null,
-                    guideline = null,
-                    valueFormatter = { value, _ ->
-                        if (value == 0f) "" else DecimalFormat("#.##;−#.##").format(value)
-                    },
-                    horizontalLabelPosition = VerticalAxis.HorizontalLabelPosition.Inside,
-                    itemPlacer = remember { AxisItemPlacer.Vertical.default(maxItemCount = 3) },
-                ),
-            chartScrollSpec = rememberChartScrollSpec(isScrollEnabled = false),
-            marker = rememberMarker(),
-            horizontalLayout = HorizontalLayout.fullWidth(),
+            scrollState = rememberVicoScrollState(scrollEnabled = false),
         )
     }
+}
 
 @Preview(showBackground = true)
 @Composable
