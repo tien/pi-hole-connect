@@ -7,7 +7,7 @@ kotlin = "2.2.21"
 ktor = "3.3.1"
 lifecycle = "2.9.4"
 protoBufJavaLite = "4.33.0"
-vico = "1.15.0"
+vico = "3.0.3"
 
 [libraries]
 android-billingclient-ktx = { module = "com.android.billingclient:billing-ktx", version = "8.0.0" }
@@ -39,7 +39,6 @@ ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "kto
 ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 vico-compose = { module = "com.patrykandpatrick.vico:compose", version.ref = "vico" }
 vico-compose-material3 = { module = "com.patrykandpatrick.vico:compose-m3", version.ref = "vico" }
-vico-core = { module = "com.patrykandpatrick.vico:core", version.ref = "vico" }
 
 [bundles]
 androidTest = ["androidx-test-espresso-core", "androidx-test-ext-junit"]
@@ -47,7 +46,7 @@ compose = ["androidx-compose-iconsExtended", "androidx-compose-material3", "andr
 kotlin = ["kotlin-reflect", "kotlin-serialization"]
 ktor = ["ktor-client-auth", "ktor-client-contentNegotiation", "ktor-client-core", "ktor-client-okhttp", "ktor-serialization-json"]
 lifecycle = ["androidx-lifecycle-runtime", "androidx-lifecycle-runtime-compose", "androidx-lifecycle-viewModelCompose"]
-vico = ["vico-compose", "vico-compose-material3", "vico-core"]
+vico = ["vico-compose", "vico-compose-material3"]
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
