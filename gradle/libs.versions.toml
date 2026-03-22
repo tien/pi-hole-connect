@@ -1,6 +1,6 @@
 [versions]
 
-android-gradle-plugin = "8.13.2"
+android-gradle-plugin = "9.1.0"
 androidx-compose-bom = "2026.03.00"
 hilt = "2.57.2"
 kotlin = "2.2.21"
