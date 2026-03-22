@@ -54,7 +54,7 @@ import com.tien.piholeconnect.model.Screen
 import com.tien.piholeconnect.ui.component.LogItem
 import com.tien.piholeconnect.ui.component.QueryDetail
 import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
-import com.tien.piholeconnect.util.ChangedEffect
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,6 +69,8 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
     val logs by viewModel.logs.collectAsStateWithLifecycle()
     val enabledStatuses by viewModel.enabledStatuses.collectAsStateWithLifecycle()
     val sortBy by viewModel.sortBy.collectAsStateWithLifecycle()
+    val addToAllowListLoadState by viewModel.addToAllowlistLoadState.collectAsStateWithLifecycle()
+    val addToDenyListLoadState by viewModel.addToDenyListLoadState.collectAsStateWithLifecycle()
 
     var selectedLog: QueryLog? by remember { mutableStateOf(null) }
 
@@ -77,27 +79,21 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
     val addRuleSuccessMessage = stringResource(R.string.log_screen_add_filter_rule_success)
     val addRuleFailureMessage = stringResource(R.string.log_screen_add_filter_rule_failure)
 
-    suspend fun handleLoadState(loadState: LoadState<*>) {
-        when (loadState) {
-            is LoadState.Success -> {
-                selectedLog = null
-                scaffoldState.snackbarHostState.showSnackbar(addRuleSuccessMessage)
+    LaunchedEffect(Unit) {
+        merge(viewModel.addToAllowlistLoadState, viewModel.addToDenyListLoadState).collect {
+            when (it) {
+                is LoadState.Success -> {
+                    selectedLog = null
+                    scaffoldState.snackbarHostState.showSnackbar(addRuleSuccessMessage)
+                }
+                is LoadState.Failure -> {
+                    selectedLog = null
+                    scaffoldState.snackbarHostState.showSnackbar(addRuleFailureMessage)
+                }
+                else -> Unit
             }
-            is LoadState.Failure -> {
-                selectedLog = null
-                scaffoldState.snackbarHostState.showSnackbar(addRuleFailureMessage)
-            }
-            else -> Unit
         }
     }
-
-    val addToAllowListLoadState by viewModel.addToAllowlistLoadState.collectAsStateWithLifecycle()
-
-    ChangedEffect(addToAllowListLoadState) { handleLoadState(addToAllowListLoadState) }
-
-    val addToDenyListLoadState by viewModel.addToDenyListLoadState.collectAsStateWithLifecycle()
-
-    ChangedEffect(addToDenyListLoadState) { handleLoadState(addToDenyListLoadState) }
 
     LaunchedEffect(logs) { lazyListState.scrollToItem(0) }
 
@@ -264,7 +260,9 @@ fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltVie
             ) {
                 Column {
                     Row(
-                        Modifier.fillMaxWidth().padding(start = 16.dp),
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         logs.data?.count()?.let {

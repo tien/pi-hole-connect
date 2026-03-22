@@ -30,7 +30,6 @@ import com.tien.piholeconnect.model.asFailure
 import com.tien.piholeconnect.model.asLoadState
 import com.tien.piholeconnect.model.asLoading
 import com.tien.piholeconnect.util.showGenericPiHoleConnectionError
-import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -46,6 +45,7 @@ import kotlinx.coroutines.flow.onSubscription
 import kotlinx.coroutines.flow.runningFold
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 open class BaseViewModel : ViewModel() {
     protected var flows = MutableStateFlow(listOf<Flow<LoadState<*>>>())
@@ -149,7 +149,7 @@ open class BaseViewModel : ViewModel() {
         val currentError by error.collectAsStateWithLifecycle(null)
 
         currentError?.let {
-            LaunchedEffect(snackbarHostState) {
+            LaunchedEffect(snackbarHostState, currentError) {
                 val snackbarResult = snackbarHostState.showGenericPiHoleConnectionError(it, context)
 
                 when (snackbarResult) {

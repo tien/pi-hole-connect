@@ -30,6 +30,8 @@ sealed class Screen(
 
     data object FilterRules : Screen("filterRules", R.string.label_filter_rules, TabScreenOptions)
 
+    data object Tools : Screen("tools", R.string.label_tools, TabScreenOptions)
+
     data object Preferences :
         Screen("preferences", R.string.label_preferences, DefaultScreenOptions)
 

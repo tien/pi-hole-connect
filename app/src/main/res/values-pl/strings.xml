@@ -50,6 +50,7 @@
     <string name="label_preferences">Ustawienia</string>
     <string name="label_statistics">Statystyki</string>
     <string name="label_tip_jar">Rzuć monetą</string>
+    <string name="label_tools">Narzędzia</string>
     <string name="log_screen_add_filter_rule_failure">Nie można dodać reguły filtru</string>
     <string name="log_screen_add_filter_rule_success">Pomyślnie dodano regułę filtru</string>
     <string name="log_screen_label_allowed">Dozwolone</string>
@@ -72,12 +73,12 @@
     <string name="pi_hole_connection_desc_scanner">Zeskanuj kod QR</string>
     <string name="pi_hole_connection_hint_scanner"><![CDATA[Można to znaleźć w \"Ustawienia > API / Interfejs sieciowy > Pokaż token API"]]></string>
     <string name="pi_hole_connection_label_api_path">Ścieżka interfejsu API</string>
-    <string name="pi_hole_connection_label_password">Hasło</string>
     <string name="pi_hole_connection_label_basic_auth_password">Podstawowe hasło uwierzytelniające</string>
     <string name="pi_hole_connection_label_basic_auth_realm">Podstawowa przestrzeń uwierzytelniania</string>
     <string name="pi_hole_connection_label_basic_auth_username">Podstawowa nazwa użytkownika uwierzytelniania</string>
     <string name="pi_hole_connection_label_host">Host</string>
     <string name="pi_hole_connection_label_name">Nazwa</string>
+    <string name="pi_hole_connection_label_password">Hasło</string>
     <string name="pi_hole_connection_label_port">Port</string>
     <string name="pi_hole_connection_label_show_advance_options">Pokaż opcje zaawansowane</string>
     <string name="pi_hole_connection_label_trust_all_certificates">Ufaj wszystkim certyfikatom</string>
@@ -104,5 +105,12 @@
     <string name="statistics_top_client">Najlepsi klienci (łącznie)</string>
     <string name="statistics_top_permitted">Najpopularniejsze dozwolone</string>
     <string name="tip_jar_msg">Jeśli podoba Ci się to, co widzisz. W takim razie świetnie, proszę również o pozostawienie napiwku i opinii, ponieważ bardzo pomoże mi to w dalszym rozwijaniu tej aplikacji. Oto trochę konfetti w ramach podziękowania (ﾉ´ヮ`)ﾉ*: ･ﾟ</string>
+    <string name="tools_flush_logs">Wyczyść logi (24h)</string>
+    <string name="tools_flush_network_table">Wyczyść tablicę sieciową</string>
+    <string name="tools_gravity_last_updated">Ostatnia aktualizacja: %s</string>
+    <string name="tools_operation_error">Operacja nie powiodła się</string>
+    <string name="tools_operation_success">Operacja powiodła się</string>
+    <string name="tools_restart_dns">Zrestartuj serwer DNS</string>
+    <string name="tools_update_gravity">Zaktualizuj Gravity</string>
     <string name="top_bar_more_options_label">Więcej opcji</string>
 </resources>

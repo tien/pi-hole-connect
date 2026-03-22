@@ -14,6 +14,7 @@ import androidx.compose.material.icons.automirrored.twotone.OpenInNew
 import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.twotone.Analytics
 import androidx.compose.material.icons.twotone.BugReport
+import androidx.compose.material.icons.twotone.Construction
 import androidx.compose.material.icons.twotone.Home
 import androidx.compose.material.icons.twotone.Insights
 import androidx.compose.material.icons.twotone.Paid
@@ -60,6 +61,7 @@ import com.tien.piholeconnect.ui.screen.piholeconnection.PiHoleConnectionScreen
 import com.tien.piholeconnect.ui.screen.preferences.PreferencesScreen
 import com.tien.piholeconnect.ui.screen.statistics.StatisticsScreen
 import com.tien.piholeconnect.ui.screen.tipjar.TipJarScreen
+import com.tien.piholeconnect.ui.screen.tools.ToolsScreen
 import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 import com.tien.piholeconnect.util.toKtorURLProtocol
 import io.ktor.http.URLBuilder
@@ -137,6 +139,7 @@ fun App(viewModel: AppViewModel = hiltViewModel()) {
             BottomTabItem(Screen.Statistics, Icons.TwoTone.Insights),
             BottomTabItem(Screen.FilterRules, Icons.TwoTone.Shield),
             BottomTabItem(Screen.Log, Icons.TwoTone.Analytics),
+            BottomTabItem(Screen.Tools, Icons.TwoTone.Construction),
         )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -251,6 +254,7 @@ fun App(viewModel: AppViewModel = hiltViewModel()) {
                     ConnectionGuard { LogScreen(actions = { defaultOptionsMenu() }) }
                 }
                 composable(Screen.FilterRules.route) { ConnectionGuard { FilterRulesScreen() } }
+                composable(Screen.Tools.route) { ConnectionGuard { ToolsScreen() } }
                 composable(Screen.Preferences.route) {
                     PreferencesScreen(navController = navController)
                 }
