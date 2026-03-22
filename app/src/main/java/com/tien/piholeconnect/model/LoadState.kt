@@ -52,15 +52,16 @@ fun <T> Flow<T>.asLoadState(): Flow<LoadState<T>> {
 
 fun <T> MutableStateFlow<LoadState<T>>.run(
     scope: CoroutineScope,
+    data: T? = null,
     block: suspend CoroutineScope.() -> T,
 ) {
-    value = LoadState.Loading<T>()
+    value = LoadState.Loading(data)
     scope.launch {
         value =
             try {
                 LoadState.Success(block())
             } catch (error: Throwable) {
-                LoadState.Failure(error)
+                LoadState.Failure(error, data)
             }
     }
 }

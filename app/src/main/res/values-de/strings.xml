@@ -48,6 +48,7 @@
     <string name="label_preferences">Einstellungen</string>
     <string name="label_statistics">Statistiken</string>
     <string name="label_tip_jar">Trinkgeld geben</string>
+    <string name="label_tools">Werkzeuge</string>
     <string name="log_screen_add_filter_rule_failure">Filterregel kann nicht hinzugefügt werden</string>
     <string name="log_screen_add_filter_rule_success">Erfolgreich hinzugefügte Filterregel</string>
     <string name="log_screen_label_allowed">Erlaubt</string>
@@ -68,12 +69,12 @@
     <string name="pi_hole_connection_desc_scanner">QR-Code scannen</string>
     <string name="pi_hole_connection_hint_scanner"><![CDATA[Dies ist in \"Settings > API / Web Interface > Show API token\" zu finden]]></string>
     <string name="pi_hole_connection_label_api_path">API-Pfad</string>
-    <string name="pi_hole_connection_label_password">Passwort</string>
     <string name="pi_hole_connection_label_basic_auth_password">Basisauthentifizierung Passwort</string>
     <string name="pi_hole_connection_label_basic_auth_realm">Basisauthentifizierung Realm</string>
     <string name="pi_hole_connection_label_basic_auth_username">Basisauthentifizierung Benutzername</string>
     <string name="pi_hole_connection_label_host">Host (Domain-Name oder IP-Adresse)</string>
     <string name="pi_hole_connection_label_name">Name</string>
+    <string name="pi_hole_connection_label_password">Passwort</string>
     <string name="pi_hole_connection_label_port">Netzwerkport</string>
     <string name="pi_hole_connection_label_show_advance_options">Erweiterte Optionen anzeigen</string>
     <string name="pi_hole_connection_label_trust_all_certificates">Allen Zertifikaten vertrauen</string>
@@ -100,5 +101,12 @@
     <string name="statistics_top_client">Top client</string>
     <string name="statistics_top_permitted">Top erlaubt</string>
     <string name="tip_jar_msg">Gefällt Dir diese App? Falls JA, dann hinterlasse mir bitte ein Trinkgeld und ein Feedback, da es mir dabei sehr hilft, diese App weiter zu entwickeln. Herzlichen Dank!</string>
+    <string name="tools_flush_logs">Logs leeren (24h)</string>
+    <string name="tools_flush_network_table">Netzwerktabelle leeren</string>
+    <string name="tools_gravity_last_updated">Zuletzt aktualisiert: %s</string>
+    <string name="tools_operation_error">Vorgang fehlgeschlagen</string>
+    <string name="tools_operation_success">Vorgang erfolgreich</string>
+    <string name="tools_restart_dns">DNS-Resolver neu starten</string>
+    <string name="tools_update_gravity">Gravity aktualisieren</string>
     <string name="top_bar_more_options_label">Mehr Optionen</string>
 </resources>

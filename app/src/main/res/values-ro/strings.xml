@@ -49,6 +49,7 @@
     <string name="label_preferences">Preferințe</string>
     <string name="label_statistics">Statistici</string>
     <string name="label_tip_jar">Lasă-mi ciubuc</string>
+    <string name="label_tools">Instrumente</string>
     <string name="log_screen_add_filter_rule_failure">Nu se poate adăuga o regulă de filtrare</string>
     <string name="log_screen_add_filter_rule_success">Adăugarea cu succes a regulii de filtrare</string>
     <string name="log_screen_label_allowed">Permise</string>
@@ -70,12 +71,12 @@
     <string name="pi_hole_connection_desc_scanner">Scanează cod QR</string>
     <string name="pi_hole_connection_hint_scanner"><![CDATA[Poate fi găsit la \"Setări > API / Interfață Web > Arată cheia API\"]]></string>
     <string name="pi_hole_connection_label_api_path">Cale API</string>
-    <string name="pi_hole_connection_label_password">Parolă</string>
     <string name="pi_hole_connection_label_basic_auth_password">Parola de autentificare de bază</string>
     <string name="pi_hole_connection_label_basic_auth_realm">Domeniu pentru autentificare de bază</string>
     <string name="pi_hole_connection_label_basic_auth_username">Utilizator pentru autentificare de bază</string>
     <string name="pi_hole_connection_label_host">Gazdă</string>
     <string name="pi_hole_connection_label_name">Nume</string>
+    <string name="pi_hole_connection_label_password">Parolă</string>
     <string name="pi_hole_connection_label_port">Port</string>
     <string name="pi_hole_connection_label_show_advance_options">Arată opțiuni avansate</string>
     <string name="pi_hole_connection_label_trust_all_certificates">Ai încredere în toate certificatele</string>
@@ -102,5 +103,12 @@
     <string name="statistics_top_client">Top clienți</string>
     <string name="statistics_top_permitted">Top permise</string>
     <string name="tip_jar_msg">Dacă îți place ce vezi. Atunci e minunat, te rog lasă-mi un ciubuc și o părere personală căci mă va ajuta enorm să continui cu dezvoltarea în continuare a acestei aplicații. Uite niște confetti ca un semn de mulțumire (ﾉ´ヮ`)ﾉ*: ･ﾟ</string>
+    <string name="tools_flush_logs">Golește jurnalele (24h)</string>
+    <string name="tools_flush_network_table">Golește tabelul de rețea</string>
+    <string name="tools_gravity_last_updated">Ultima actualizare: %s</string>
+    <string name="tools_operation_error">Operațiunea a eșuat</string>
+    <string name="tools_operation_success">Operațiune reușită</string>
+    <string name="tools_restart_dns">Repornește rezolvitorul DNS</string>
+    <string name="tools_update_gravity">Actualizează Gravity</string>
     <string name="top_bar_more_options_label">Mai multe opțiuni</string>
 </resources>
