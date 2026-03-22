@@ -13,119 +13,118 @@ import com.tien.piholeconnect.repository.apis.DomainManagementApi
 import com.tien.piholeconnect.repository.models.Post
 import com.tien.piholeconnect.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
-class LogViewModel
+open class LogViewModel
 @Inject
 constructor(private val piHoleRepositoryManager: PiHoleRepositoryManager) : BaseViewModel() {
-    enum class Sort(@param:StringRes val labelResourceId: Int) {
-        DATE_DESC(R.string.log_screen_label_date_sort_desc),
-        DATE_ASC(R.string.log_screen_label_date_sort_asc),
-        RESPONSE_TIME_ASC(R.string.log_screen_label_response_time_sort_asc),
-        RESPONSE_TIME_DESC(R.string.log_screen_label_response_time_sort_desc),
-    }
+  enum class Sort(@param:StringRes val labelResourceId: Int) {
+    DATE_DESC(R.string.log_screen_label_date_sort_desc),
+    DATE_ASC(R.string.log_screen_label_date_sort_asc),
+    RESPONSE_TIME_ASC(R.string.log_screen_label_response_time_sort_asc),
+    RESPONSE_TIME_DESC(R.string.log_screen_label_response_time_sort_desc),
+  }
 
-    enum class Status(@param:StringRes val labelResourceId: Int, val contains: Set<QueryStatusType>) {
-        ALLOWED(
-            R.string.log_screen_label_allowed,
-            setOf(QueryStatusType.ALLOW, QueryStatusType.CACHE),
-        ),
-        BLOCKED(
-            R.string.log_screen_label_blocked,
-            setOf(QueryStatusType.BLOCK, QueryStatusType.UNKNOWN),
-        ),
-    }
+  enum class Status(@param:StringRes val labelResourceId: Int, val contains: Set<QueryStatusType>) {
+    ALLOWED(
+        R.string.log_screen_label_allowed,
+        setOf(QueryStatusType.ALLOW, QueryStatusType.CACHE),
+    ),
+    BLOCKED(
+        R.string.log_screen_label_blocked,
+        setOf(QueryStatusType.BLOCK, QueryStatusType.UNKNOWN),
+    ),
+  }
 
-    val addToAllowlistLoadState = MutableStateFlow<UnitLoadState>(UnitLoadState.Idle)
+  val addToAllowlistLoadState = MutableStateFlow<UnitLoadState>(UnitLoadState.Idle)
 
-    val addToDenyListLoadState = MutableStateFlow<UnitLoadState>(UnitLoadState.Idle)
+  val addToDenyListLoadState = MutableStateFlow<UnitLoadState>(UnitLoadState.Idle)
 
-    val query = MutableStateFlow("")
-    val sortBy = MutableStateFlow(Sort.DATE_DESC)
-    val limits = listOf(1000, 2500, 10000)
-    var limit = MutableStateFlow(limits[0])
+  val query = MutableStateFlow("")
+  val sortBy = MutableStateFlow(Sort.DATE_DESC)
+  val limits = listOf(1000, 2500, 10000)
+  var limit = MutableStateFlow(limits[0])
 
-    var enabledStatuses = MutableStateFlow(setOf(Status.ALLOWED, Status.BLOCKED))
+  var enabledStatuses = MutableStateFlow(setOf(Status.ALLOWED, Status.BLOCKED))
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    var logs =
-        piHoleRepositoryManager.selectedPiHoleRepository
-            .filterNotNull()
-            .combine(limit) { piHole, limit -> Pair(piHole, limit) }
-            .mapLatest { (piHole, limit) ->
-                piHole.metricsApi.getQueries(length = limit).body().queries ?: listOf()
+  @OptIn(ExperimentalCoroutinesApi::class)
+  open var logs =
+      piHoleRepositoryManager.selectedPiHoleRepository
+          .filterNotNull()
+          .combine(limit) { piHole, limit -> Pair(piHole, limit) }
+          .mapLatest { (piHole, limit) ->
+            piHole.metricsApi.getQueries(length = limit).body().queries ?: listOf()
+          }
+          .combine(enabledStatuses) { logs, statuses ->
+            logs.filter { log ->
+              log.status != null &&
+                  statuses
+                      .flatMap { it.contains }
+                      .contains(QueryStatus.Companion.fromStatusString(log.status).type)
             }
-            .combine(enabledStatuses) { logs, statuses ->
-                logs.filter { log ->
-                    log.status != null &&
-                        statuses
-                            .flatMap { it.contains }
-                            .contains(QueryStatus.Companion.fromStatusString(log.status).type)
-                }
+          }
+          .combine(query) { logs, query ->
+            if (query.isBlank()) {
+              logs
+            } else {
+              logs.filter {
+                (it.domain != null && it.domain.contains(query, ignoreCase = true)) ||
+                    (it.client?.name != null && it.client.name.contains(query, ignoreCase = true))
+              }
             }
-            .combine(query) { logs, query ->
-                if (query.isBlank()) {
-                    logs
-                } else {
-                    logs.filter {
-                        (it.domain != null && it.domain.contains(query, ignoreCase = true)) ||
-                            (it.client?.name != null &&
-                                it.client.name.contains(query, ignoreCase = true))
-                    }
-                }
+          }
+          .combine(sortBy) { logs, sortBy ->
+            when (sortBy) {
+              Sort.DATE_DESC -> logs.sortedByDescending { it.time }
+              Sort.DATE_ASC -> logs.sortedBy { it.time }
+              Sort.RESPONSE_TIME_ASC -> logs.sortedBy { it.reply?.time }
+              Sort.RESPONSE_TIME_DESC -> logs.sortedByDescending { it.reply?.time }
             }
-            .combine(sortBy) { logs, sortBy ->
-                when (sortBy) {
-                    Sort.DATE_DESC -> logs.sortedByDescending { it.time }
-                    Sort.DATE_ASC -> logs.sortedBy { it.time }
-                    Sort.RESPONSE_TIME_ASC -> logs.sortedBy { it.reply?.time }
-                    Sort.RESPONSE_TIME_DESC -> logs.sortedByDescending { it.reply?.time }
-                }
-            }
-            .asViewFlowState()
+          }
+          .asViewFlowState()
 
-    fun addToWhiteList(domain: String) {
-        addToAllowlistLoadState.run(scope = viewModelScope) {
-            val body =
-                piHoleRepositoryManager
-                    .getSelectedPiHoleRepository()
-                    ?.domainManagementApi
-                    ?.addDomain(
-                        DomainManagementApi.TypeAddDomain.ALLOW,
-                        DomainManagementApi.KindAddDomain.EXACT,
-                        Post(domain = listOf(domain)),
-                    )
-                    ?.body()
+  fun addToWhiteList(domain: String) {
+    addToAllowlistLoadState.run(scope = viewModelScope) {
+      val body =
+          piHoleRepositoryManager
+              .getSelectedPiHoleRepository()
+              ?.domainManagementApi
+              ?.addDomain(
+                  DomainManagementApi.TypeAddDomain.ALLOW,
+                  DomainManagementApi.KindAddDomain.EXACT,
+                  Post(domain = listOf(domain)),
+              )
+              ?.body()
 
-            body?.processed?.errors?.firstOrNull()?.also { throw Error(it.error) }
-        }
+      body?.processed?.errors?.firstOrNull()?.also { throw Error(it.error) }
     }
+  }
 
-    fun addToBlacklist(domain: String) {
-        addToDenyListLoadState.run(scope = viewModelScope) {
-            val body =
-                piHoleRepositoryManager
-                    .getSelectedPiHoleRepository()
-                    ?.domainManagementApi
-                    ?.addDomain(
-                        DomainManagementApi.TypeAddDomain.DENY,
-                        DomainManagementApi.KindAddDomain.EXACT,
-                        Post(domain = listOf(domain)),
-                    )
-                    ?.body()
+  fun addToBlacklist(domain: String) {
+    addToDenyListLoadState.run(scope = viewModelScope) {
+      val body =
+          piHoleRepositoryManager
+              .getSelectedPiHoleRepository()
+              ?.domainManagementApi
+              ?.addDomain(
+                  DomainManagementApi.TypeAddDomain.DENY,
+                  DomainManagementApi.KindAddDomain.EXACT,
+                  Post(domain = listOf(domain)),
+              )
+              ?.body()
 
-            body?.processed?.errors?.firstOrNull()?.also { throw Error(it.error) }
-        }
+      body?.processed?.errors?.firstOrNull()?.also { throw Error(it.error) }
     }
+  }
 
-    fun changeLimit(limit: Int) {
-        viewModelScope.launch { this@LogViewModel.limit.value = limit }
-    }
+  fun changeLimit(limit: Int) {
+    viewModelScope.launch { this@LogViewModel.limit.value = limit }
+  }
 }

@@ -12,31 +12,29 @@ suspend fun SnackbarHostState.showGenericPiHoleConnectionError(
     error: Exception,
     context: Context,
 ): SnackbarResult? {
-    if (error is CancellationException) return null
+  if (error is CancellationException) return null
 
-    val message =
-        with(StringBuilder()) {
-            when (error) {
-                is ResponseException -> {
-                    append(error.response.status.toString())
-                    append(": ")
-                }
+  val message =
+      with(StringBuilder()) {
+        when (error) {
+          is ResponseException -> {
+            append(error.response.status.toString())
+            append(": ")
+          }
 
-                else -> {
-                    append(
-                        context.getString(R.string.error_pi_hole_connection_generic_error_prefix)
-                    )
-                    append(". ")
-                }
-            }
-
-            append(context.getString(R.string.error_pi_hole_connection_generic))
-            toString()
+          else -> {
+            append(context.getString(R.string.error_pi_hole_connection_generic_error_prefix))
+            append(". ")
+          }
         }
 
-    return showSnackbar(
-        message = message,
-        duration = SnackbarDuration.Long,
-        actionLabel = context.getString(R.string.error_show_details),
-    )
+        append(context.getString(R.string.error_pi_hole_connection_generic))
+        toString()
+      }
+
+  return showSnackbar(
+      message = message,
+      duration = SnackbarDuration.Long,
+      actionLabel = context.getString(R.string.error_show_details),
+  )
 }

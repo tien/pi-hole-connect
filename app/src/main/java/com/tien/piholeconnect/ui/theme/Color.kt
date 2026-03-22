@@ -97,7 +97,7 @@ val dark_onWarningContainer = Color(0xFFFFDDB9)
 
 fun Color.toColorInt() =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        rgb(this.red, this.green, this.blue)
+      rgb(this.red, this.green, this.blue)
     } else {
-        rgb((this.red * 255).toInt(), (this.green * 255).toInt(), (this.blue * 255).toInt())
+      rgb((this.red * 255).toInt(), (this.green * 255).toInt(), (this.blue * 255).toInt())
     }

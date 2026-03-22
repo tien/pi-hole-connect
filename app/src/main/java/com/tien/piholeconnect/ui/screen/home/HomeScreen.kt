@@ -51,237 +51,232 @@ import com.tien.piholeconnect.ui.theme.infoContainer
 import com.tien.piholeconnect.ui.theme.success
 import com.tien.piholeconnect.ui.theme.successContainer
 import com.tien.piholeconnect.ui.theme.warningContainer
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.text.DateFormat.getTimeInstance
 import java.util.Date
 import kotlin.math.max
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
-    val metrics by viewModel.metricSummary.collectAsStateWithLifecycle()
+  val metrics by viewModel.metricSummary.collectAsStateWithLifecycle()
 
-    val totalQueries by
-        animateIntAsState(metrics.data?.queries?.total ?: 0, label = "Total queries")
+  val totalQueries by animateIntAsState(metrics.data?.queries?.total ?: 0, label = "Total queries")
 
-    val totalBlockedQueries by
-        animateIntAsState(metrics.data?.queries?.blocked ?: 0, label = "Total blocked queries")
+  val totalBlockedQueries by
+      animateIntAsState(metrics.data?.queries?.blocked ?: 0, label = "Total blocked queries")
 
-    val queryBlockingPercentage by
-        animateFloatAsState(
-            metrics.data?.queries?.percentBlocked?.toFloat() ?: 0f,
-            label = "Query blocking percentage",
-        )
+  val queryBlockingPercentage by
+      animateFloatAsState(
+          metrics.data?.queries?.percentBlocked?.toFloat() ?: 0f,
+          label = "Query blocking percentage",
+      )
 
-    val blockedDomainListCount by
-        animateIntAsState(
-            metrics.data?.gravity?.domainsBeingBlocked ?: 0,
-            label = "Blocked domain list count",
-        )
+  val blockedDomainListCount by
+      animateIntAsState(
+          metrics.data?.gravity?.domainsBeingBlocked ?: 0,
+          label = "Blocked domain list count",
+      )
 
-    val successColor = MaterialTheme.colorScheme.success
-    val errorColor = MaterialTheme.colorScheme.error
+  val successColor = MaterialTheme.colorScheme.success
+  val errorColor = MaterialTheme.colorScheme.error
 
-    val snackbarHostState = remember { SnackbarHostState() }
+  val snackbarHostState = remember { SnackbarHostState() }
 
-    viewModel.SnackBarErrorEffect(snackbarHostState)
+  viewModel.SnackBarErrorEffect(snackbarHostState)
 
-    DisposableEffect(Unit) {
-        val job =
+  DisposableEffect(Unit) {
+    val job =
+        viewModel.viewModelScope.launch {
+          while (true) {
+            delay(10_000)
+            viewModel.doRefresh()
+          }
+        }
+
+    onDispose { job.cancel() }
+  }
+
+  val isAdsBlockingEnabled =
+      viewModel.isAdsBlockingEnabled.collectAsStateWithLifecycle().value.data == true
+
+  var isDisableDialogVisible by rememberSaveable { mutableStateOf(false) }
+
+  if (isDisableDialogVisible) {
+    if (isAdsBlockingEnabled) {
+      DisableAdsBlockingAlertDialog(
+          onDismissRequest = { isDisableDialogVisible = false },
+          onDurationButtonClick = {
             viewModel.viewModelScope.launch {
-                while (true) {
-                    delay(10_000)
-                    viewModel.doRefresh()
-                }
+              isDisableDialogVisible = false
+              viewModel.disable(it)
             }
-
-        onDispose { job.cancel() }
+          },
+      )
+    } else {
+      EnableAdsBlockingAlertDialog(
+          onDismissRequest = { isDisableDialogVisible = false },
+          onConfirmRequest = {
+            viewModel.viewModelScope.launch {
+              isDisableDialogVisible = false
+              viewModel.enable()
+            }
+          },
+      )
     }
+  }
 
-    val isAdsBlockingEnabled =
-        viewModel.isAdsBlockingEnabled.collectAsStateWithLifecycle().value.data == true
+  val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
+  val pullToRefreshState = rememberPullToRefreshState()
+  val loading by viewModel.loading.collectAsStateWithLifecycle()
 
-    var isDisableDialogVisible by rememberSaveable { mutableStateOf(false) }
+  TopBarProgressIndicator(visible = loading && !refreshing)
 
-    if (isDisableDialogVisible) {
-        if (isAdsBlockingEnabled) {
-            DisableAdsBlockingAlertDialog(
-                onDismissRequest = { isDisableDialogVisible = false },
-                onDurationButtonClick = {
-                    viewModel.viewModelScope.launch {
-                        isDisableDialogVisible = false
-                        viewModel.disable(it)
-                    }
-                },
-            )
-        } else {
-            EnableAdsBlockingAlertDialog(
-                onDismissRequest = { isDisableDialogVisible = false },
-                onConfirmRequest = {
-                    viewModel.viewModelScope.launch {
-                        isDisableDialogVisible = false
-                        viewModel.enable()
-                    }
-                },
-            )
-        }
-    }
-
-    val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
-    val pullToRefreshState = rememberPullToRefreshState()
-    val loading by viewModel.loading.collectAsStateWithLifecycle()
-
-    TopBarProgressIndicator(visible = loading && !refreshing)
-
-    Scaffold(
-        Modifier.fillMaxHeight(),
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        floatingActionButton = {
-            PiHoleSwitchFloatingActionButton(
-                isAdsBlockingEnabled = isAdsBlockingEnabled,
-                isLoading = viewModel.isPiHoleSwitchLoading,
-                onClick = { isDisableDialogVisible = true },
-            )
-        },
+  Scaffold(
+      Modifier.fillMaxHeight(),
+      snackbarHost = { SnackbarHost(snackbarHostState) },
+      floatingActionButton = {
+        PiHoleSwitchFloatingActionButton(
+            isAdsBlockingEnabled = isAdsBlockingEnabled,
+            isLoading = viewModel.isPiHoleSwitchLoading,
+            onClick = { isDisableDialogVisible = true },
+        )
+      },
+  ) {
+    PullToRefreshBox(
+        state = pullToRefreshState,
+        isRefreshing = refreshing,
+        onRefresh = { viewModel.refresh() },
     ) {
-        PullToRefreshBox(
-            state = pullToRefreshState,
-            isRefreshing = refreshing,
-            onRefresh = { viewModel.refresh() },
-        ) {
-            Column(
-                Modifier.fillMaxHeight()
-                    .verticalScroll(rememberScrollState())
-                    .heightIn(min = 500.dp)
-                    .padding(it)
-                    .padding(start = 15.dp, top = 15.dp, end = 15.dp, bottom = 80.dp),
-                verticalArrangement = Arrangement.spacedBy(15.dp),
-            ) {
-                Column {
-                    Row {
-                        StatsCard(
-                            name = {
-                                Text(
-                                    buildAnnotatedString {
-                                        append(stringResource(R.string.home_total_queries))
-                                        append(" ")
-                                        withStyle(
-                                            SpanStyle(
-                                                fontSize = 9.sp,
-                                                baselineShift = BaselineShift.Superscript,
-                                            )
-                                        ) {
-                                            (metrics.data?.clients?.total ?: 0).let {
-                                                append(
-                                                    pluralStringResource(
-                                                        R.plurals.home_unique_clients,
-                                                        it,
-                                                        it,
-                                                    )
-                                                )
-                                            }
-                                        }
-                                    },
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                            },
-                            statistics = "%,d".format(totalQueries),
-                            backGroundColor = MaterialTheme.colorScheme.successContainer,
-                            modifier = Modifier.padding(end = 2.5.dp).weight(1f),
-                        )
-                        StatsCard(
-                            name = {
-                                Text(
-                                    stringResource(R.string.home_queries_blocked),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                            },
-                            statistics = "%,d".format(totalBlockedQueries),
-                            backGroundColor = MaterialTheme.colorScheme.infoContainer,
-                            modifier = Modifier.padding(start = 2.5.dp).weight(1f),
-                        )
-                    }
-                    Row(Modifier.padding(top = 5.dp)) {
-                        StatsCard(
-                            name = {
-                                Text(
-                                    stringResource(R.string.home_percent_blocked),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                            },
-                            statistics = "%.2f%%".format(queryBlockingPercentage),
-                            backGroundColor = MaterialTheme.colorScheme.warningContainer,
-                            modifier = Modifier.padding(end = 2.5.dp).weight(1f),
-                        )
-                        StatsCard(
-                            name = {
-                                Text(
-                                    stringResource(R.string.home_blocklist),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                            },
-                            statistics = "%,d".format(blockedDomainListCount),
-                            backGroundColor = MaterialTheme.colorScheme.errorContainer,
-                            modifier = Modifier.padding(start = 2.5.dp).weight(1f),
-                        )
-                    }
-                }
-
-                val history by viewModel.history.collectAsStateWithLifecycle()
-
-                val queriesOverTimeLabel = stringResource(R.string.home_queries_over_time)
-                val queriesOverTimeData =
-                    remember(history.data) {
-                        LineChartData(
-                            label = queriesOverTimeLabel,
-                            data =
-                                history.data?.map {
-                                    Pair(
-                                        it.timestamp ?: 0,
-                                        max((it.total ?: 0) - (it.blocked ?: 0), 0),
-                                    )
-                                } ?: listOf(),
-                            color = successColor,
-                        )
-                    }
-
-                val adsOverTimeLabel = stringResource(R.string.home_ads_over_time)
-                val adsOverTimeData =
-                    remember(history) {
-                        LineChartData(
-                            label = adsOverTimeLabel,
-                            data =
-                                history.data?.map { Pair(it.timestamp ?: 0, it.blocked ?: 0) }
-                                    ?: listOf(),
-                            color = errorColor,
-                        )
-                    }
-
-                Card(Modifier.weight(1f)) {
-                    Column {
-                        Column(Modifier.padding(15.dp)) {
-                            Text(
-                                stringResource(R.string.home_queries_chart_title),
-                                style = MaterialTheme.typography.titleLarge,
-                            )
-                        }
-                        LineChart(
-                            Modifier.fillMaxSize(),
-                            data = listOf(queriesOverTimeData, adsOverTimeData),
-                            xAxisFormatter =
-                                remember { getTimeInstance(DateFormat.SHORT) }
-                                    .let { dateTime ->
-                                        { value -> dateTime.format(Date(value.toLong() * 1000)) }
-                                    },
-                        )
-                    }
-                }
-            }
+      Column(
+          Modifier.fillMaxHeight()
+              .verticalScroll(rememberScrollState())
+              .heightIn(min = 500.dp)
+              .padding(it)
+              .padding(start = 15.dp, top = 15.dp, end = 15.dp, bottom = 80.dp),
+          verticalArrangement = Arrangement.spacedBy(15.dp),
+      ) {
+        Column {
+          Row {
+            StatsCard(
+                name = {
+                  Text(
+                      buildAnnotatedString {
+                        append(stringResource(R.string.home_total_queries))
+                        append(" ")
+                        withStyle(
+                            SpanStyle(
+                                fontSize = 9.sp,
+                                baselineShift = BaselineShift.Superscript,
+                            )) {
+                              (metrics.data?.clients?.total ?: 0).let {
+                                append(
+                                    pluralStringResource(
+                                        R.plurals.home_unique_clients,
+                                        it,
+                                        it,
+                                    ))
+                              }
+                            }
+                      },
+                      maxLines = 1,
+                      overflow = TextOverflow.Ellipsis,
+                  )
+                },
+                statistics = "%,d".format(totalQueries),
+                backGroundColor = MaterialTheme.colorScheme.successContainer,
+                modifier = Modifier.padding(end = 2.5.dp).weight(1f),
+            )
+            StatsCard(
+                name = {
+                  Text(
+                      stringResource(R.string.home_queries_blocked),
+                      maxLines = 1,
+                      overflow = TextOverflow.Ellipsis,
+                  )
+                },
+                statistics = "%,d".format(totalBlockedQueries),
+                backGroundColor = MaterialTheme.colorScheme.infoContainer,
+                modifier = Modifier.padding(start = 2.5.dp).weight(1f),
+            )
+          }
+          Row(Modifier.padding(top = 5.dp)) {
+            StatsCard(
+                name = {
+                  Text(
+                      stringResource(R.string.home_percent_blocked),
+                      maxLines = 1,
+                      overflow = TextOverflow.Ellipsis,
+                  )
+                },
+                statistics = "%.2f%%".format(queryBlockingPercentage),
+                backGroundColor = MaterialTheme.colorScheme.warningContainer,
+                modifier = Modifier.padding(end = 2.5.dp).weight(1f),
+            )
+            StatsCard(
+                name = {
+                  Text(
+                      stringResource(R.string.home_blocklist),
+                      maxLines = 1,
+                      overflow = TextOverflow.Ellipsis,
+                  )
+                },
+                statistics = "%,d".format(blockedDomainListCount),
+                backGroundColor = MaterialTheme.colorScheme.errorContainer,
+                modifier = Modifier.padding(start = 2.5.dp).weight(1f),
+            )
+          }
         }
+
+        val history by viewModel.history.collectAsStateWithLifecycle()
+
+        val queriesOverTimeLabel = stringResource(R.string.home_queries_over_time)
+        val queriesOverTimeData =
+            remember(history.data) {
+              LineChartData(
+                  label = queriesOverTimeLabel,
+                  data =
+                      history.data?.map {
+                        Pair(
+                            it.timestamp ?: 0,
+                            max((it.total ?: 0) - (it.blocked ?: 0), 0),
+                        )
+                      } ?: listOf(),
+                  color = successColor,
+              )
+            }
+
+        val adsOverTimeLabel = stringResource(R.string.home_ads_over_time)
+        val adsOverTimeData =
+            remember(history) {
+              LineChartData(
+                  label = adsOverTimeLabel,
+                  data = history.data?.map { Pair(it.timestamp ?: 0, it.blocked ?: 0) } ?: listOf(),
+                  color = errorColor,
+              )
+            }
+
+        Card(Modifier.weight(1f)) {
+          Column {
+            Column(Modifier.padding(15.dp)) {
+              Text(
+                  stringResource(R.string.home_queries_chart_title),
+                  style = MaterialTheme.typography.titleLarge,
+              )
+            }
+            LineChart(
+                Modifier.fillMaxSize(),
+                data = listOf(queriesOverTimeData, adsOverTimeData),
+                xAxisFormatter =
+                    remember { getTimeInstance(DateFormat.SHORT) }
+                        .let { dateTime ->
+                          { value -> dateTime.format(Date(value.toLong() * 1000)) }
+                        },
+            )
+          }
+        }
+      }
     }
+  }
 }

@@ -33,64 +33,64 @@ fun StatisticsScreen(
     snackbarHostState: SnackbarHostState,
     viewModel: StatisticsViewModel = hiltViewModel(),
 ) {
-    viewModel.SnackBarErrorEffect(snackbarHostState)
+  viewModel.SnackBarErrorEffect(snackbarHostState)
 
-    val loading by viewModel.loading.collectAsStateWithLifecycle()
-    val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
-    val pullToRefreshState = rememberPullToRefreshState()
+  val loading by viewModel.loading.collectAsStateWithLifecycle()
+  val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
+  val pullToRefreshState = rememberPullToRefreshState()
 
-    TopBarProgressIndicator(visible = loading && !refreshing)
+  TopBarProgressIndicator(visible = loading && !refreshing)
 
-    PullToRefreshBox(
-        state = pullToRefreshState,
-        isRefreshing = refreshing,
-        onRefresh = { viewModel.refresh() },
-    ) {
-        val topDomains by viewModel.topDomains.collectAsStateWithLifecycle()
-        val topBlockedDomains by viewModel.topBlockedDomains.collectAsStateWithLifecycle()
-        val topClients by viewModel.topClients.collectAsStateWithLifecycle()
+  PullToRefreshBox(
+      state = pullToRefreshState,
+      isRefreshing = refreshing,
+      onRefresh = { viewModel.refresh() },
+  ) {
+    val topDomains by viewModel.topDomains.collectAsStateWithLifecycle()
+    val topBlockedDomains by viewModel.topBlockedDomains.collectAsStateWithLifecycle()
+    val topClients by viewModel.topClients.collectAsStateWithLifecycle()
 
-        if (topDomains.data == null && topBlockedDomains.data == null && topClients.data == null) {
-            return@PullToRefreshBox
-        }
-
-        Column(
-            Modifier.verticalScroll(rememberScrollState()).padding(15.dp),
-            verticalArrangement = Arrangement.spacedBy(15.dp),
-        ) {
-            RankedListCard(
-                title = { Text(stringResource(R.string.statistics_top_permitted)) },
-                icon = {
-                    Icon(
-                        Icons.Default.GppGood,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.success,
-                    )
-                },
-                valueMap = topDomains.data ?: mapOf(),
-            )
-            RankedListCard(
-                title = { Text(stringResource(R.string.statistics_top_blocked)) },
-                icon = {
-                    Icon(
-                        Icons.Default.GppBad,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.error,
-                    )
-                },
-                valueMap = topBlockedDomains.data ?: mapOf(),
-            )
-            RankedListCard(
-                title = { Text(stringResource(R.string.statistics_top_client)) },
-                icon = {
-                    Icon(
-                        Icons.Default.Devices,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.info,
-                    )
-                },
-                valueMap = topClients.data ?: mapOf(),
-            )
-        }
+    if (topDomains.data == null && topBlockedDomains.data == null && topClients.data == null) {
+      return@PullToRefreshBox
     }
+
+    Column(
+        Modifier.verticalScroll(rememberScrollState()).padding(15.dp),
+        verticalArrangement = Arrangement.spacedBy(15.dp),
+    ) {
+      RankedListCard(
+          title = { Text(stringResource(R.string.statistics_top_permitted)) },
+          icon = {
+            Icon(
+                Icons.Default.GppGood,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.success,
+            )
+          },
+          valueMap = topDomains.data ?: mapOf(),
+      )
+      RankedListCard(
+          title = { Text(stringResource(R.string.statistics_top_blocked)) },
+          icon = {
+            Icon(
+                Icons.Default.GppBad,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.error,
+            )
+          },
+          valueMap = topBlockedDomains.data ?: mapOf(),
+      )
+      RankedListCard(
+          title = { Text(stringResource(R.string.statistics_top_client)) },
+          icon = {
+            Icon(
+                Icons.Default.Devices,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.info,
+            )
+          },
+          valueMap = topClients.data ?: mapOf(),
+      )
+    }
+  }
 }

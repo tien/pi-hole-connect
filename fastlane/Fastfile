@@ -1,44 +1,67 @@
+# frozen_string_literal: true
+
 default_platform(:android)
 
-platform :android do
+platform :android do # rubocop:disable Metrics/BlockLength
   properties = {
-    "android.injected.signing.store.file" => ENV["KEYSTORE_FILE"],
-    "android.injected.signing.store.password" => ENV["KEYSTORE_PASSWORD"],
-    "android.injected.signing.key.alias" => ENV["KEY_ALIAS"],
-    "android.injected.signing.key.password" => ENV["KEY_PASSWORD"],
+    'android.injected.signing.store.file' => ENV.fetch('KEYSTORE_FILE', nil),
+    'android.injected.signing.store.password' => ENV.fetch('KEYSTORE_PASSWORD', nil),
+    'android.injected.signing.key.alias' => ENV.fetch('KEY_ALIAS', nil),
+    'android.injected.signing.key.password' => ENV.fetch('KEY_PASSWORD', nil)
   }
 
   lane :development do
     android_set_version_code(
-      version_code: ENV["VERSION_CODE"],
-      gradle_file: "app/build.gradle.kts"
+      version_code: ENV.fetch('VERSION_CODE', nil),
+      gradle_file: 'app/build.gradle.kts'
     )
     android_set_version_name(
-      version_name: ENV["VERSION_NAME"],
-      gradle_file: "app/build.gradle.kts"
+      version_name: ENV.fetch('VERSION_NAME', nil),
+      gradle_file: 'app/build.gradle.kts'
     )
 
-    gradle(task: "clean bundleRelease", properties: properties)
-    firebase_app_distribution(android_artifact_type: "AAB")
+    gradle(task: 'clean bundleRelease', properties: properties)
+    firebase_app_distribution(android_artifact_type: 'AAB')
 
-    gradle(task: "clean assembleRelease", properties: properties)
+    gradle(task: 'clean assembleRelease', properties: properties)
     copy_artifacts(artifacts: [lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]])
+  end
+
+  lane :screenshots do |options|
+    gradle(task: 'clean assembleDebug assembleAndroidTest')
+
+    devices = {
+      'phone' => options[:phone],
+      'sevenInch' => options[:seven_inch],
+      'tenInch' => options[:ten_inch]
+    }.compact
+
+    if devices.empty?
+      screengrab
+    else
+      devices.each do |device_type, serial|
+        screengrab(
+          specific_device: serial,
+          device_type: device_type
+        )
+      end
+    end
   end
 
   lane :release do
     android_set_version_code(
-      version_code: google_play_track_version_codes(track: "internal").max + 1,
-      gradle_file: "app/build.gradle.kts"
+      version_code: google_play_track_version_codes(track: 'internal').max + 1,
+      gradle_file: 'app/build.gradle.kts'
     )
     android_set_version_name(
-      version_name: ENV["VERSION_NAME"],
-      gradle_file: "app/build.gradle.kts"
+      version_name: ENV.fetch('VERSION_NAME', nil),
+      gradle_file: 'app/build.gradle.kts'
     )
 
-    gradle(task: "clean bundleRelease", properties: properties)
-    upload_to_play_store(track: "internal")
+    gradle(task: 'clean bundleRelease', properties: properties)
+    upload_to_play_store(track: 'internal')
 
-    gradle(task: "clean assembleRelease", properties: properties)
+    gradle(task: 'clean assembleRelease', properties: properties)
     set_github_release(is_draft: true, upload_assets: [lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]])
   end
 end

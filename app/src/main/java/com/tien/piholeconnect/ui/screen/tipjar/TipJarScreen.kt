@@ -19,27 +19,26 @@ import com.tien.piholeconnect.model.LoadState
 
 @Composable
 fun TipJarScreen(viewModel: TipJarViewModel = hiltViewModel()) {
-    val activity = LocalActivity.current as Activity
-    val tipOptions by viewModel.tipOptions.collectAsStateWithLifecycle()
+  val activity = LocalActivity.current as Activity
+  val tipOptions by viewModel.tipOptions.collectAsStateWithLifecycle()
 
-    Column {
-        Text(stringResource(R.string.tip_jar_msg), modifier = Modifier.padding(15.dp))
-        when (val tipOptions = tipOptions) {
-            is LoadState.Success ->
-                tipOptions.data.forEach { tipOption ->
-                    ListItem(
-                        modifier =
-                            Modifier.clickable { viewModel.launchBillingFlow(activity, tipOption) },
-                        headlineContent = {
-                            Text(tipOption.title.slice(IntRange(0, tipOption.title.indexOf(" ("))))
-                        },
-                        supportingContent = { Text(tipOption.description) },
-                        trailingContent = {
-                            Text(tipOption.oneTimePurchaseOfferDetails?.formattedPrice ?: "")
-                        },
-                    )
-                }
-            else -> Unit
-        }
+  Column {
+    Text(stringResource(R.string.tip_jar_msg), modifier = Modifier.padding(15.dp))
+    when (val tipOptions = tipOptions) {
+      is LoadState.Success ->
+          tipOptions.data.forEach { tipOption ->
+            ListItem(
+                modifier = Modifier.clickable { viewModel.launchBillingFlow(activity, tipOption) },
+                headlineContent = {
+                  Text(tipOption.title.slice(IntRange(0, tipOption.title.indexOf(" ("))))
+                },
+                supportingContent = { Text(tipOption.description) },
+                trailingContent = {
+                  Text(tipOption.oneTimePurchaseOfferDetails?.formattedPrice ?: "")
+                },
+            )
+          }
+      else -> Unit
     }
+  }
 }

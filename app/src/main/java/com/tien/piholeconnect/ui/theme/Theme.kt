@@ -85,55 +85,53 @@ private val DarkColors =
     )
 
 val ColorScheme.isDark
-    get() = this.toString() == DarkColors.toString()
+  get() = this.toString() == DarkColors.toString()
 
 @get:Composable
 @get:ReadOnlyComposable
 val ColorScheme.info
-    get() = if (this.isDark) dark_Info else light_Info
+  get() = if (this.isDark) dark_Info else light_Info
 
 @get:Composable
 @get:ReadOnlyComposable
 val ColorScheme.infoContainer
-    get() = if (this.isDark) dark_InfoContainer else light_InfoContainer
+  get() = if (this.isDark) dark_InfoContainer else light_InfoContainer
 
 @get:Composable
 @get:ReadOnlyComposable
 val ColorScheme.success
-    get() = if (this.isDark) dark_Success else light_Success
+  get() = if (this.isDark) dark_Success else light_Success
 
 @get:Composable
 @get:ReadOnlyComposable
 val ColorScheme.successContainer
-    get() = if (this.isDark) dark_SuccessContainer else light_SuccessContainer
+  get() = if (this.isDark) dark_SuccessContainer else light_SuccessContainer
 
 @get:Composable
 @get:ReadOnlyComposable
 val ColorScheme.warning
-    get() = if (this.isDark) dark_Warning else light_Warning
+  get() = if (this.isDark) dark_Warning else light_Warning
 
 @get:Composable
 @get:ReadOnlyComposable
 val ColorScheme.warningContainer
-    get() = if (this.isDark) dark_WarningContainer else light_WarningContainer
+  get() = if (this.isDark) dark_WarningContainer else light_WarningContainer
 
 @Composable
 @ReadOnlyComposable
 fun ColorScheme.contentColorFor(backGroundColor: Color) =
     MaterialTheme.colorScheme.contentColorFor(backGroundColor).takeIf { it != Color.Unspecified }
         ?: when (backGroundColor) {
-            MaterialTheme.colorScheme.info -> if (this.isDark) dark_onInfo else light_onInfo
-            MaterialTheme.colorScheme.infoContainer ->
-                if (this.isDark) dark_onInfoContainer else light_onInfoContainer
-            MaterialTheme.colorScheme.success ->
-                if (this.isDark) dark_onSuccess else light_onSuccess
-            MaterialTheme.colorScheme.successContainer ->
-                if (this.isDark) dark_onSuccessContainer else light_onSuccessContainer
-            MaterialTheme.colorScheme.warning ->
-                if (this.isDark) dark_onWarning else light_onWarning
-            MaterialTheme.colorScheme.warningContainer ->
-                if (this.isDark) dark_onWarningContainer else light_onWarningContainer
-            else -> Color.Unspecified
+          MaterialTheme.colorScheme.info -> if (this.isDark) dark_onInfo else light_onInfo
+          MaterialTheme.colorScheme.infoContainer ->
+              if (this.isDark) dark_onInfoContainer else light_onInfoContainer
+          MaterialTheme.colorScheme.success -> if (this.isDark) dark_onSuccess else light_onSuccess
+          MaterialTheme.colorScheme.successContainer ->
+              if (this.isDark) dark_onSuccessContainer else light_onSuccessContainer
+          MaterialTheme.colorScheme.warning -> if (this.isDark) dark_onWarning else light_onWarning
+          MaterialTheme.colorScheme.warningContainer ->
+              if (this.isDark) dark_onWarningContainer else light_onWarningContainer
+          else -> Color.Unspecified
         }
 
 @Composable
@@ -142,27 +140,27 @@ fun PiHoleConnectTheme(
     useDynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
-    val dynamicColor = useDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-    val colorScheme =
-        when {
-            dynamicColor && useDarkTheme -> {
-                dynamicDarkColorScheme(LocalContext.current)
-            }
-
-            dynamicColor && !useDarkTheme -> {
-                dynamicLightColorScheme(LocalContext.current)
-            }
-
-            useDarkTheme -> DarkColors
-            else -> LightColors
+  val dynamicColor = useDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+  val colorScheme =
+      when {
+        dynamicColor && useDarkTheme -> {
+          dynamicDarkColorScheme(LocalContext.current)
         }
 
-    val view = LocalView.current
-    LaunchedEffect(useDarkTheme) {
-        val window = (view.context as Activity).window
-        WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars =
-            !useDarkTheme
-    }
+        dynamicColor && !useDarkTheme -> {
+          dynamicLightColorScheme(LocalContext.current)
+        }
 
-    MaterialTheme(colorScheme = colorScheme, content = content)
+        useDarkTheme -> DarkColors
+        else -> LightColors
+      }
+
+  val view = LocalView.current
+  LaunchedEffect(useDarkTheme) {
+    val window = (view.context as Activity).window
+    WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars =
+        !useDarkTheme
+  }
+
+  MaterialTheme(colorScheme = colorScheme, content = content)
 }

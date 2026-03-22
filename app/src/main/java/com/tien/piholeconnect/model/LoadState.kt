@@ -11,43 +11,43 @@ import kotlinx.coroutines.launch
 typealias UnitLoadState = LoadState<Unit>
 
 sealed interface LoadState<out T> {
-    val data: T?
+  val data: T?
 
-    data class Idle<T>(override val data: T? = null) : LoadState<T>
+  data class Idle<T>(override val data: T? = null) : LoadState<T>
 
-    data class Success<T>(override val data: T) : LoadState<T>
+  data class Success<T>(override val data: T) : LoadState<T>
 
-    data class Loading<T>(override val data: T? = null) : LoadState<T>
+  data class Loading<T>(override val data: T? = null) : LoadState<T>
 
-    data class Failure<T>(val throwable: Throwable, override val data: T? = null) : LoadState<T>
+  data class Failure<T>(val throwable: Throwable, override val data: T? = null) : LoadState<T>
 
-    companion object {
-        val Idle = Idle<Unit>()
+  companion object {
+    val Idle = Idle<Unit>()
 
-        val Success = Success(Unit)
+    val Success = Success(Unit)
 
-        val Loading = Loading<Unit>()
+    val Loading = Loading<Unit>()
 
-        fun Failure(throwable: Throwable) = Failure<Unit>(throwable)
-    }
+    fun Failure(throwable: Throwable) = Failure<Unit>(throwable)
+  }
 }
 
 fun <T> LoadState<T>.asSuccess(data: T): LoadState<T> {
-    return LoadState.Success(data)
+  return LoadState.Success(data)
 }
 
 fun <T> LoadState<T>.asLoading(): LoadState<T> {
-    return LoadState.Loading(this.data)
+  return LoadState.Loading(this.data)
 }
 
 fun <T> LoadState<T>.asFailure(throwable: Throwable): LoadState<T> {
-    return LoadState.Failure(throwable, this.data)
+  return LoadState.Failure(throwable, this.data)
 }
 
 fun <T> Flow<T>.asLoadState(): Flow<LoadState<T>> {
-    return this.map { LoadState.Success(it) as LoadState<T> }
-        .onStart { emit(LoadState.Loading()) }
-        .catch { emit(LoadState.Failure(it)) }
+  return this.map { LoadState.Success(it) as LoadState<T> }
+      .onStart { emit(LoadState.Loading()) }
+      .catch { emit(LoadState.Failure(it)) }
 }
 
 fun <T> MutableStateFlow<LoadState<T>>.run(
@@ -55,13 +55,13 @@ fun <T> MutableStateFlow<LoadState<T>>.run(
     data: T? = null,
     block: suspend CoroutineScope.() -> T,
 ) {
-    value = LoadState.Loading(data)
-    scope.launch {
-        value =
-            try {
-                LoadState.Success(block())
-            } catch (error: Throwable) {
-                LoadState.Failure(error, data)
-            }
-    }
+  value = LoadState.Loading(data)
+  scope.launch {
+    value =
+        try {
+          LoadState.Success(block())
+        } catch (error: Throwable) {
+          LoadState.Failure(error, data)
+        }
+  }
 }

@@ -9,5 +9,5 @@ interface InAppPurchase :
     PurchasesUpdatedListener,
     PurchasesResponseListener,
     ConsumeResponseListener {
-    val billingClient: BillingClient
+  val billingClient: BillingClient
 }

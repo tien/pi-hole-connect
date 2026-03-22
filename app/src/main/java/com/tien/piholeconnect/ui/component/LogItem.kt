@@ -35,74 +35,72 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun LogItem(log: QueryLog, modifier: Modifier = Modifier) {
-    val dateFormat = remember { DateFormat.getTimeInstance() }
-    val status =
-        log.status?.let { QueryStatus.Companion.fromStatusString(it) } ?: QueryStatus.UNKNOWN
-    val (icon, tint) =
-        when (status.type) {
-            QueryStatusType.BLOCK -> Pair(Icons.Default.GppBad, MaterialTheme.colorScheme.error)
-            QueryStatusType.ALLOW -> Pair(Icons.Default.GppGood, MaterialTheme.colorScheme.success)
-            QueryStatusType.CACHE -> Pair(Icons.Default.Cached, MaterialTheme.colorScheme.info)
-            QueryStatusType.UNKNOWN ->
-                Pair(Icons.AutoMirrored.Filled.Help, LocalContentColor.current.copy(alpha = 0.5f))
-        }
+  val dateFormat = remember { DateFormat.getTimeInstance() }
+  val status = log.status?.let { QueryStatus.Companion.fromStatusString(it) } ?: QueryStatus.UNKNOWN
+  val (icon, tint) =
+      when (status.type) {
+        QueryStatusType.BLOCK -> Pair(Icons.Default.GppBad, MaterialTheme.colorScheme.error)
+        QueryStatusType.ALLOW -> Pair(Icons.Default.GppGood, MaterialTheme.colorScheme.success)
+        QueryStatusType.CACHE -> Pair(Icons.Default.Cached, MaterialTheme.colorScheme.info)
+        QueryStatusType.UNKNOWN ->
+            Pair(Icons.AutoMirrored.Filled.Help, LocalContentColor.current.copy(alpha = 0.5f))
+      }
 
-    ListItem(
-        modifier = modifier,
-        leadingContent = {
-            Icon(
-                icon,
-                tint = tint,
-                contentDescription = log.status,
-                modifier = Modifier.padding(top = 11.dp).size(35.dp),
-            )
-        },
-        overlineContent = {
-            if (log.status != null) {
-                Text(log.status)
-            }
-        },
-        headlineContent = {
-            if (log.domain != null) {
-                Text(log.domain)
-            }
-        },
-        supportingContent = {
-            if (log.client?.name != null) {
-                Text(log.client.name)
-            }
-        },
-        trailingContent = {
-            Column {
-                if (log.time != null) {
-                    Text(dateFormat.format(log.time * 1000L))
-                }
-                if (log.reply?.time != null) {
-                    Text(log.reply.time.milliseconds.toString())
-                }
-            }
-        },
-    )
+  ListItem(
+      modifier = modifier,
+      leadingContent = {
+        Icon(
+            icon,
+            tint = tint,
+            contentDescription = log.status,
+            modifier = Modifier.padding(top = 11.dp).size(35.dp),
+        )
+      },
+      overlineContent = {
+        if (log.status != null) {
+          Text(log.status)
+        }
+      },
+      headlineContent = {
+        if (log.domain != null) {
+          Text(log.domain)
+        }
+      },
+      supportingContent = {
+        if (log.client?.name != null) {
+          Text(log.client.name)
+        }
+      },
+      trailingContent = {
+        Column {
+          if (log.time != null) {
+            Text(dateFormat.format(log.time * 1000L))
+          }
+          if (log.reply?.time != null) {
+            Text(log.reply.time.milliseconds.toString())
+          }
+        }
+      },
+  )
 }
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun LogItemPreview() {
-    PiHoleConnectTheme {
-        Column(Modifier.verticalScroll(rememberScrollState())) {
-            listOf("FORWARDED", "GRAVITY", "CACHE", "UNKNOWN").forEach {
-                LogItem(
-                    QueryLog(
-                        time = 1616407649532.0,
-                        status = it,
-                        type = "IPv6",
-                        domain = "google.com",
-                        client = QueryLogClient(name = "android.router"),
-                        reply = QueryLogReply(time = 0.050610790252685547),
-                    )
-                )
-            }
-        }
+  PiHoleConnectTheme {
+    Column(Modifier.verticalScroll(rememberScrollState())) {
+      listOf("FORWARDED", "GRAVITY", "CACHE", "UNKNOWN").forEach {
+        LogItem(
+            QueryLog(
+                time = 1616407649532.0,
+                status = it,
+                type = "IPv6",
+                domain = "google.com",
+                client = QueryLogClient(name = "android.router"),
+                reply = QueryLogReply(time = 0.050610790252685547),
+            ))
+      }
     }
+  }
 }

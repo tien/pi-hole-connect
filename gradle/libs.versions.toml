@@ -23,6 +23,8 @@ androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-kt
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 androidx-lifecycle-viewModelCompose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.9.7" }
+androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
+androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version = "3.7.0" }
 androidx-test-ext-junit = { module = "androidx.test.ext:junit", version = "1.3.0" }
 google-android-material = { module = "com.google.android.material:material", version = "1.13.0" }
@@ -38,10 +40,11 @@ ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 vico-compose = { module = "com.patrykandpatrick.vico:compose", version.ref = "vico" }
+tools-screengrab = { module = "tools.fastlane:screengrab", version = "2.1.1" }
 vico-compose-material3 = { module = "com.patrykandpatrick.vico:compose-m3", version.ref = "vico" }
 
 [bundles]
-androidTest = ["androidx-test-espresso-core", "androidx-test-ext-junit"]
+androidTest = ["androidx-test-espresso-core", "androidx-test-ext-junit", "androidx-compose-ui-test-junit4", "tools-screengrab"]
 compose = ["androidx-compose-iconsExtended", "androidx-compose-material3", "androidx-compose-ui-tooling"]
 kotlin = ["kotlin-reflect", "kotlin-serialization"]
 ktor = ["ktor-client-auth", "ktor-client-contentNegotiation", "ktor-client-core", "ktor-client-okhttp", "ktor-serialization-json"]
@@ -57,3 +60,4 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 ksp = { id = "com.google.devtools.ksp", version = "2.2.21-2.0.4" }
 openapi-generator = { id = "org.openapi.generator", version = "7.20.0" }
 protobuf = { id = "com.google.protobuf", version = "0.9.6" }
+spotless = { id = "com.diffplug.spotless", version = "7.0.3" }
