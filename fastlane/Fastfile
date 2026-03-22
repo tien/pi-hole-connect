@@ -37,14 +37,12 @@ platform :android do # rubocop:disable Metrics/BlockLength
     }.compact
 
     if devices.empty?
-      screengrab(locales: %w[en-US], clear_previous_screenshots: true)
+      screengrab
     else
       devices.each do |device_type, serial|
         screengrab(
           specific_device: serial,
-          device_type: device_type,
-          locales: %w[en-US],
-          clear_previous_screenshots: device_type == devices.keys.first
+          device_type: device_type
         )
       end
     end
