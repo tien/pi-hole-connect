@@ -1,0 +1,8 @@
+app_package_name('com.tien.piholeconnect')
+use_tests_in_packages(['com.tien.piholeconnect.screenshot'])
+app_apk_path('app/build/outputs/apk/debug/app-debug.apk')
+tests_apk_path('app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk')
+locales(['en-US', 'de-DE', 'pl-PL', 'ro-RO'])
+clear_previous_screenshots(true)
+output_directory('fastlane/metadata/android')
+use_timestamp_suffix(false)

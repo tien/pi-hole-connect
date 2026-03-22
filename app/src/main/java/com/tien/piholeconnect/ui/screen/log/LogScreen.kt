@@ -60,228 +60,219 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogScreen(actions: @Composable () -> Unit, viewModel: LogViewModel = hiltViewModel()) {
-    val scope = rememberCoroutineScope()
-    val lazyListState = rememberLazyListState()
-    val scaffoldState = rememberBottomSheetScaffoldState()
+  val scope = rememberCoroutineScope()
+  val lazyListState = rememberLazyListState()
+  val scaffoldState = rememberBottomSheetScaffoldState()
 
-    var searchActive by remember { mutableStateOf(false) }
-    val query by viewModel.query.collectAsStateWithLifecycle()
-    val logs by viewModel.logs.collectAsStateWithLifecycle()
-    val enabledStatuses by viewModel.enabledStatuses.collectAsStateWithLifecycle()
-    val sortBy by viewModel.sortBy.collectAsStateWithLifecycle()
-    val addToAllowListLoadState by viewModel.addToAllowlistLoadState.collectAsStateWithLifecycle()
-    val addToDenyListLoadState by viewModel.addToDenyListLoadState.collectAsStateWithLifecycle()
+  var searchActive by remember { mutableStateOf(false) }
+  val query by viewModel.query.collectAsStateWithLifecycle()
+  val logs by viewModel.logs.collectAsStateWithLifecycle()
+  val enabledStatuses by viewModel.enabledStatuses.collectAsStateWithLifecycle()
+  val sortBy by viewModel.sortBy.collectAsStateWithLifecycle()
+  val addToAllowListLoadState by viewModel.addToAllowlistLoadState.collectAsStateWithLifecycle()
+  val addToDenyListLoadState by viewModel.addToDenyListLoadState.collectAsStateWithLifecycle()
 
-    var selectedLog: QueryLog? by remember { mutableStateOf(null) }
+  var selectedLog: QueryLog? by remember { mutableStateOf(null) }
 
-    viewModel.SnackBarErrorEffect(scaffoldState.snackbarHostState)
+  viewModel.SnackBarErrorEffect(scaffoldState.snackbarHostState)
 
-    val addRuleSuccessMessage = stringResource(R.string.log_screen_add_filter_rule_success)
-    val addRuleFailureMessage = stringResource(R.string.log_screen_add_filter_rule_failure)
+  val addRuleSuccessMessage = stringResource(R.string.log_screen_add_filter_rule_success)
+  val addRuleFailureMessage = stringResource(R.string.log_screen_add_filter_rule_failure)
 
-    LaunchedEffect(Unit) {
-        merge(viewModel.addToAllowlistLoadState, viewModel.addToDenyListLoadState).collect {
-            when (it) {
-                is LoadState.Success -> {
-                    selectedLog = null
-                    scaffoldState.snackbarHostState.showSnackbar(addRuleSuccessMessage)
-                }
-                is LoadState.Failure -> {
-                    selectedLog = null
-                    scaffoldState.snackbarHostState.showSnackbar(addRuleFailureMessage)
-                }
-                else -> Unit
-            }
+  LaunchedEffect(Unit) {
+    merge(viewModel.addToAllowlistLoadState, viewModel.addToDenyListLoadState).collect {
+      when (it) {
+        is LoadState.Success -> {
+          selectedLog = null
+          scaffoldState.snackbarHostState.showSnackbar(addRuleSuccessMessage)
         }
-    }
-
-    LaunchedEffect(logs) { lazyListState.scrollToItem(0) }
-
-    selectedLog?.let { logQuery ->
-        QueryDetail(
-            logQuery,
-            onWhitelistClick = {
-                if (logQuery.domain != null) {
-                    viewModel.addToWhiteList(logQuery.domain)
-                }
-            },
-            onBlacklistClick = {
-                if (logQuery.domain != null) {
-                    viewModel.addToBlacklist(logQuery.domain)
-                }
-            },
-            onDismissRequest = { selectedLog = null },
-            addToWhitelistLoading = addToAllowListLoadState is LoadState.Loading,
-            addToBlacklistLoading = addToDenyListLoadState is LoadState.Loading,
-        )
-    }
-
-    @Composable
-    fun LogList(state: LazyListState = rememberLazyListState()) {
-        LazyColumn(state = state) {
-            logs.data?.forEachIndexed { index, log ->
-                item(key = index) {
-                    LogItem(log, modifier = Modifier.clickable { selectedLog = log })
-                }
-            }
+        is LoadState.Failure -> {
+          selectedLog = null
+          scaffoldState.snackbarHostState.showSnackbar(addRuleFailureMessage)
         }
+        else -> Unit
+      }
     }
+  }
 
-    BottomSheetScaffold(
-        scaffoldState = scaffoldState,
-        sheetPeekHeight = BottomSheetDefaults.SheetPeekHeight * 0.75f,
-        topBar = {
-            Box(Modifier.fillMaxWidth()) {
-                SearchBar(
-                    modifier = Modifier.align(Alignment.TopCenter),
-                    expanded = searchActive,
-                    onExpandedChange = { searchActive = it },
-                    inputField =
-                        @Composable {
-                            SearchBarDefaults.InputField(
-                                query = query,
-                                onQueryChange = { viewModel.query.value = it },
-                                onSearch = {
-                                    viewModel.query.value = it
-                                    searchActive = false
-                                },
-                                expanded = searchActive,
-                                onExpandedChange = { searchActive = it },
-                                placeholder = { Text(stringResource(Screen.Log.labelResourceId)) },
-                                leadingIcon = {
-                                    if (searchActive || query.isNotBlank()) {
-                                        IconButton(
-                                            onClick = {
-                                                searchActive = false
-                                                viewModel.query.value = ""
-                                            }
-                                        ) {
-                                            Icon(
-                                                Icons.AutoMirrored.Filled.ArrowBack,
-                                                contentDescription =
-                                                    stringResource(android.R.string.cancel),
-                                            )
-                                        }
-                                    } else {
-                                        Icon(
-                                            Icons.Default.Search,
-                                            contentDescription =
-                                                stringResource(android.R.string.search_go),
-                                        )
-                                    }
-                                },
-                                trailingIcon = {
-                                    if (!searchActive) {
-                                        actions()
-                                    }
-                                },
-                            )
-                        },
-                ) {
-                    LogList()
-                }
-            }
+  LaunchedEffect(logs) { lazyListState.scrollToItem(0) }
+
+  selectedLog?.let { logQuery ->
+    QueryDetail(
+        logQuery,
+        onWhitelistClick = {
+          if (logQuery.domain != null) {
+            viewModel.addToWhiteList(logQuery.domain)
+          }
         },
-        sheetContent = {
-            val paddingModifier = Modifier.padding(horizontal = 16.dp)
-            val styledDivider =
-                @Composable { HorizontalDivider(paddingModifier.padding(vertical = 16.dp)) }
-
-            Text(stringResource(R.string.log_screen_number_of_queries), modifier = paddingModifier)
-
-            val limit by viewModel.limit.collectAsStateWithLifecycle()
-
-            val listItemColors =
-                ListItemDefaults.colors(containerColor = BottomSheetDefaults.ContainerColor)
-
-            viewModel.limits.forEach {
-                ListItem(
-                    modifier =
-                        Modifier.selectable(
-                            selected = limit == it,
-                            onClick = { viewModel.changeLimit(it) },
-                            role = Role.RadioButton,
-                        ),
-                    leadingContent = { RadioButton(selected = limit == it, onClick = null) },
-                    headlineContent = { Text(it.toString()) },
-                    colors = listItemColors,
-                )
-            }
-            styledDivider()
-            Text(stringResource(R.string.log_screen_status), modifier = paddingModifier)
-            LogViewModel.Status.entries.forEach { status ->
-                val checked = enabledStatuses.contains(status)
-                ListItem(
-                    modifier =
-                        Modifier.selectable(
-                            selected = checked,
-                            onClick = {
-                                if (!checked) {
-                                    viewModel.enabledStatuses.value += status
-                                } else {
-                                    viewModel.enabledStatuses.value -= status
-                                }
-                            },
-                            role = Role.Checkbox,
-                        ),
-                    leadingContent = { Checkbox(checked = checked, onCheckedChange = null) },
-                    headlineContent = { Text(stringResource(status.labelResourceId)) },
-                    colors = listItemColors,
-                )
-            }
-            styledDivider()
-            Text(stringResource(R.string.log_screen_sort), modifier = paddingModifier)
-            LogViewModel.Sort.entries.forEach { sort ->
-                val selected = sortBy == sort
-                ListItem(
-                    modifier =
-                        Modifier.selectable(
-                            selected = selected,
-                            onClick = { viewModel.sortBy.value = sort },
-                            role = Role.RadioButton,
-                        ),
-                    leadingContent = { RadioButton(selected = selected, onClick = null) },
-                    headlineContent = { Text(stringResource(sort.labelResourceId)) },
-                    colors = listItemColors,
-                )
-            }
+        onBlacklistClick = {
+          if (logQuery.domain != null) {
+            viewModel.addToBlacklist(logQuery.domain)
+          }
         },
-        content = {
-            val loading by viewModel.loading.collectAsStateWithLifecycle()
-            val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
-            val pullToRefreshState = rememberPullToRefreshState()
-
-            TopBarProgressIndicator(visible = loading && !refreshing)
-
-            PullToRefreshBox(
-                state = pullToRefreshState,
-                isRefreshing = refreshing,
-                onRefresh = { viewModel.refresh() },
-            ) {
-                Column {
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(start = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        logs.data?.count()?.let {
-                            Text(
-                                pluralStringResource(R.plurals.log_screen_results, it, it),
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                        }
-                        Spacer(Modifier.weight(1f))
-                        IconButton(
-                            onClick = { scope.launch { scaffoldState.bottomSheetState.expand() } }
-                        ) {
-                            Icon(Icons.Default.Tune, contentDescription = null)
-                        }
-                    }
-                    HorizontalDivider()
-                    LogList(state = lazyListState)
-                }
-            }
-        },
+        onDismissRequest = { selectedLog = null },
+        addToWhitelistLoading = addToAllowListLoadState is LoadState.Loading,
+        addToBlacklistLoading = addToDenyListLoadState is LoadState.Loading,
     )
+  }
+
+  @Composable
+  fun LogList(state: LazyListState = rememberLazyListState()) {
+    LazyColumn(state = state) {
+      logs.data?.forEachIndexed { index, log ->
+        item(key = index) { LogItem(log, modifier = Modifier.clickable { selectedLog = log }) }
+      }
+    }
+  }
+
+  BottomSheetScaffold(
+      scaffoldState = scaffoldState,
+      sheetPeekHeight = BottomSheetDefaults.SheetPeekHeight * 0.75f,
+      topBar = {
+        Box(Modifier.fillMaxWidth()) {
+          SearchBar(
+              modifier = Modifier.align(Alignment.TopCenter),
+              expanded = searchActive,
+              onExpandedChange = { searchActive = it },
+              inputField =
+                  @Composable {
+                    SearchBarDefaults.InputField(
+                        query = query,
+                        onQueryChange = { viewModel.query.value = it },
+                        onSearch = {
+                          viewModel.query.value = it
+                          searchActive = false
+                        },
+                        expanded = searchActive,
+                        onExpandedChange = { searchActive = it },
+                        placeholder = { Text(stringResource(Screen.Log.labelResourceId)) },
+                        leadingIcon = {
+                          if (searchActive || query.isNotBlank()) {
+                            IconButton(
+                                onClick = {
+                                  searchActive = false
+                                  viewModel.query.value = ""
+                                }) {
+                                  Icon(
+                                      Icons.AutoMirrored.Filled.ArrowBack,
+                                      contentDescription = stringResource(android.R.string.cancel),
+                                  )
+                                }
+                          } else {
+                            Icon(
+                                Icons.Default.Search,
+                                contentDescription = stringResource(android.R.string.search_go),
+                            )
+                          }
+                        },
+                        trailingIcon = {
+                          if (!searchActive) {
+                            actions()
+                          }
+                        },
+                    )
+                  },
+          ) {
+            LogList()
+          }
+        }
+      },
+      sheetContent = {
+        val paddingModifier = Modifier.padding(horizontal = 16.dp)
+        val styledDivider =
+            @Composable { HorizontalDivider(paddingModifier.padding(vertical = 16.dp)) }
+
+        Text(stringResource(R.string.log_screen_number_of_queries), modifier = paddingModifier)
+
+        val limit by viewModel.limit.collectAsStateWithLifecycle()
+
+        val listItemColors =
+            ListItemDefaults.colors(containerColor = BottomSheetDefaults.ContainerColor)
+
+        viewModel.limits.forEach {
+          ListItem(
+              modifier =
+                  Modifier.selectable(
+                      selected = limit == it,
+                      onClick = { viewModel.changeLimit(it) },
+                      role = Role.RadioButton,
+                  ),
+              leadingContent = { RadioButton(selected = limit == it, onClick = null) },
+              headlineContent = { Text(it.toString()) },
+              colors = listItemColors,
+          )
+        }
+        styledDivider()
+        Text(stringResource(R.string.log_screen_status), modifier = paddingModifier)
+        LogViewModel.Status.entries.forEach { status ->
+          val checked = enabledStatuses.contains(status)
+          ListItem(
+              modifier =
+                  Modifier.selectable(
+                      selected = checked,
+                      onClick = {
+                        if (!checked) {
+                          viewModel.enabledStatuses.value += status
+                        } else {
+                          viewModel.enabledStatuses.value -= status
+                        }
+                      },
+                      role = Role.Checkbox,
+                  ),
+              leadingContent = { Checkbox(checked = checked, onCheckedChange = null) },
+              headlineContent = { Text(stringResource(status.labelResourceId)) },
+              colors = listItemColors,
+          )
+        }
+        styledDivider()
+        Text(stringResource(R.string.log_screen_sort), modifier = paddingModifier)
+        LogViewModel.Sort.entries.forEach { sort ->
+          val selected = sortBy == sort
+          ListItem(
+              modifier =
+                  Modifier.selectable(
+                      selected = selected,
+                      onClick = { viewModel.sortBy.value = sort },
+                      role = Role.RadioButton,
+                  ),
+              leadingContent = { RadioButton(selected = selected, onClick = null) },
+              headlineContent = { Text(stringResource(sort.labelResourceId)) },
+              colors = listItemColors,
+          )
+        }
+      },
+      content = {
+        val loading by viewModel.loading.collectAsStateWithLifecycle()
+        val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
+        val pullToRefreshState = rememberPullToRefreshState()
+
+        TopBarProgressIndicator(visible = loading && !refreshing)
+
+        PullToRefreshBox(
+            state = pullToRefreshState,
+            isRefreshing = refreshing,
+            onRefresh = { viewModel.refresh() },
+        ) {
+          Column {
+            Row(
+                Modifier.fillMaxWidth().padding(start = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+              logs.data?.count()?.let {
+                Text(
+                    pluralStringResource(R.plurals.log_screen_results, it, it),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+              }
+              Spacer(Modifier.weight(1f))
+              IconButton(onClick = { scope.launch { scaffoldState.bottomSheetState.expand() } }) {
+                Icon(Icons.Default.Tune, contentDescription = null)
+              }
+            }
+            HorizontalDivider()
+            LogList(state = lazyListState)
+          }
+        }
+      },
+  )
 }

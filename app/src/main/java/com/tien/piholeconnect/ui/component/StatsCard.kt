@@ -27,43 +27,41 @@ fun StatsCard(
     statistics: String,
     backGroundColor: Color,
 ) {
-    val defaultSize = MaterialTheme.typography
-    var fontSize by remember { mutableStateOf(defaultSize.headlineMedium.fontSize) }
+  val defaultSize = MaterialTheme.typography
+  var fontSize by remember { mutableStateOf(defaultSize.headlineMedium.fontSize) }
 
-    Card(modifier, colors = CardDefaults.cardColors(containerColor = backGroundColor)) {
-        Column(Modifier.padding(horizontal = 10.dp, vertical = 5.dp)) {
-            ProvideTextStyle(
-                value =
-                    MaterialTheme.typography.titleMedium.copy(
-                        color = MaterialTheme.colorScheme.contentColorFor(backGroundColor)
-                    )
-            ) {
-                name()
+  Card(modifier, colors = CardDefaults.cardColors(containerColor = backGroundColor)) {
+    Column(Modifier.padding(horizontal = 10.dp, vertical = 5.dp)) {
+      ProvideTextStyle(
+          value =
+              MaterialTheme.typography.titleMedium.copy(
+                  color = MaterialTheme.colorScheme.contentColorFor(backGroundColor))) {
+            name()
+          }
+      Text(
+          statistics,
+          color = MaterialTheme.colorScheme.contentColorFor(backGroundColor),
+          style = MaterialTheme.typography.headlineMedium,
+          fontSize = fontSize,
+          maxLines = 1,
+          softWrap = false,
+          onTextLayout = {
+            if (it.didOverflowWidth) {
+              fontSize *= 0.9
             }
-            Text(
-                statistics,
-                color = MaterialTheme.colorScheme.contentColorFor(backGroundColor),
-                style = MaterialTheme.typography.headlineMedium,
-                fontSize = fontSize,
-                maxLines = 1,
-                softWrap = false,
-                onTextLayout = {
-                    if (it.didOverflowWidth) {
-                        fontSize *= 0.9
-                    }
-                },
-            )
-        }
+          },
+      )
     }
+  }
 }
 
 @Preview
 @Composable
 fun StatsCardPreview() {
-    StatsCard(
-        Modifier.widthIn(max = 150.dp),
-        name = { Text("Total Queries") },
-        statistics = "23,456,756,456",
-        backGroundColor = MaterialTheme.colorScheme.success,
-    )
+  StatsCard(
+      Modifier.widthIn(max = 150.dp),
+      name = { Text("Total Queries") },
+      statistics = "23,456,756,456",
+      backGroundColor = MaterialTheme.colorScheme.success,
+  )
 }

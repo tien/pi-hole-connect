@@ -43,21 +43,21 @@ fun AddFilterRuleDialog(
     onConfirmClick: () -> Unit,
     onCancelClick: () -> Unit,
 ) {
-    val focusRequester = remember { FocusRequester() }
+  val focusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(Unit) { focusRequester.requestFocus() }
+  LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
-    Dialog(onDismissRequest = onDismissRequest) {
-        AddFilterRuleCard(
-            value = value,
-            isWildcardChecked = isWildcardChecked,
-            focusRequester = focusRequester,
-            onValueChange = onValueChange,
-            onIsWildcardCheckedChanged = onIsWildcardCheckedChanged,
-            onConfirmClick = onConfirmClick,
-            onCancelClick = onCancelClick,
-        )
-    }
+  Dialog(onDismissRequest = onDismissRequest) {
+    AddFilterRuleCard(
+        value = value,
+        isWildcardChecked = isWildcardChecked,
+        focusRequester = focusRequester,
+        onValueChange = onValueChange,
+        onIsWildcardCheckedChanged = onIsWildcardCheckedChanged,
+        onConfirmClick = onConfirmClick,
+        onCancelClick = onCancelClick,
+    )
+  }
 }
 
 @Composable
@@ -70,61 +70,61 @@ fun AddFilterRuleCard(
     onConfirmClick: () -> Unit,
     onCancelClick: () -> Unit,
 ) {
-    Card {
-        Column {
-            Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(
-                    stringResource(R.string.add_filter_rules_dialog_add_rule),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                )
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
-                    label = { Text(stringResource(R.string.add_filter_rules_dialog_domain)) },
-                    value = value,
-                    onValueChange = onValueChange,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
-                )
-                Row(
-                    Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text(stringResource(R.string.add_filter_rules_dialog_add_as_wildcard))
-                    Switch(
-                        checked = isWildcardChecked,
-                        onCheckedChange = onIsWildcardCheckedChanged,
-                    )
-                }
-            }
-            HorizontalDivider()
-            Row(Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.End) {
-                TextButton(onClick = onCancelClick) {
-                    Text(stringResource(android.R.string.cancel).uppercase())
-                }
-                TextButton(onClick = onConfirmClick) {
-                    Text(stringResource(R.string.add_filter_rules_dialog_add).uppercase())
-                }
-            }
+  Card {
+    Column {
+      Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Text(
+            stringResource(R.string.add_filter_rules_dialog_add_rule),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+        )
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
+            label = { Text(stringResource(R.string.add_filter_rules_dialog_domain)) },
+            value = value,
+            onValueChange = onValueChange,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
+        )
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+          Text(stringResource(R.string.add_filter_rules_dialog_add_as_wildcard))
+          Switch(
+              checked = isWildcardChecked,
+              onCheckedChange = onIsWildcardCheckedChanged,
+          )
         }
+      }
+      HorizontalDivider()
+      Row(Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.End) {
+        TextButton(onClick = onCancelClick) {
+          Text(stringResource(android.R.string.cancel).uppercase())
+        }
+        TextButton(onClick = onConfirmClick) {
+          Text(stringResource(R.string.add_filter_rules_dialog_add).uppercase())
+        }
+      }
     }
+  }
 }
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun AddFilterRuleCardPreview() {
-    var value by remember { mutableStateOf("") }
-    var isWildcard by remember { mutableStateOf(false) }
+  var value by remember { mutableStateOf("") }
+  var isWildcard by remember { mutableStateOf(false) }
 
-    PiHoleConnectTheme {
-        AddFilterRuleCard(
-            value = value,
-            onValueChange = { value = it },
-            isWildcardChecked = isWildcard,
-            onIsWildcardCheckedChanged = { isWildcard = it },
-            onConfirmClick = {},
-            onCancelClick = {},
-        )
-    }
+  PiHoleConnectTheme {
+    AddFilterRuleCard(
+        value = value,
+        onValueChange = { value = it },
+        isWildcardChecked = isWildcard,
+        onIsWildcardCheckedChanged = { isWildcard = it },
+        onConfirmClick = {},
+        onCancelClick = {},
+    )
+  }
 }

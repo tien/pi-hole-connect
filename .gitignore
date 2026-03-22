@@ -13,3 +13,15 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# fastlane specific
+**/fastlane/report.xml
+
+# deliver temporary files
+**/fastlane/Preview.html
+
+# snapshot generated screenshots
+**/fastlane/metadata/android/**
+
+# scan temporary files
+**/fastlane/test_output

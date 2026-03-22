@@ -27,39 +27,39 @@ fun BottomTab(
     currentRoute: String,
     onBottomTabItemClick: (BottomTabItem) -> Unit,
 ) {
-    NavigationBar {
-        items.forEach {
-            val label = stringResource(it.screen.labelResourceId)
+  NavigationBar {
+    items.forEach {
+      val label = stringResource(it.screen.labelResourceId)
 
-            NavigationBarItem(
-                selected = it.screen.route == currentRoute,
-                onClick = { onBottomTabItemClick(it) },
-                icon = { Icon(it.icon, contentDescription = label) },
-                label = { Text(label) },
-            )
-        }
+      NavigationBarItem(
+          selected = it.screen.route == currentRoute,
+          onClick = { onBottomTabItemClick(it) },
+          icon = { Icon(it.icon, contentDescription = label) },
+          label = { Text(label) },
+      )
     }
+  }
 }
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun BottomTabPreview() {
-    var currentRoute by remember { mutableStateOf(Screen.Home.route) }
+  var currentRoute by remember { mutableStateOf(Screen.Home.route) }
 
-    val tabItems =
-        listOf(
-            BottomTabItem(Screen.Home, Icons.TwoTone.Home),
-            BottomTabItem(Screen.Statistics, Icons.TwoTone.Insights),
-            BottomTabItem(Screen.Log, Icons.TwoTone.Analytics),
-            BottomTabItem(Screen.FilterRules, Icons.TwoTone.Shield),
-        )
+  val tabItems =
+      listOf(
+          BottomTabItem(Screen.Home, Icons.TwoTone.Home),
+          BottomTabItem(Screen.Statistics, Icons.TwoTone.Insights),
+          BottomTabItem(Screen.Log, Icons.TwoTone.Analytics),
+          BottomTabItem(Screen.FilterRules, Icons.TwoTone.Shield),
+      )
 
-    PiHoleConnectTheme {
-        BottomTab(
-            items = tabItems,
-            currentRoute = currentRoute,
-            onBottomTabItemClick = { currentRoute = it.screen.route },
-        )
-    }
+  PiHoleConnectTheme {
+    BottomTab(
+        items = tabItems,
+        currentRoute = currentRoute,
+        onBottomTabItemClick = { currentRoute = it.screen.route },
+    )
+  }
 }

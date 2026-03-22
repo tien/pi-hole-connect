@@ -8,9 +8,9 @@ import io.ktor.http.URLProtocol.Companion.HTTPS
 
 fun URLProtocol.toKtorURLProtocol() =
     when (this) {
-        URLProtocol.HTTP -> HTTP
-        URLProtocol.HTTPS -> HTTPS
-        else -> HTTP
+      URLProtocol.HTTP -> HTTP
+      URLProtocol.HTTPS -> HTTPS
+      else -> HTTP
     }
 
 fun PiHoleConnection.Builder.populateDefaultValues(): PiHoleConnection.Builder =
@@ -20,8 +20,7 @@ fun PiHoleConnection.Builder.populateDefaultValues(): PiHoleConnection.Builder =
             .setProtocol(URLProtocol.HTTP)
             .setHost("pi.hole")
             .setApiPath("/api")
-            .setPort(HTTP.defaultPort)
-    )
+            .setPort(HTTP.defaultPort))
 
 fun PiHoleConnections.getSelectedConnection(): Pair<String, PiHoleConnection>? =
     if (this.hasSelectedConnectionId())

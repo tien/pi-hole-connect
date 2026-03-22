@@ -49,22 +49,22 @@ fun TopBar(
     onBackButtonClick: () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
 ) {
-    if (backButtonEnabled) {
-        TopAppBar(
-            title = { Text(title) },
-            navigationIcon = {
-                IconButton(onClick = onBackButtonClick) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.back_button_label),
-                    )
-                }
-            },
-            actions = actions,
-        )
-    } else {
-        CenterAlignedTopAppBar(title = { Text(title) }, actions = actions)
-    }
+  if (backButtonEnabled) {
+    TopAppBar(
+        title = { Text(title) },
+        navigationIcon = {
+          IconButton(onClick = onBackButtonClick) {
+            Icon(
+                Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(R.string.back_button_label),
+            )
+          }
+        },
+        actions = actions,
+    )
+  } else {
+    CenterAlignedTopAppBar(title = { Text(title) }, actions = actions)
+  }
 }
 
 @Composable
@@ -75,42 +75,42 @@ fun OptionsMenu(
     onOptionsMenuItemClick: (TopBarOptionsMenuItem) -> Unit,
     onPiHoleConnectionClick: (id: String) -> Unit,
 ) {
-    Box {
-        var isOptionsMenuExpanded by remember { mutableStateOf(false) }
+  Box {
+    var isOptionsMenuExpanded by remember { mutableStateOf(false) }
 
-        IconButton(onClick = { isOptionsMenuExpanded = true }) {
-            Icon(
-                Icons.Default.MoreVert,
-                contentDescription = stringResource(R.string.top_bar_more_options_label),
-            )
-        }
-        DropdownMenu(
-            expanded = isOptionsMenuExpanded,
-            modifier =
-                Modifier.composed {
-                    if (piHoleConnections.count() > 1) {
-                        fillMaxWidth()
-                    } else {
-                        this
-                    }
-                },
-            onDismissRequest = { isOptionsMenuExpanded = false },
-        ) {
-            Menu(
-                piHoleConnections = piHoleConnections,
-                selectedPiHoleConnectionId = selectedPiHoleConnectionId,
-                optionsMenuItems = optionsMenuItems,
-                onOptionsMenuItemClick = {
-                    isOptionsMenuExpanded = false
-                    onOptionsMenuItemClick(it)
-                },
-                onPiHoleConnectionClick = {
-                    isOptionsMenuExpanded = false
-                    onPiHoleConnectionClick(it)
-                },
-            )
-        }
+    IconButton(onClick = { isOptionsMenuExpanded = true }) {
+      Icon(
+          Icons.Default.MoreVert,
+          contentDescription = stringResource(R.string.top_bar_more_options_label),
+      )
     }
+    DropdownMenu(
+        expanded = isOptionsMenuExpanded,
+        modifier =
+            Modifier.composed {
+              if (piHoleConnections.count() > 1) {
+                fillMaxWidth()
+              } else {
+                this
+              }
+            },
+        onDismissRequest = { isOptionsMenuExpanded = false },
+    ) {
+      Menu(
+          piHoleConnections = piHoleConnections,
+          selectedPiHoleConnectionId = selectedPiHoleConnectionId,
+          optionsMenuItems = optionsMenuItems,
+          onOptionsMenuItemClick = {
+            isOptionsMenuExpanded = false
+            onOptionsMenuItemClick(it)
+          },
+          onPiHoleConnectionClick = {
+            isOptionsMenuExpanded = false
+            onPiHoleConnectionClick(it)
+          },
+      )
+    }
+  }
 }
 
 @Composable
@@ -121,82 +121,81 @@ private fun Menu(
     onOptionsMenuItemClick: (TopBarOptionsMenuItem) -> Unit,
     onPiHoleConnectionClick: (id: String) -> Unit,
 ) {
-    val selectedId = selectedPiHoleConnectionId ?: piHoleConnections.keys.firstOrNull()
+  val selectedId = selectedPiHoleConnectionId ?: piHoleConnections.keys.firstOrNull()
 
-    if (piHoleConnections.count() > 1) {
-        piHoleConnections.forEach { (id, connection) ->
-            DropdownMenuItem(
-                leadingIcon = { RadioButton(selected = id == selectedId, onClick = null) },
-                text = { Text("${connection.metadata.name}@${connection.configuration.host}") },
-                onClick = { onPiHoleConnectionClick(id) },
-            )
-        }
-        HorizontalDivider()
+  if (piHoleConnections.count() > 1) {
+    piHoleConnections.forEach { (id, connection) ->
+      DropdownMenuItem(
+          leadingIcon = { RadioButton(selected = id == selectedId, onClick = null) },
+          text = { Text("${connection.metadata.name}@${connection.configuration.host}") },
+          onClick = { onPiHoleConnectionClick(id) },
+      )
     }
+    HorizontalDivider()
+  }
 
-    optionsMenuItems.forEach {
-        DropdownMenuItem(
-            leadingIcon = { Icon(imageVector = it.icon, contentDescription = null) },
-            text = { Text(stringResource(it.labelResourceId)) },
-            onClick = { onOptionsMenuItemClick(it) },
-        )
-    }
+  optionsMenuItems.forEach {
+    DropdownMenuItem(
+        leadingIcon = { Icon(imageVector = it.icon, contentDescription = null) },
+        text = { Text(stringResource(it.labelResourceId)) },
+        onClick = { onOptionsMenuItemClick(it) },
+    )
+  }
 }
 
 @Composable
 fun TopBarProgressIndicator(visible: Boolean) {
-    AnimatedVisibility(
-        visible,
-        modifier = Modifier.zIndex(1f),
-        enter = slideInVertically(),
-        exit = slideOutVertically(),
-    ) {
-        LinearProgressIndicator(
-            Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.secondary,
-        )
-    }
+  AnimatedVisibility(
+      visible,
+      modifier = Modifier.zIndex(1f),
+      enter = slideInVertically(),
+      exit = slideOutVertically(),
+  ) {
+    LinearProgressIndicator(
+        Modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.secondary,
+    )
+  }
 }
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun RootTopAppBarPreview() {
-    PiHoleConnectTheme { TopBar(title = "Pi-Hole Connect", backButtonEnabled = false) }
+  PiHoleConnectTheme { TopBar(title = "Pi-Hole Connect", backButtonEnabled = false) }
 }
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun NestedTopBarPreview() {
-    PiHoleConnectTheme { TopBar(title = "Pi-Hole Connect", backButtonEnabled = true) }
+  PiHoleConnectTheme { TopBar(title = "Pi-Hole Connect", backButtonEnabled = true) }
 }
 
 @Preview(showBackground = true)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun MenuPreview() {
-    PiHoleConnectTheme {
-        Column {
-            val piHoleConnections =
-                listOf((0..4)).flatten().associate {
-                    it.toString() to PiHoleConnection.newBuilder().populateDefaultValues().build()
-                }
+  PiHoleConnectTheme {
+    Column {
+      val piHoleConnections =
+          listOf((0..4)).flatten().associate {
+            it.toString() to PiHoleConnection.newBuilder().populateDefaultValues().build()
+          }
 
-            Menu(
-                piHoleConnections = piHoleConnections,
-                selectedPiHoleConnectionId = piHoleConnections.entries.first().key,
-                optionsMenuItems =
-                    listOf(
-                        TopBarOptionsMenuItem(
-                            Screen.Preferences.route,
-                            Screen.Preferences.labelResourceId,
-                            Icons.Default.Settings,
-                        )
-                    ),
-                onOptionsMenuItemClick = {},
-                onPiHoleConnectionClick = {},
-            )
-        }
+      Menu(
+          piHoleConnections = piHoleConnections,
+          selectedPiHoleConnectionId = piHoleConnections.entries.first().key,
+          optionsMenuItems =
+              listOf(
+                  TopBarOptionsMenuItem(
+                      Screen.Preferences.route,
+                      Screen.Preferences.labelResourceId,
+                      Icons.Default.Settings,
+                  )),
+          onOptionsMenuItemClick = {},
+          onPiHoleConnectionClick = {},
+      )
     }
+  }
 }
