@@ -44,79 +44,81 @@ import okhttp3.OkHttpClient
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class PiHoleConnectModule {
-  @Binds
-  @Singleton
-  abstract fun bindPiHoleRepositoryManager(
-      piHoleRepositoryManager: PiHoleRepositoryManagerImpl
-  ): PiHoleRepositoryManager
-
-  companion object {
-    @Provides
+    @Binds
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder().dns(Ipv4FirstDns()).build()
+    abstract fun bindPiHoleRepositoryManager(
+        piHoleRepositoryManager: PiHoleRepositoryManagerImpl
+    ): PiHoleRepositoryManager
 
-    @Provides
-    @DefaultHttpClient
-    @Singleton
-    fun provideDefaultHttpClient(okHttpClient: OkHttpClient): HttpClient =
-        HttpClient(OkHttp) {
-          engine { preconfigured = okHttpClient }
-          install(ContentNegotiation) { json(PiHoleSerializer.DefaultJson) }
-        }
+    companion object {
+        @Provides
+        @Singleton
+        fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder().dns(Ipv4FirstDns()).build()
 
-    @SuppressLint("AllowAllHostnameVerifier")
-    @TrustAllCertificatesHttpClient
-    @Provides
-    @Singleton
-    fun provideAllowSelfSignedCertificateHttpClient(okHttpClient: OkHttpClient): HttpClient =
-        HttpClient(OkHttp) {
-          engine {
-            val trustManager = NaiveTrustManager()
-            val sslContext =
-                SSLContext.getInstance("TLS").apply { init(null, arrayOf(trustManager), null) }
-            preconfigured =
-                okHttpClient
-                    .newBuilder()
-                    .sslSocketFactory(
-                        sslSocketFactory = sslContext.socketFactory,
-                        trustManager = trustManager,
-                    )
-                    .hostnameVerifier(HostnameVerifier { _, _ -> true })
-                    .build()
-          }
-          install(ContentNegotiation) { json(PiHoleSerializer.DefaultJson) }
-        }
+        @Provides
+        @DefaultHttpClient
+        @Singleton
+        fun provideDefaultHttpClient(okHttpClient: OkHttpClient): HttpClient =
+            HttpClient(OkHttp) {
+                engine { preconfigured = okHttpClient }
+                install(ContentNegotiation) { json(PiHoleSerializer.DefaultJson) }
+            }
 
-    @Provides
-    @Singleton
-    fun provideUserPreferencesDataStore(
-        @ApplicationContext appContext: Context
-    ): DataStore<UserPreferences> =
-        DataStoreFactory.create(
-            serializer = UserPreferencesSerializer,
-            migrations = listOf(),
-            scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
-            produceFile = { appContext.dataStoreFile("preferences.pb") },
-        )
+        @SuppressLint("AllowAllHostnameVerifier")
+        @TrustAllCertificatesHttpClient
+        @Provides
+        @Singleton
+        fun provideAllowSelfSignedCertificateHttpClient(okHttpClient: OkHttpClient): HttpClient =
+            HttpClient(OkHttp) {
+                engine {
+                    val trustManager = NaiveTrustManager()
+                    val sslContext =
+                        SSLContext.getInstance("TLS").apply {
+                            init(null, arrayOf(trustManager), null)
+                        }
+                    preconfigured =
+                        okHttpClient
+                            .newBuilder()
+                            .sslSocketFactory(
+                                sslSocketFactory = sslContext.socketFactory,
+                                trustManager = trustManager,
+                            )
+                            .hostnameVerifier(HostnameVerifier { _, _ -> true })
+                            .build()
+                }
+                install(ContentNegotiation) { json(PiHoleSerializer.DefaultJson) }
+            }
 
-    @Provides
-    @Singleton
-    fun providePiHoleConnectionsDataStore(
-        @ApplicationContext appContext: Context
-    ): DataStore<PiHoleConnections> =
-        DataStoreFactory.create(
-            serializer = PiHoleConnectionsSerializer,
-            migrations = listOf(),
-            scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
-            produceFile = { appContext.dataStoreFile("pi_hole_connections.pb") },
-        )
-  }
+        @Provides
+        @Singleton
+        fun provideUserPreferencesDataStore(
+            @ApplicationContext appContext: Context
+        ): DataStore<UserPreferences> =
+            DataStoreFactory.create(
+                serializer = UserPreferencesSerializer,
+                migrations = listOf(),
+                scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
+                produceFile = { appContext.dataStoreFile("preferences.pb") },
+            )
+
+        @Provides
+        @Singleton
+        fun providePiHoleConnectionsDataStore(
+            @ApplicationContext appContext: Context
+        ): DataStore<PiHoleConnections> =
+            DataStoreFactory.create(
+                serializer = PiHoleConnectionsSerializer,
+                migrations = listOf(),
+                scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
+                produceFile = { appContext.dataStoreFile("pi_hole_connections.pb") },
+            )
+    }
 }
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)
 abstract class PiHoleConnectActivityModule {
-  @Binds
-  @ActivityRetainedScoped
-  abstract fun bindInAppPurchase(inAppPurchaseImpl: InAppPurchaseImpl): InAppPurchase
+    @Binds
+    @ActivityRetainedScoped
+    abstract fun bindInAppPurchase(inAppPurchaseImpl: InAppPurchaseImpl): InAppPurchase
 }

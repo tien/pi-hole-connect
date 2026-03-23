@@ -20,70 +20,73 @@ open class ToolsViewModel
 @Inject
 constructor(private val piHoleRepositoryManager: PiHoleRepositoryManager) : BaseViewModel() {
 
-  enum class Tool {
-    UPDATE_GRAVITY,
-    RESTART_DNS,
-    FLUSH_NETWORK_TABLE,
-    FLUSH_LOG,
-  }
-
-  open val operationLoadState = MutableStateFlow<LoadState<Tool>>(LoadState.Idle())
-
-  @OptIn(ExperimentalCoroutinesApi::class)
-  open val gravityUpdatedAt =
-      piHoleRepositoryManager.selectedPiHoleRepository
-          .filterNotNull()
-          .mapLatest {
-            it.metricsApi.getMetricsSummary().body().gravity?.lastUpdate?.let { lastUpdate ->
-              lastUpdate.toLong() * 1000
-            }
-          }
-          .asViewFlowState()
-
-  fun updateGravity() =
-      performAction(Tool.UPDATE_GRAVITY) {
-        piHoleRepositoryManager.getSelectedPiHoleRepository()?.actionsApi?.actionGravity()
-      }
-
-  fun restartDNS() =
-      performAction(Tool.RESTART_DNS) {
-        piHoleRepositoryManager.getSelectedPiHoleRepository()?.actionsApi?.actionRestartdns()
-      }
-
-  fun flushNetworkTable() =
-      performAction(Tool.FLUSH_NETWORK_TABLE) {
-        piHoleRepositoryManager.getSelectedPiHoleRepository()?.actionsApi?.actionFlusharp()
-      }
-
-  fun flushLog() =
-      performAction(Tool.FLUSH_LOG) {
-        piHoleRepositoryManager.getSelectedPiHoleRepository()?.actionsApi?.actionFlushlogs()
-      }
-
-  private fun performAction(tool: Tool, action: suspend () -> Unit) {
-    operationLoadState.run(viewModelScope, data = tool) {
-      coroutineScope {
-        listOf(
-                // The delay here seems to yield better UX
-                async { delay(1000) },
-                async { action() },
-            )
-            .forEach { it.await() }
-      }
-
-      if (tool == Tool.UPDATE_GRAVITY) {
-        try {
-          // Need to invoke any request as Pi-hole have an error
-          // where the next response after gravity update will always be malformed
-          piHoleRepositoryManager.getSelectedPiHoleRepository()?.ftlInformationApi?.getFtlinfo()
-        } catch (_: Exception) {}
-
-        // Pi-hole need some time to reflect gravity updates
-        delay(1000)
-        doRefresh()
-      }
-
-      tool
+    enum class Tool {
+        UPDATE_GRAVITY,
+        RESTART_DNS,
+        FLUSH_NETWORK_TABLE,
+        FLUSH_LOG,
     }
-  }
+
+    open val operationLoadState = MutableStateFlow<LoadState<Tool>>(LoadState.Idle())
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    open val gravityUpdatedAt =
+        piHoleRepositoryManager.selectedPiHoleRepository
+            .filterNotNull()
+            .mapLatest {
+                it.metricsApi.getMetricsSummary().body().gravity?.lastUpdate?.let { lastUpdate ->
+                    lastUpdate.toLong() * 1000
+                }
+            }
+            .asViewFlowState()
+
+    fun updateGravity() =
+        performAction(Tool.UPDATE_GRAVITY) {
+            piHoleRepositoryManager.getSelectedPiHoleRepository()?.actionsApi?.actionGravity()
+        }
+
+    fun restartDNS() =
+        performAction(Tool.RESTART_DNS) {
+            piHoleRepositoryManager.getSelectedPiHoleRepository()?.actionsApi?.actionRestartdns()
+        }
+
+    fun flushNetworkTable() =
+        performAction(Tool.FLUSH_NETWORK_TABLE) {
+            piHoleRepositoryManager.getSelectedPiHoleRepository()?.actionsApi?.actionFlusharp()
+        }
+
+    fun flushLog() =
+        performAction(Tool.FLUSH_LOG) {
+            piHoleRepositoryManager.getSelectedPiHoleRepository()?.actionsApi?.actionFlushlogs()
+        }
+
+    private fun performAction(tool: Tool, action: suspend () -> Unit) {
+        operationLoadState.run(viewModelScope, data = tool) {
+            coroutineScope {
+                listOf(
+                        // The delay here seems to yield better UX
+                        async { delay(1000) },
+                        async { action() },
+                    )
+                    .forEach { it.await() }
+            }
+
+            if (tool == Tool.UPDATE_GRAVITY) {
+                try {
+                    // Need to invoke any request as Pi-hole have an error
+                    // where the next response after gravity update will always be malformed
+                    piHoleRepositoryManager
+                        .getSelectedPiHoleRepository()
+                        ?.ftlInformationApi
+                        ?.getFtlinfo()
+                } catch (_: Exception) {}
+
+                // Pi-hole need some time to reflect gravity updates
+                delay(1000)
+                doRefresh()
+            }
+
+            tool
+        }
+    }
 }

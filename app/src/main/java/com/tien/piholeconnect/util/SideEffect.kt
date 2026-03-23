@@ -10,13 +10,13 @@ import kotlinx.coroutines.CoroutineScope
 
 @Composable
 fun ChangedEffect(vararg keys: Any?, block: suspend CoroutineScope.() -> Unit) {
-  var isFirst by remember { mutableStateOf(true) }
+    var isFirst by remember { mutableStateOf(true) }
 
-  LaunchedEffect(*keys) {
-    if (isFirst) {
-      isFirst = false
-      return@LaunchedEffect
+    LaunchedEffect(*keys) {
+        if (isFirst) {
+            isFirst = false
+            return@LaunchedEffect
+        }
+        block()
     }
-    block()
-  }
 }

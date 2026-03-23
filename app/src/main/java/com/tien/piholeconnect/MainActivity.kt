@@ -11,15 +11,15 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-  @Inject lateinit var inAppPurchase: InAppPurchase
+    @Inject lateinit var inAppPurchase: InAppPurchase
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-    lifecycle.addObserver(inAppPurchase)
+        lifecycle.addObserver(inAppPurchase)
 
-    enableEdgeToEdge()
+        enableEdgeToEdge()
 
-    setContent { App() }
-  }
+        setContent { App() }
+    }
 }
