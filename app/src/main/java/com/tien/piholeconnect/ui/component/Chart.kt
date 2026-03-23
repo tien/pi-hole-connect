@@ -6,6 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
@@ -93,12 +95,24 @@ fun LineChart(
         val lineProvider =
             LineCartesianLayer.LineProvider.series(
                 dataList.map { lineData ->
+                    val color = lineData.color ?: defaultColor
                     LineCartesianLayer.rememberLine(
-                        fill =
-                            LineCartesianLayer.LineFill.single(
-                                Fill(lineData.color ?: defaultColor)
+                        fill = LineCartesianLayer.LineFill.single(Fill(color)),
+                        areaFill =
+                            LineCartesianLayer.AreaFill.single(
+                                fill =
+                                    Fill(
+                                        brush =
+                                            Brush.verticalGradient(
+                                                colors =
+                                                    listOf(
+                                                        color.copy(alpha = 0.3f),
+                                                        Color.Transparent,
+                                                    )
+                                            )
+                                    )
                             ),
-                        areaFill = null,
+                        pointConnector = LineCartesianLayer.PointConnector.cubic(),
                     )
                 }
             )
