@@ -2,7 +2,7 @@
 
 android-gradle-plugin = "8.13.2"
 androidx-compose-bom = "2026.03.00"
-hilt = "2.57.2"
+hilt = "2.59.2"
 kotlin = "2.2.21"
 ktor = "3.4.1"
 lifecycle = "2.10.0"
