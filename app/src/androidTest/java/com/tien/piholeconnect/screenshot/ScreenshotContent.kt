@@ -44,71 +44,64 @@ private val tabItems =
     )
 
 @Composable
-private fun ScreenshotScaffold(
-    screen: Screen,
-    content: @Composable (PaddingValues) -> Unit,
-) {
-  PiHoleConnectTheme {
-    Scaffold(
-        topBar = {
-          TopBar(
-              title = stringResource(screen.labelResourceId),
-              backButtonEnabled = false,
-              actions = {
-                IconButton(onClick = {}) {
-                  Icon(Icons.Default.MoreVert, contentDescription = null)
-                }
-              },
-          )
-        },
-        bottomBar = {
-          BottomTab(
-              items = tabItems,
-              currentRoute = screen.route,
-              onBottomTabItemClick = {},
-          )
-        },
-        content = content,
-    )
-  }
+private fun ScreenshotScaffold(screen: Screen, content: @Composable (PaddingValues) -> Unit) {
+    PiHoleConnectTheme {
+        Scaffold(
+            topBar = {
+                TopBar(
+                    title = stringResource(screen.labelResourceId),
+                    backButtonEnabled = false,
+                    actions = {
+                        IconButton(onClick = {}) {
+                            Icon(Icons.Default.MoreVert, contentDescription = null)
+                        }
+                    },
+                )
+            },
+            bottomBar = {
+                BottomTab(items = tabItems, currentRoute = screen.route, onBottomTabItemClick = {})
+            },
+            content = content,
+        )
+    }
 }
 
 @Composable
 fun ScreenshotHomeScreen(viewModel: HomeViewModel) {
-  ScreenshotScaffold(screen = Screen.Home) { padding ->
-    Box(Modifier.padding(padding)) { HomeScreen(viewModel = viewModel) }
-  }
+    ScreenshotScaffold(screen = Screen.Home) { padding ->
+        Box(Modifier.padding(padding)) { HomeScreen(viewModel = viewModel) }
+    }
 }
 
 @Composable
 fun ScreenshotStatisticsScreen(viewModel: StatisticsViewModel) {
-  ScreenshotScaffold(screen = Screen.Statistics) { padding ->
-    Box(Modifier.padding(padding)) {
-      StatisticsScreen(
-          snackbarHostState = remember { SnackbarHostState() },
-          viewModel = viewModel,
-      )
+    ScreenshotScaffold(screen = Screen.Statistics) { padding ->
+        Box(Modifier.padding(padding)) {
+            StatisticsScreen(
+                snackbarHostState = remember { SnackbarHostState() },
+                viewModel = viewModel,
+            )
+        }
     }
-  }
 }
 
 @Composable
 fun ScreenshotFilterRulesScreen(viewModel: FilterRulesViewModel) {
-  ScreenshotScaffold(screen = Screen.FilterRules) { padding ->
-    Box(Modifier.padding(padding)) { FilterRulesScreen(viewModel = viewModel) }
-  }
+    ScreenshotScaffold(screen = Screen.FilterRules) { padding ->
+        Box(Modifier.padding(padding)) { FilterRulesScreen(viewModel = viewModel) }
+    }
 }
 
 @Composable
 fun ScreenshotLogScreen(viewModel: LogViewModel) {
-  ScreenshotScaffold(screen = Screen.Log) { padding ->
-    Box(Modifier.padding(padding)) { LogScreen(actions = {}, viewModel = viewModel) }
-  }
+    ScreenshotScaffold(screen = Screen.Log) { padding ->
+        Box(Modifier.padding(padding)) { LogScreen(actions = {}, viewModel = viewModel) }
+    }
 }
 
 @Composable
 fun ScreenshotToolsScreen(viewModel: ToolsViewModel) {
-  ScreenshotScaffold(screen = Screen.Tools) { padding ->
-    Box(Modifier.padding(padding)) { ToolsScreen(viewModel = viewModel) }
-  }
+    ScreenshotScaffold(screen = Screen.Tools) { padding ->
+        Box(Modifier.padding(padding)) { ToolsScreen(viewModel = viewModel) }
+    }
 }

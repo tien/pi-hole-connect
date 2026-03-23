@@ -11,6 +11,6 @@ import okhttp3.Dns
  * prevent them from using this application hence we want to default to IPv4
  */
 class Ipv4FirstDns : Dns {
-  override fun lookup(hostname: String): List<InetAddress> =
-      Dns.SYSTEM.lookup(hostname).sortedByDescending { it is Inet4Address }
+    override fun lookup(hostname: String): List<InetAddress> =
+        Dns.SYSTEM.lookup(hostname).sortedByDescending { it is Inet4Address }
 }

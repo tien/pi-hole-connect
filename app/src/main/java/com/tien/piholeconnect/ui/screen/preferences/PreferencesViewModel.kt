@@ -19,23 +19,23 @@ constructor(
     piHoleConnectionsDataStore: DataStore<PiHoleConnections>,
     private val userPreferencesDataStore: DataStore<UserPreferences>,
 ) : BaseViewModel() {
-  val piHoleConnections =
-      piHoleConnectionsDataStore.data
-          .map { it.connectionsMap }
-          .stateIn(
-              scope = viewModelScope,
-              started = SharingStarted.WhileSubscribed(),
-              initialValue = null,
-          )
+    val piHoleConnections =
+        piHoleConnectionsDataStore.data
+            .map { it.connectionsMap }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(),
+                initialValue = null,
+            )
 
-  val userPreferences =
-      userPreferencesDataStore.data.stateIn(
-          scope = viewModelScope,
-          started = SharingStarted.WhileSubscribed(),
-          initialValue = null,
-      )
+    val userPreferences =
+        userPreferencesDataStore.data.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = null,
+        )
 
-  fun updateUserPreferences(transform: suspend (UserPreferences) -> UserPreferences) {
-    viewModelScope.launch { userPreferencesDataStore.updateData(transform) }
-  }
+    fun updateUserPreferences(transform: suspend (UserPreferences) -> UserPreferences) {
+        viewModelScope.launch { userPreferencesDataStore.updateData(transform) }
+    }
 }

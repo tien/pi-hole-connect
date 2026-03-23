@@ -60,164 +60,175 @@ fun QueryDetail(
     addToWhitelistLoading: Boolean = false,
     addToBlacklistLoading: Boolean = false,
 ) {
-  val loading = addToWhitelistLoading || addToBlacklistLoading
-  val dateFormat = remember { DateFormat.getDateTimeInstance() }
-  val status =
-      query.status?.let { QueryStatus.Companion.fromStatusString(it) } ?: QueryStatus.UNKNOWN
-  val (icon, tint) =
-      when (status.type) {
-        QueryStatusType.BLOCK -> Pair(Icons.Default.GppBad, MaterialTheme.colorScheme.error)
-        QueryStatusType.ALLOW -> Pair(Icons.Default.GppGood, MaterialTheme.colorScheme.success)
-        QueryStatusType.CACHE -> Pair(Icons.Default.Cached, MaterialTheme.colorScheme.info)
-        QueryStatusType.UNKNOWN ->
-            Pair(Icons.AutoMirrored.Filled.Help, LocalContentColor.current.copy(alpha = 0.5f))
-      }
-
-  AlertDialog(
-      onDismissRequest = onDismissRequest,
-      text = {
-        Column(Modifier.padding(top = 8.dp)) {
-          val listItemColors =
-              ListItemDefaults.colors(containerColor = AlertDialogDefaults.containerColor)
-
-          ListItem(
-              leadingContent = { Icon(icon, tint = tint, contentDescription = null) },
-              headlineContent = {
-                SelectionContainer { Text(status.name, fontWeight = FontWeight.Bold, color = tint) }
-              },
-              colors = listItemColors,
-          )
-          ListItem(
-              leadingContent = { Icon(Icons.Default.Schedule, contentDescription = null) },
-              overlineContent = { Text(stringResource(R.string.query_detail_timestamp)) },
-              headlineContent = {
-                SelectionContainer {
-                  if (query.time != null) {
-                    Text(dateFormat.format(query.time * 1000))
-                  }
-                }
-              },
-              colors = listItemColors,
-          )
-          ListItem(
-              leadingContent = { Icon(Icons.Default.Domain, contentDescription = null) },
-              overlineContent = { Text(stringResource(R.string.query_detail_requested_domain)) },
-              headlineContent = {
-                if (query.domain != null) {
-                  SelectionContainer { Text(query.domain) }
-                }
-              },
-              colors = listItemColors,
-          )
-          ListItem(
-              leadingContent = { Icon(Icons.Default.Devices, contentDescription = null) },
-              overlineContent = { Text(stringResource(R.string.query_detail_client)) },
-              headlineContent = {
-                if (query.client?.name != null) {
-                  SelectionContainer { Text(query.client.name) }
-                }
-              },
-              colors = listItemColors,
-          )
-          ListItem(
-              leadingContent = { Icon(Icons.Default.Dns, contentDescription = null) },
-              overlineContent = { Text(stringResource(R.string.query_detail_dns_record_type)) },
-              headlineContent = {
-                if (query.type != null) {
-                  SelectionContainer { Text(query.type) }
-                }
-              },
-              colors = listItemColors,
-          )
-          ListItem(
-              leadingContent = { Icon(Icons.Default.HourglassBottom, contentDescription = null) },
-              overlineContent = { Text(stringResource(R.string.query_detail_response_time)) },
-              headlineContent = {
-                if (query.reply?.time != null) {
-                  SelectionContainer { Text(query.reply.time.milliseconds.toString()) }
-                }
-              },
-              colors = listItemColors,
-          )
+    val loading = addToWhitelistLoading || addToBlacklistLoading
+    val dateFormat = remember { DateFormat.getDateTimeInstance() }
+    val status =
+        query.status?.let { QueryStatus.Companion.fromStatusString(it) } ?: QueryStatus.UNKNOWN
+    val (icon, tint) =
+        when (status.type) {
+            QueryStatusType.BLOCK -> Pair(Icons.Default.GppBad, MaterialTheme.colorScheme.error)
+            QueryStatusType.ALLOW -> Pair(Icons.Default.GppGood, MaterialTheme.colorScheme.success)
+            QueryStatusType.CACHE -> Pair(Icons.Default.Cached, MaterialTheme.colorScheme.info)
+            QueryStatusType.UNKNOWN ->
+                Pair(Icons.AutoMirrored.Filled.Help, LocalContentColor.current.copy(alpha = 0.5f))
         }
-      },
-      confirmButton = {
-        Column(
-            Modifier.fillMaxWidth().padding(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 16.dp),
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-          Box(contentAlignment = Alignment.Center) {
-            TextButton(
-                modifier = Modifier.composed { if (addToWhitelistLoading) alpha(0f) else this },
-                onClick = onWhitelistClick,
-                enabled = !loading,
+
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        text = {
+            Column(Modifier.padding(top = 8.dp)) {
+                val listItemColors =
+                    ListItemDefaults.colors(containerColor = AlertDialogDefaults.containerColor)
+
+                ListItem(
+                    leadingContent = { Icon(icon, tint = tint, contentDescription = null) },
+                    headlineContent = {
+                        SelectionContainer {
+                            Text(status.name, fontWeight = FontWeight.Bold, color = tint)
+                        }
+                    },
+                    colors = listItemColors,
+                )
+                ListItem(
+                    leadingContent = { Icon(Icons.Default.Schedule, contentDescription = null) },
+                    overlineContent = { Text(stringResource(R.string.query_detail_timestamp)) },
+                    headlineContent = {
+                        SelectionContainer {
+                            if (query.time != null) {
+                                Text(dateFormat.format(query.time * 1000))
+                            }
+                        }
+                    },
+                    colors = listItemColors,
+                )
+                ListItem(
+                    leadingContent = { Icon(Icons.Default.Domain, contentDescription = null) },
+                    overlineContent = {
+                        Text(stringResource(R.string.query_detail_requested_domain))
+                    },
+                    headlineContent = {
+                        if (query.domain != null) {
+                            SelectionContainer { Text(query.domain) }
+                        }
+                    },
+                    colors = listItemColors,
+                )
+                ListItem(
+                    leadingContent = { Icon(Icons.Default.Devices, contentDescription = null) },
+                    overlineContent = { Text(stringResource(R.string.query_detail_client)) },
+                    headlineContent = {
+                        if (query.client?.name != null) {
+                            SelectionContainer { Text(query.client.name) }
+                        }
+                    },
+                    colors = listItemColors,
+                )
+                ListItem(
+                    leadingContent = { Icon(Icons.Default.Dns, contentDescription = null) },
+                    overlineContent = {
+                        Text(stringResource(R.string.query_detail_dns_record_type))
+                    },
+                    headlineContent = {
+                        if (query.type != null) {
+                            SelectionContainer { Text(query.type) }
+                        }
+                    },
+                    colors = listItemColors,
+                )
+                ListItem(
+                    leadingContent = {
+                        Icon(Icons.Default.HourglassBottom, contentDescription = null)
+                    },
+                    overlineContent = { Text(stringResource(R.string.query_detail_response_time)) },
+                    headlineContent = {
+                        if (query.reply?.time != null) {
+                            SelectionContainer { Text(query.reply.time.milliseconds.toString()) }
+                        }
+                    },
+                    colors = listItemColors,
+                )
+            }
+        },
+        confirmButton = {
+            Column(
+                Modifier.fillMaxWidth()
+                    .padding(start = 16.dp, top = 0.dp, end = 16.dp, bottom = 16.dp),
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-              Text(stringResource(R.string.query_detail_add_to_whitelist).uppercase())
+                Box(contentAlignment = Alignment.Center) {
+                    TextButton(
+                        modifier =
+                            Modifier.composed { if (addToWhitelistLoading) alpha(0f) else this },
+                        onClick = onWhitelistClick,
+                        enabled = !loading,
+                    ) {
+                        Text(stringResource(R.string.query_detail_add_to_whitelist).uppercase())
+                    }
+                    if (addToWhitelistLoading) {
+                        CircularProgressIndicator(Modifier.size(30.dp))
+                    }
+                }
+                Box(contentAlignment = Alignment.Center) {
+                    TextButton(
+                        modifier =
+                            Modifier.composed { if (addToBlacklistLoading) alpha(0f) else this },
+                        onClick = onBlacklistClick,
+                        enabled = !loading,
+                    ) {
+                        Text(stringResource(R.string.query_detail_add_to_blacklist).uppercase())
+                    }
+                    if (addToBlacklistLoading) {
+                        CircularProgressIndicator(Modifier.size(30.dp))
+                    }
+                }
+                TextButton(onClick = onDismissRequest) {
+                    Text(stringResource(R.string.query_detail_done).uppercase())
+                }
             }
-            if (addToWhitelistLoading) {
-              CircularProgressIndicator(Modifier.size(30.dp))
-            }
-          }
-          Box(contentAlignment = Alignment.Center) {
-            TextButton(
-                modifier = Modifier.composed { if (addToBlacklistLoading) alpha(0f) else this },
-                onClick = onBlacklistClick,
-                enabled = !loading,
-            ) {
-              Text(stringResource(R.string.query_detail_add_to_blacklist).uppercase())
-            }
-            if (addToBlacklistLoading) {
-              CircularProgressIndicator(Modifier.size(30.dp))
-            }
-          }
-          TextButton(onClick = onDismissRequest) {
-            Text(stringResource(R.string.query_detail_done).uppercase())
-          }
-        }
-      },
-  )
+        },
+    )
 }
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun QueryDetailPreview() {
-  PiHoleConnectTheme {
-    QueryDetail(
-        QueryLog(
-            time = 1616407649532.0,
-            type = "IPv6",
-            status = "FORWARDED",
-            domain = "google.com",
-            client = QueryLogClient(name = "android.router"),
-            reply = QueryLogReply(time = 450.0),
-        ),
-        onWhitelistClick = {},
-        onBlacklistClick = {},
-        onDismissRequest = {},
-    )
-  }
+    PiHoleConnectTheme {
+        QueryDetail(
+            QueryLog(
+                time = 1616407649532.0,
+                type = "IPv6",
+                status = "FORWARDED",
+                domain = "google.com",
+                client = QueryLogClient(name = "android.router"),
+                reply = QueryLogReply(time = 450.0),
+            ),
+            onWhitelistClick = {},
+            onBlacklistClick = {},
+            onDismissRequest = {},
+        )
+    }
 }
 
 @Preview
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun QueryDetailLoadingPreview() {
-  PiHoleConnectTheme {
-    QueryDetail(
-        QueryLog(
-            time = 1616407649532.0,
-            type = "IPv6",
-            status = "FORWARDED",
-            domain = "google.com",
-            client = QueryLogClient(name = "android.router"),
-            reply = QueryLogReply(time = 450.0),
-        ),
-        onWhitelistClick = {},
-        onBlacklistClick = {},
-        onDismissRequest = {},
-        addToWhitelistLoading = true,
-    )
-  }
+    PiHoleConnectTheme {
+        QueryDetail(
+            QueryLog(
+                time = 1616407649532.0,
+                type = "IPv6",
+                status = "FORWARDED",
+                domain = "google.com",
+                client = QueryLogClient(name = "android.router"),
+                reply = QueryLogReply(time = 450.0),
+            ),
+            onWhitelistClick = {},
+            onBlacklistClick = {},
+            onDismissRequest = {},
+            addToWhitelistLoading = true,
+        )
+    }
 }

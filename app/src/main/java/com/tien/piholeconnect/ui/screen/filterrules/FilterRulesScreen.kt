@@ -63,183 +63,214 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
-  val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = remember { SnackbarHostState() }
 
-  val dateTimeInstance = remember { DateFormat.getDateInstance() }
-  var isAddDialogVisible by rememberSaveable { mutableStateOf(false) }
+    val dateTimeInstance = remember { DateFormat.getDateInstance() }
+    var isAddDialogVisible by rememberSaveable { mutableStateOf(false) }
 
-  viewModel.SnackBarErrorEffect(snackbarHostState)
+    viewModel.SnackBarErrorEffect(snackbarHostState)
 
-  if (isAddDialogVisible) {
-    AddFilterRuleDialog(
-        value = viewModel.addRuleInputValue,
-        onValueChange = { viewModel.addRuleInputValue = it },
-        isWildcardChecked = viewModel.addRuleIsWildcardChecked,
-        onIsWildcardCheckedChanged = { viewModel.addRuleIsWildcardChecked = it },
-        onDismissRequest = { isAddDialogVisible = false },
-        onConfirmClick = {
-          isAddDialogVisible = false
-          viewModel.addRule()
-        },
-        onCancelClick = {
-          isAddDialogVisible = false
-          viewModel.resetAddRuleDialogInputs()
-        },
-    )
-  }
-
-  val loading by viewModel.loading.collectAsStateWithLifecycle()
-  val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
-  val pullToRefreshState = rememberPullToRefreshState()
-
-  TopBarProgressIndicator(visible = loading && !refreshing)
-
-  Scaffold(
-      snackbarHost = { SnackbarHost(snackbarHostState) },
-      floatingActionButton = {
-        FloatingActionButton(onClick = { isAddDialogVisible = true }) {
-          Icon(
-              Icons.Default.Add,
-              contentDescription = stringResource(R.string.filter_rules_desc_add_filter),
-          )
-        }
-      },
-  ) {
-    PullToRefreshBox(
-        state = pullToRefreshState,
-        isRefreshing = refreshing,
-        onRefresh = { viewModel.refresh() },
-    ) {
-      Column(Modifier.padding(it)) {
-        PrimaryTabRow(selectedTabIndex = viewModel.selectedTab.ordinal) {
-          Tab(
-              selected = viewModel.selectedTab == FilterRulesViewModel.Tab.BLACK,
-              onClick = { viewModel.selectedTab = FilterRulesViewModel.Tab.BLACK },
-              icon = { Icon(Icons.Default.Block, contentDescription = null) },
-              text = { Text(stringResource(R.string.filter_rules_blacklist)) },
-          )
-          Tab(
-              selected = viewModel.selectedTab == FilterRulesViewModel.Tab.WHITE,
-              onClick = { viewModel.selectedTab = FilterRulesViewModel.Tab.WHITE },
-              icon = { Icon(Icons.Default.CheckCircleOutline, contentDescription = null) },
-              text = { Text(stringResource(R.string.filter_rules_whitelist)) },
-          )
-        }
-
-        val rulesState by viewModel.rules.collectAsStateWithLifecycle()
-
-        if (rulesState.data != null) {
-          LazyColumn(contentPadding = PaddingValues(bottom = 80.dp)) {
-            rulesState.data
-                ?.filter {
-                  when (viewModel.selectedTab) {
-                    FilterRulesViewModel.Tab.BLACK -> it.type === GetDomainsInner.Type.DENY
-                    FilterRulesViewModel.Tab.WHITE -> it.type === GetDomainsInner.Type.ALLOW
-                  }
-                }
-                ?.forEach { rule ->
-                  item(rule.id) {
-                    val localDensity = LocalDensity.current
-                    val iconSize = with(localDensity) { 48.dp.toPx() }
-                    val decayAnimationSpec = rememberSplineBasedDecay<Float>()
-                    val anchoredDraggableState = remember {
-                      AnchoredDraggableState(
-                          initialValue = 0,
-                          anchors =
-                              DraggableAnchors {
-                                0 at 0f
-                                1 at -iconSize
-                              },
-                          positionalThreshold = { distance: Float -> distance * 0.5f },
-                          velocityThreshold = { with(localDensity) { 100.dp.toPx() } },
-                          snapAnimationSpec = tween(),
-                          decayAnimationSpec = decayAnimationSpec,
-                      )
-                    }
-
-                    Box(
-                        Modifier.anchoredDraggable(
-                            state = anchoredDraggableState,
-                            orientation = Orientation.Horizontal,
-                        )) {
-                          Box(Modifier.matchParentSize()) {
-                            Row(
-                                Modifier.fillMaxSize().background(MaterialTheme.colorScheme.error),
-                                horizontalArrangement = Arrangement.End,
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                              IconButton(
-                                  modifier = Modifier.fillMaxHeight(),
-                                  onClick = { viewModel.removeRule(rule) },
-                              ) {
-                                Icon(
-                                    Icons.Default.Delete,
-                                    contentDescription =
-                                        stringResource(R.string.filter_rules_desc_delete_filter),
-                                    tint = contentColorFor(MaterialTheme.colorScheme.error),
-                                )
-                              }
-                            }
-                          }
-                          ListItem(
-                              modifier =
-                                  Modifier.offset {
-                                        IntOffset(
-                                            anchoredDraggableState.requireOffset().roundToInt(),
-                                            0,
-                                        )
-                                      }
-                                      .background(MaterialTheme.colorScheme.background),
-                              overlineContent =
-                                  when (rule.kind) {
-                                    GetDomainsInner.Kind.REGEX -> ({
-                                          Text(stringResource(R.string.filter_rules_reg_exr))
-                                        })
-                                    else -> null
-                                  },
-                              headlineContent = {
-                                if (rule.domain != null) {
-                                  Text(rule.domain)
-                                }
-                              },
-                              supportingContent = {
-                                if (rule.dateAdded != null) {
-                                  Text(text = dateTimeInstance.format(rule.dateAdded * 1000L))
-                                }
-                              },
-                              trailingContent = {
-                                if (rule.enabled != null) {
-                                  val scope = rememberCoroutineScope()
-                                  var loading by remember { mutableStateOf(false) }
-
-                                  Switch(
-                                      rule.enabled,
-                                      {
-                                        scope.launch {
-                                          loading = true
-                                          try {
-                                            viewModel.doToggleRule(rule)
-                                          } finally {
-                                            loading = false
-                                          }
-                                        }
-                                      },
-                                      thumbContent = {
-                                        if (loading) {
-                                          CircularProgressIndicator()
-                                        }
-                                      },
-                                      enabled = !loading,
-                                  )
-                                }
-                              },
-                          )
-                        }
-                  }
-                }
-          }
-        }
-      }
+    if (isAddDialogVisible) {
+        AddFilterRuleDialog(
+            value = viewModel.addRuleInputValue,
+            onValueChange = { viewModel.addRuleInputValue = it },
+            isWildcardChecked = viewModel.addRuleIsWildcardChecked,
+            onIsWildcardCheckedChanged = { viewModel.addRuleIsWildcardChecked = it },
+            onDismissRequest = { isAddDialogVisible = false },
+            onConfirmClick = {
+                isAddDialogVisible = false
+                viewModel.addRule()
+            },
+            onCancelClick = {
+                isAddDialogVisible = false
+                viewModel.resetAddRuleDialogInputs()
+            },
+        )
     }
-  }
+
+    val loading by viewModel.loading.collectAsStateWithLifecycle()
+    val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
+    val pullToRefreshState = rememberPullToRefreshState()
+
+    TopBarProgressIndicator(visible = loading && !refreshing)
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { isAddDialogVisible = true }) {
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = stringResource(R.string.filter_rules_desc_add_filter),
+                )
+            }
+        },
+    ) {
+        PullToRefreshBox(
+            state = pullToRefreshState,
+            isRefreshing = refreshing,
+            onRefresh = { viewModel.refresh() },
+        ) {
+            Column(Modifier.padding(it)) {
+                PrimaryTabRow(selectedTabIndex = viewModel.selectedTab.ordinal) {
+                    Tab(
+                        selected = viewModel.selectedTab == FilterRulesViewModel.Tab.BLACK,
+                        onClick = { viewModel.selectedTab = FilterRulesViewModel.Tab.BLACK },
+                        icon = { Icon(Icons.Default.Block, contentDescription = null) },
+                        text = { Text(stringResource(R.string.filter_rules_blacklist)) },
+                    )
+                    Tab(
+                        selected = viewModel.selectedTab == FilterRulesViewModel.Tab.WHITE,
+                        onClick = { viewModel.selectedTab = FilterRulesViewModel.Tab.WHITE },
+                        icon = {
+                            Icon(Icons.Default.CheckCircleOutline, contentDescription = null)
+                        },
+                        text = { Text(stringResource(R.string.filter_rules_whitelist)) },
+                    )
+                }
+
+                val rulesState by viewModel.rules.collectAsStateWithLifecycle()
+
+                if (rulesState.data != null) {
+                    LazyColumn(contentPadding = PaddingValues(bottom = 80.dp)) {
+                        rulesState.data
+                            ?.filter {
+                                when (viewModel.selectedTab) {
+                                    FilterRulesViewModel.Tab.BLACK ->
+                                        it.type === GetDomainsInner.Type.DENY
+                                    FilterRulesViewModel.Tab.WHITE ->
+                                        it.type === GetDomainsInner.Type.ALLOW
+                                }
+                            }
+                            ?.forEach { rule ->
+                                item(rule.id) {
+                                    val localDensity = LocalDensity.current
+                                    val iconSize = with(localDensity) { 48.dp.toPx() }
+                                    val decayAnimationSpec = rememberSplineBasedDecay<Float>()
+                                    val anchoredDraggableState = remember {
+                                        AnchoredDraggableState(
+                                            initialValue = 0,
+                                            anchors =
+                                                DraggableAnchors {
+                                                    0 at 0f
+                                                    1 at -iconSize
+                                                },
+                                            positionalThreshold = { distance: Float ->
+                                                distance * 0.5f
+                                            },
+                                            velocityThreshold = {
+                                                with(localDensity) { 100.dp.toPx() }
+                                            },
+                                            snapAnimationSpec = tween(),
+                                            decayAnimationSpec = decayAnimationSpec,
+                                        )
+                                    }
+
+                                    Box(
+                                        Modifier.anchoredDraggable(
+                                            state = anchoredDraggableState,
+                                            orientation = Orientation.Horizontal,
+                                        )
+                                    ) {
+                                        Box(Modifier.matchParentSize()) {
+                                            Row(
+                                                Modifier.fillMaxSize()
+                                                    .background(MaterialTheme.colorScheme.error),
+                                                horizontalArrangement = Arrangement.End,
+                                                verticalAlignment = Alignment.CenterVertically,
+                                            ) {
+                                                IconButton(
+                                                    modifier = Modifier.fillMaxHeight(),
+                                                    onClick = { viewModel.removeRule(rule) },
+                                                ) {
+                                                    Icon(
+                                                        Icons.Default.Delete,
+                                                        contentDescription =
+                                                            stringResource(
+                                                                R.string
+                                                                    .filter_rules_desc_delete_filter
+                                                            ),
+                                                        tint =
+                                                            contentColorFor(
+                                                                MaterialTheme.colorScheme.error
+                                                            ),
+                                                    )
+                                                }
+                                            }
+                                        }
+                                        ListItem(
+                                            modifier =
+                                                Modifier.offset {
+                                                        IntOffset(
+                                                            anchoredDraggableState
+                                                                .requireOffset()
+                                                                .roundToInt(),
+                                                            0,
+                                                        )
+                                                    }
+                                                    .background(
+                                                        MaterialTheme.colorScheme.background
+                                                    ),
+                                            overlineContent =
+                                                when (rule.kind) {
+                                                    GetDomainsInner.Kind.REGEX -> ({
+                                                            Text(
+                                                                stringResource(
+                                                                    R.string.filter_rules_reg_exr
+                                                                )
+                                                            )
+                                                        })
+                                                    else -> null
+                                                },
+                                            headlineContent = {
+                                                if (rule.domain != null) {
+                                                    Text(rule.domain)
+                                                }
+                                            },
+                                            supportingContent = {
+                                                if (rule.dateAdded != null) {
+                                                    Text(
+                                                        text =
+                                                            dateTimeInstance.format(
+                                                                rule.dateAdded * 1000L
+                                                            )
+                                                    )
+                                                }
+                                            },
+                                            trailingContent = {
+                                                if (rule.enabled != null) {
+                                                    val scope = rememberCoroutineScope()
+                                                    var loading by remember {
+                                                        mutableStateOf(false)
+                                                    }
+
+                                                    Switch(
+                                                        rule.enabled,
+                                                        {
+                                                            scope.launch {
+                                                                loading = true
+                                                                try {
+                                                                    viewModel.doToggleRule(rule)
+                                                                } finally {
+                                                                    loading = false
+                                                                }
+                                                            }
+                                                        },
+                                                        thumbContent = {
+                                                            if (loading) {
+                                                                CircularProgressIndicator()
+                                                            }
+                                                        },
+                                                        enabled = !loading,
+                                                    )
+                                                }
+                                            },
+                                        )
+                                    }
+                                }
+                            }
+                    }
+                }
+            }
+        }
+    }
 }

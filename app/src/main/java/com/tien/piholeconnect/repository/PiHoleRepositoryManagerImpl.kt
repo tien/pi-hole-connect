@@ -19,29 +19,31 @@ constructor(
     private val piHoleRepositoryFactory: PiHoleRepository.Factory,
     private val piHoleConnectionsDataStore: DataStore<PiHoleConnections>,
 ) : PiHoleRepositoryManager {
-  @OptIn(ExperimentalCoroutinesApi::class)
-  override val selectedPiHoleRepository =
-      piHoleConnectionsDataStore.data
-          .map {
-            it.getSelectedConnection()?.let { (id, connection) -> id to connection.configuration }
-          }
-          .distinctUntilChanged()
-          .map { it?.let { piHoleRepositoryFactory.create(it.first, it.second) } }
-          .stateIn(
-              scope = MainScope(),
-              started = SharingStarted.WhileSubscribed(5_000, 0),
-              initialValue = null,
-          )
-          .mapLatest { it?.authenticate() }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override val selectedPiHoleRepository =
+        piHoleConnectionsDataStore.data
+            .map {
+                it.getSelectedConnection()?.let { (id, connection) ->
+                    id to connection.configuration
+                }
+            }
+            .distinctUntilChanged()
+            .map { it?.let { piHoleRepositoryFactory.create(it.first, it.second) } }
+            .stateIn(
+                scope = MainScope(),
+                started = SharingStarted.WhileSubscribed(5_000, 0),
+                initialValue = null,
+            )
+            .mapLatest { it?.authenticate() }
 
-  override suspend fun getSelectedPiHoleRepository(): PiHoleRepository? {
-    return selectedPiHoleRepository.firstOrNull()
-  }
-
-  override suspend fun setSelectedPiHole(id: String) {
-    piHoleConnectionsDataStore.updateData {
-      require(it.containsConnections(id))
-      it.toBuilder().setSelectedConnectionId(id).build()
+    override suspend fun getSelectedPiHoleRepository(): PiHoleRepository? {
+        return selectedPiHoleRepository.firstOrNull()
     }
-  }
+
+    override suspend fun setSelectedPiHole(id: String) {
+        piHoleConnectionsDataStore.updateData {
+            require(it.containsConnections(id))
+            it.toBuilder().setSelectedConnectionId(id).build()
+        }
+    }
 }
