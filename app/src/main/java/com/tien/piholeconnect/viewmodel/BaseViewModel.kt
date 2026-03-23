@@ -84,8 +84,9 @@ open class BaseViewModel : ViewModel() {
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val loadingFlow =
-        flows.flatMapLatest { combine(it) { values -> values.any { it is LoadState.Loading } } }
+    private val loadingFlow = flows.flatMapLatest {
+        combine(it) { values -> values.any { it is LoadState.Loading } }
+    }
 
     open val loading =
         loadingFlow.stateIn(
