@@ -1,13 +1,19 @@
 import com.google.protobuf.gradle.id
+import org.gradle.api.DefaultTask
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.tasks.OutputDirectory
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-val openApiOutput = file("${layout.buildDirectory.asFile.get().path}/generated/source/open-api")
+abstract class OpenApiKotlinSources : DefaultTask() {
+    @get:OutputDirectory abstract val sourceDir: DirectoryProperty
+}
+
+val openApiOutput = layout.buildDirectory.dir("generated/source/open-api")
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose)
     alias(libs.plugins.hilt)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.openapi.generator)
@@ -50,15 +56,31 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlin { compilerOptions { jvmTarget = JvmTarget.JVM_17 } }
-
     buildFeatures { compose = true }
 
     packaging { resources { excludes.add("/META-INF/{AL2.0,LGPL2.1}") } }
+}
 
-    sourceSets.getByName("main") { kotlin { srcDir(File(openApiOutput, "debug/kotlin")) } }
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_17
+        freeCompilerArgs.add("-Xannotation-default-target=param-property")
+    }
+}
 
-    tasks { preBuild { dependsOn(openApiGenerate) } }
+val openApiKotlinSources =
+    tasks.register<OpenApiKotlinSources>("openApiKotlinSources") {
+        dependsOn("openApiGenerate")
+        sourceDir = openApiOutput.map { it.dir("debug/kotlin") }
+    }
+
+androidComponents {
+    onVariants { variant ->
+        variant.sources.kotlin?.addGeneratedSourceDirectory(
+            openApiKotlinSources,
+            OpenApiKotlinSources::sourceDir,
+        )
+    }
 }
 
 protobuf {
@@ -71,8 +93,8 @@ openApiGenerate {
     generatorName = "kotlin"
     remoteInputSpec =
         "https://raw.githubusercontent.com/tien/FTL/refs/heads/fix/batch-delete-request-body/src/api/docs/content/specs/main.yaml"
-    outputDir = openApiOutput.absolutePath
-    ignoreFileOverride = "${projectDir.path}/openapi-generator-ignore"
+    outputDir = openApiOutput
+    ignoreFileOverride = layout.projectDirectory.file("openapi-generator-ignore")
     library = "multiplatform"
     packageName = "${android.namespace}.repository"
     additionalProperties =

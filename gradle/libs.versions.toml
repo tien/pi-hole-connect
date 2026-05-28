@@ -1,16 +1,16 @@
 [versions]
 
-android-gradle-plugin = "8.13.2"
-androidx-compose-bom = "2026.03.00"
-hilt = "2.57.2"
-kotlin = "2.2.21"
-ktor = "3.4.1"
+android-gradle-plugin = "9.2.1"
+androidx-compose-bom = "2026.05.01"
+hilt = "2.59.2"
+kotlin = "2.3.0"
+ktor = "3.5.0"
 lifecycle = "2.10.0"
-protoBufJavaLite = "4.34.1"
-vico = "3.0.3"
+protoBufJavaLite = "4.35.0"
+vico = "3.1.0"
 
 [libraries]
-android-billingclient-ktx = { module = "com.android.billingclient:billing-ktx", version = "8.3.0" }
+android-billingclient-ktx = { module = "com.android.billingclient:billing-ktx", version = "9.0.0" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.13.0" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidx-compose-bom" }
 androidx-compose-iconsExtended = { module = "androidx.compose.material:material-icons-extended" }
@@ -22,18 +22,18 @@ androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-com
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 androidx-lifecycle-viewModelCompose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
-androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.9.7" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version = "2.9.8" }
 androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
 androidx-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version = "3.7.0" }
 androidx-test-ext-junit = { module = "androidx.test.ext:junit", version = "1.3.0" }
-google-android-material = { module = "com.google.android.material:material", version = "1.13.0" }
+google-android-material = { module = "com.google.android.material:material", version = "1.14.0" }
 google-dagger-hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 google-dagger-hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 google-protobuf-javalite = { module = "com.google.protobuf:protobuf-javalite", version.ref = "protoBufJavaLite" }
 junit-junit = { module = "junit:junit", version = "4.13.2" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
-kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 ktor-client-contentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
@@ -46,7 +46,7 @@ vico-compose-material3 = { module = "com.patrykandpatrick.vico:compose-m3", vers
 [bundles]
 androidTest = ["androidx-test-espresso-core", "androidx-test-ext-junit", "androidx-compose-ui-test-junit4", "tools-screengrab"]
 compose = ["androidx-compose-iconsExtended", "androidx-compose-material3", "androidx-compose-ui-tooling"]
-kotlin = ["kotlin-reflect", "kotlin-serialization"]
+kotlin = ["kotlin-reflect", "kotlin-stdlib"]
 ktor = ["ktor-client-auth", "ktor-client-contentNegotiation", "ktor-client-core", "ktor-client-okhttp", "ktor-serialization-json"]
 lifecycle = ["androidx-lifecycle-runtime", "androidx-lifecycle-runtime-compose", "androidx-lifecycle-viewModelCompose"]
 vico = ["vico-compose", "vico-compose-material3"]
@@ -55,9 +55,8 @@ vico = ["vico-compose", "vico-compose-material3"]
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
 compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-ksp = { id = "com.google.devtools.ksp", version = "2.2.21-2.0.4" }
-openapi-generator = { id = "org.openapi.generator", version = "7.20.0" }
-protobuf = { id = "com.google.protobuf", version = "0.9.6" }
-spotless = { id = "com.diffplug.spotless", version = "7.0.3" }
+ksp = { id = "com.google.devtools.ksp", version = "2.3.9" }
+openapi-generator = { id = "org.openapi.generator", version = "7.22.0" }
+protobuf = { id = "com.google.protobuf", version = "0.10.0" }
+spotless = { id = "com.diffplug.spotless", version = "8.6.0" }

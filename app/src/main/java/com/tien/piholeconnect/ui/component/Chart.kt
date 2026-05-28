@@ -112,7 +112,7 @@ fun LineChart(
                                             )
                                     )
                             ),
-                        pointConnector = LineCartesianLayer.PointConnector.cubic(),
+                        interpolator = LineCartesianLayer.Interpolator.cubic(),
                     )
                 }
             )

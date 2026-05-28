@@ -1,8 +1,7 @@
 package com.tien.piholeconnect.ui.screen.filterrules
 
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.AnchoredDraggableDefaults
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
@@ -145,7 +144,6 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
                                 item(rule.id) {
                                     val localDensity = LocalDensity.current
                                     val iconSize = with(localDensity) { 48.dp.toPx() }
-                                    val decayAnimationSpec = rememberSplineBasedDecay<Float>()
                                     val anchoredDraggableState = remember {
                                         AnchoredDraggableState(
                                             initialValue = 0,
@@ -154,14 +152,6 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
                                                     0 at 0f
                                                     1 at -iconSize
                                                 },
-                                            positionalThreshold = { distance: Float ->
-                                                distance * 0.5f
-                                            },
-                                            velocityThreshold = {
-                                                with(localDensity) { 100.dp.toPx() }
-                                            },
-                                            snapAnimationSpec = tween(),
-                                            decayAnimationSpec = decayAnimationSpec,
                                         )
                                     }
 
@@ -169,6 +159,10 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
                                         Modifier.anchoredDraggable(
                                             state = anchoredDraggableState,
                                             orientation = Orientation.Horizontal,
+                                            flingBehavior =
+                                                AnchoredDraggableDefaults.flingBehavior(
+                                                    state = anchoredDraggableState
+                                                ),
                                         )
                                     ) {
                                         Box(Modifier.matchParentSize()) {

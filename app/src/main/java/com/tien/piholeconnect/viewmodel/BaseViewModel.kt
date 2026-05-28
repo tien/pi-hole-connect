@@ -1,6 +1,7 @@
 package com.tien.piholeconnect.viewmodel
 
 import android.R
+import android.content.ClipData
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -15,11 +16,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -140,7 +142,8 @@ open class BaseViewModel : ViewModel() {
     @Composable
     fun SnackBarErrorEffect(snackbarHostState: SnackbarHostState) {
         val context = LocalContext.current
-        val clipboard = LocalClipboardManager.current
+        val clipboard = LocalClipboard.current
+        val coroutineScope = rememberCoroutineScope()
 
         val sensitiveData by sensitiveData.collectAsStateWithLifecycle(listOf())
         val sanitize = { string: String ->
@@ -171,7 +174,10 @@ open class BaseViewModel : ViewModel() {
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            clipboard.setText(AnnotatedString(sanitize(it.stackTraceToString())))
+                            val text = sanitize(it.stackTraceToString())
+                            coroutineScope.launch {
+                                clipboard.setClipEntry(ClipEntry(ClipData.newPlainText("", text)))
+                            }
                             this.errorToDisplay.value = null
                         }
                     ) {
