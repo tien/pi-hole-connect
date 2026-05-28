@@ -5,13 +5,16 @@ import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.tien.piholeconnect.fixtures.Fixtures
 import com.tien.piholeconnect.fixtures.respondJson
 import com.tien.piholeconnect.repository.models.GetDomainsInner
+import com.tien.piholeconnect.ui.screen.filterrules.FilterRulesTestTags
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.http.HttpMethod
 import org.junit.Test
@@ -85,8 +88,20 @@ class FilterRulesScreenE2ETest : E2ETestBase() {
                     it.method == HttpMethod.Post && it.path.startsWith("/api/domains/")
                 }
             }
+            // The refreshed list appends the new entry at the bottom; on the CI
+            // emulator's viewport it falls outside the LazyColumn's compose window,
+            // so it never enters the semantics tree. Scroll the list (targeted by
+            // testTag to avoid ambiguity with other scrollables on the screen) until
+            // the row composes, then assert it is displayed. The waitUntil loop
+            // doubles as the "refresh has happened" gate — until the new row exists
+            // in the underlying data, performScrollToNode throws.
             composeRule.waitUntil(timeoutMillis = 10_000) {
-                composeRule.onAllNodes(hasText(newDomain)).fetchSemanticsNodes().isNotEmpty()
+                runCatching {
+                        composeRule
+                            .onNodeWithTag(FilterRulesTestTags.RulesList)
+                            .performScrollToNode(hasText(newDomain))
+                    }
+                    .isSuccess
             }
             composeRule.onNodeWithText(newDomain).assertIsDisplayed()
         }
