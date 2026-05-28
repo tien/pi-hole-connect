@@ -88,14 +88,28 @@ class FilterRulesScreenE2ETest : E2ETestBase() {
                     it.method == HttpMethod.Post && it.path.startsWith("/api/domains/")
                 }
             }
+            // Wait for at least one GET /api/domains *after* the POST — that proves
+            // addRule() actually fired doRefresh() and the refreshed response
+            // (which includes the new row) has been delivered to the client. The
+            // CI emulator can be much slower than local, so give this a generous
+            // budget rather than relying on the UI-visible assertion alone.
+            val firstIndexAfterPost =
+                mockResponses.recorded.indexOfFirst {
+                    it.method == HttpMethod.Post && it.path.startsWith("/api/domains/")
+                } + 1
+            composeRule.waitUntil(timeoutMillis = 15_000) {
+                mockResponses.recorded.drop(firstIndexAfterPost).any {
+                    it.method == HttpMethod.Get && it.path == "/api/domains"
+                }
+            }
             // The refreshed list appends the new entry at the bottom; on the CI
             // emulator's viewport it falls outside the LazyColumn's compose window,
-            // so it never enters the semantics tree. Scroll the list (targeted by
-            // testTag to avoid ambiguity with other scrollables on the screen) until
-            // the row composes, then assert it is displayed. The waitUntil loop
-            // doubles as the "refresh has happened" gate — until the new row exists
-            // in the underlying data, performScrollToNode throws.
-            composeRule.waitUntil(timeoutMillis = 10_000) {
+            // so it never enters the semantics tree. Scroll the tagged list to
+            // surface the row before asserting it is displayed. Wrap in waitUntil
+            // because the GET being recorded only means the response is *being*
+            // dispatched — the StateFlow update + LazyColumn recomposition may
+            // still be a tick or two behind.
+            composeRule.waitUntil(timeoutMillis = 15_000) {
                 runCatching {
                         composeRule
                             .onNodeWithTag(FilterRulesTestTags.RulesList)
