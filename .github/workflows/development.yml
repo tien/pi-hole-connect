@@ -30,6 +30,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          # pull_request_target defaults to the base branch; force PR head so PR
+          # changes are actually exercised.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
@@ -55,6 +59,17 @@ jobs:
           disable-animations: true
           script: bundle exec fastlane tests
 
+      - if: failure()
+        name: Print test failures
+        run: |
+          shopt -s globstar nullglob
+          for xml in app/build/outputs/androidTest-results/**/*.xml \
+                     app/build/test-results/**/*.xml; do
+            echo "::group::$xml"
+            cat "$xml"
+            echo "::endgroup::"
+          done
+
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -62,6 +77,8 @@ jobs:
           path: |
             app/build/reports/tests/
             app/build/reports/androidTests/
+            app/build/outputs/androidTest-results/
+            app/build/test-results/
           if-no-files-found: ignore
 
   create-test-build:

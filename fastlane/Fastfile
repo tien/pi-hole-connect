@@ -30,7 +30,14 @@ platform :android do # rubocop:disable Metrics/BlockLength
   desc 'Run JVM unit tests and instrumented tests (needs a running emulator/device).'
   lane :tests do
     gradle(task: 'test')
-    gradle(task: 'connectedAndroidTest')
+    # Exclude the screengrab-driven screenshot suite: it's only meant to run via the
+    # `screenshots` lane (fastlane screengrab CLI handles the locale/screenshot wiring).
+    # Running it under a plain connectedAndroidTest fails because the screengrab harness
+    # isn't set up.
+    gradle(
+      task: 'connectedAndroidTest',
+      flags: '-Pandroid.testInstrumentationRunnerArguments.notPackage=com.tien.piholeconnect.screenshot'
+    )
   end
 
   lane :screenshots do |options|
