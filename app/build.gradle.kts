@@ -33,7 +33,7 @@ android {
         versionCode = 1
         versionName = "SNAPSHOT"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.tien.piholeconnect.HiltTestRunner"
         vectorDrawables { useSupportLibrary = true }
     }
 
@@ -135,5 +135,6 @@ dependencies {
 
     testImplementation(libs.junit.junit)
     androidTestImplementation(libs.bundles.androidTest)
+    kspAndroidTest(libs.google.dagger.hilt.compiler)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
