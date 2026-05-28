@@ -1,12 +1,15 @@
 package com.tien.piholeconnect.e2e
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.tien.piholeconnect.fixtures.Fixtures
@@ -85,8 +88,21 @@ class FilterRulesScreenE2ETest : E2ETestBase() {
                     it.method == HttpMethod.Post && it.path.startsWith("/api/domains/")
                 }
             }
+            // The refresh appends the new row at the bottom of the LazyColumn; on
+            // shorter emulator screens it sits below the fold, which keeps it out
+            // of the semantics tree. Scroll the list to surface the row before
+            // asserting — performScrollToNode also waits for the refreshed list
+            // to compose, so this doubles as the "data has arrived" wait.
             composeRule.waitUntil(timeoutMillis = 10_000) {
-                composeRule.onAllNodes(hasText(newDomain)).fetchSemanticsNodes().isNotEmpty()
+                try {
+                    composeRule
+                        .onAllNodes(hasScrollAction())
+                        .onLast()
+                        .performScrollToNode(hasText(newDomain))
+                    true
+                } catch (_: Throwable) {
+                    false
+                }
             }
             composeRule.onNodeWithText(newDomain).assertIsDisplayed()
         }
