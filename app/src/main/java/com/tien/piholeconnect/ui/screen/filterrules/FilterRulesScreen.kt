@@ -47,7 +47,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -60,10 +59,6 @@ import com.tien.piholeconnect.ui.component.TopBarProgressIndicator
 import java.text.DateFormat
 import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
-
-object FilterRulesTestTags {
-    const val RulesList = "filter_rules_list"
-}
 
 @Composable
 fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
@@ -135,10 +130,7 @@ fun FilterRulesScreen(viewModel: FilterRulesViewModel = hiltViewModel()) {
                 val rulesState by viewModel.rules.collectAsStateWithLifecycle()
 
                 if (rulesState.data != null) {
-                    LazyColumn(
-                        modifier = Modifier.testTag(FilterRulesTestTags.RulesList),
-                        contentPadding = PaddingValues(bottom = 80.dp),
-                    ) {
+                    LazyColumn(contentPadding = PaddingValues(bottom = 80.dp)) {
                         rulesState.data
                             ?.filter {
                                 when (viewModel.selectedTab) {
