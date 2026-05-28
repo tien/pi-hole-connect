@@ -67,7 +67,10 @@ class FilterRulesScreenE2ETest : E2ETestBase() {
 
         launchApp().use {
             navigateToFilterRules()
-            composeRule.waitUntil(timeoutMillis = 10_000) {
+            // CI's API 34 emulator can be much slower than the local emulator —
+            // bump every wait that touches the screen / HTTP layer to a 30s
+            // budget so a single slow recomposition doesn't fail the test.
+            composeRule.waitUntil(timeoutMillis = 30_000) {
                 composeRule
                     .onAllNodes(hasText("ads.example.com"))
                     .fetchSemanticsNodes()
@@ -76,28 +79,26 @@ class FilterRulesScreenE2ETest : E2ETestBase() {
 
             composeRule.onNodeWithContentDescription("Add filter rule").performClick()
 
-            composeRule.waitUntil(timeoutMillis = 5_000) {
+            composeRule.waitUntil(timeoutMillis = 30_000) {
                 composeRule.onAllNodes(hasText("Add rule")).fetchSemanticsNodes().isNotEmpty()
             }
 
             composeRule.onAllNodes(hasSetTextAction()).onFirst().performTextInput(newDomain)
             composeRule.onNodeWithText("ADD").performClick()
 
-            composeRule.waitUntil(timeoutMillis = 5_000) {
+            composeRule.waitUntil(timeoutMillis = 30_000) {
                 mockResponses.recorded.any {
                     it.method == HttpMethod.Post && it.path.startsWith("/api/domains/")
                 }
             }
             // Wait for at least one GET /api/domains *after* the POST — that proves
             // addRule() actually fired doRefresh() and the refreshed response
-            // (which includes the new row) has been delivered to the client. The
-            // CI emulator can be much slower than local, so give this a generous
-            // budget rather than relying on the UI-visible assertion alone.
+            // (which includes the new row) has been delivered to the client.
             val firstIndexAfterPost =
                 mockResponses.recorded.indexOfFirst {
                     it.method == HttpMethod.Post && it.path.startsWith("/api/domains/")
                 } + 1
-            composeRule.waitUntil(timeoutMillis = 15_000) {
+            composeRule.waitUntil(timeoutMillis = 30_000) {
                 mockResponses.recorded.drop(firstIndexAfterPost).any {
                     it.method == HttpMethod.Get && it.path == "/api/domains"
                 }
@@ -109,7 +110,7 @@ class FilterRulesScreenE2ETest : E2ETestBase() {
             // because the GET being recorded only means the response is *being*
             // dispatched — the StateFlow update + LazyColumn recomposition may
             // still be a tick or two behind.
-            composeRule.waitUntil(timeoutMillis = 15_000) {
+            composeRule.waitUntil(timeoutMillis = 30_000) {
                 runCatching {
                         composeRule
                             .onNodeWithTag(FilterRulesTestTags.RulesList)
