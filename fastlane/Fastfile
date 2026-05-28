@@ -27,6 +27,12 @@ platform :android do # rubocop:disable Metrics/BlockLength
     copy_artifacts(artifacts: [lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]])
   end
 
+  desc 'Run JVM unit tests and instrumented tests (needs a running emulator/device).'
+  lane :tests do
+    gradle(task: 'test')
+    gradle(task: 'connectedAndroidTest')
+  end
+
   lane :screenshots do |options|
     gradle(task: 'clean assembleDebug assembleAndroidTest')
 
