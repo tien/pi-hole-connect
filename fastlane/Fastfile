@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'fileutils'
+
 default_platform(:android)
 
 platform :android do # rubocop:disable Metrics/BlockLength
@@ -58,9 +60,11 @@ platform :android do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  lane :release do
+  lane :release do # rubocop:disable Metrics/BlockLength
+    version_code = google_play_track_version_codes(track: 'internal').max + 1
+
     android_set_version_code(
-      version_code: google_play_track_version_codes(track: 'internal').max + 1,
+      version_code: version_code,
       gradle_file: 'app/build.gradle.kts'
     )
     android_set_version_name(
@@ -68,10 +72,34 @@ platform :android do # rubocop:disable Metrics/BlockLength
       gradle_file: 'app/build.gradle.kts'
     )
 
+    # "What's new" notes set per locale by the release workflow; Google Play caps each at 500 characters.
+    {
+      'en-US' => 'PLAY_RELEASE_NOTES_EN_US',
+      'de-DE' => 'PLAY_RELEASE_NOTES_DE_DE',
+      'pl-PL' => 'PLAY_RELEASE_NOTES_PL_PL',
+      'ro' => 'PLAY_RELEASE_NOTES_RO'
+    }.each do |locale, env_var|
+      notes = ENV.fetch(env_var, '').strip
+      next if notes.empty?
+
+      dir = "fastlane/metadata/android/#{locale}/changelogs"
+      FileUtils.mkdir_p(dir)
+      File.write("#{dir}/#{version_code}.txt", notes[0, 500])
+    end
+
     gradle(task: 'clean bundleRelease', properties: properties)
-    upload_to_play_store(track: 'internal')
+    upload_to_play_store(
+      track: 'internal',
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
 
     gradle(task: 'clean assembleRelease', properties: properties)
-    set_github_release(is_draft: true, upload_assets: [lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]])
+    set_github_release(
+      is_draft: true,
+      is_generate_release_notes: true,
+      upload_assets: [lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]]
+    )
   end
 end
