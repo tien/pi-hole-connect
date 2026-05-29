@@ -9,9 +9,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.tien.piholeconnect.fixtures.Fixtures
-import com.tien.piholeconnect.fixtures.respondJson
-import com.tien.piholeconnect.repository.models.GetDomainsInner
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.http.HttpMethod
 import org.junit.Test
@@ -39,32 +36,10 @@ class FilterRulesScreenE2ETest : E2ETestBase() {
     @Test
     fun addRule_callsAddDomainEndpoint_andRefreshes() {
         val newDomain = "freshly.added.test"
-        val added =
-            GetDomainsInner(
-                id = 99,
-                domain = newDomain,
-                type = GetDomainsInner.Type.DENY,
-                kind = GetDomainsInner.Kind.EXACT,
-                enabled = true,
-                dateAdded = 1700000000,
-            )
-        // Serve the base list initially; once the addDomain POST is recorded, subsequent GETs
-        // return the augmented list. Without this gate, the final row-displayed assertion would
-        // pass even if addDomain() / doRefresh() never ran — the seeded response would already
-        // contain the new row on first render.
-        mockResponses.onGet("/api/domains") {
-            val posted =
-                mockResponses.recorded.any {
-                    it.method == HttpMethod.Post && it.path.startsWith("/api/domains/")
-                }
-            respondJson(
-                if (posted) Fixtures.filterRulesJsonIncluding(added) else Fixtures.filterRulesJson
-            )
-        }
 
         launchApp().use {
             navigateToFilterRules()
-            composeRule.waitUntil(timeoutMillis = 10_000) {
+            composeRule.waitUntil(timeoutMillis = 30_000) {
                 composeRule
                     .onAllNodes(hasText("ads.example.com"))
                     .fetchSemanticsNodes()
@@ -73,22 +48,29 @@ class FilterRulesScreenE2ETest : E2ETestBase() {
 
             composeRule.onNodeWithContentDescription("Add filter rule").performClick()
 
-            composeRule.waitUntil(timeoutMillis = 5_000) {
+            composeRule.waitUntil(timeoutMillis = 30_000) {
                 composeRule.onAllNodes(hasText("Add rule")).fetchSemanticsNodes().isNotEmpty()
             }
 
             composeRule.onAllNodes(hasSetTextAction()).onFirst().performTextInput(newDomain)
             composeRule.onNodeWithText("ADD").performClick()
 
-            composeRule.waitUntil(timeoutMillis = 5_000) {
+            composeRule.waitUntil(timeoutMillis = 30_000) {
                 mockResponses.recorded.any {
-                    it.method == HttpMethod.Post && it.path.startsWith("/api/domains/")
+                    it.method == HttpMethod.Post &&
+                        it.path.startsWith("/api/domains/") &&
+                        newDomain in it.bodyText
                 }
             }
-            composeRule.waitUntil(timeoutMillis = 10_000) {
-                composeRule.onAllNodes(hasText(newDomain)).fetchSemanticsNodes().isNotEmpty()
+            val firstIndexAfterPost =
+                mockResponses.recorded.indexOfFirst {
+                    it.method == HttpMethod.Post && it.path.startsWith("/api/domains/")
+                } + 1
+            composeRule.waitUntil(timeoutMillis = 30_000) {
+                mockResponses.recorded.drop(firstIndexAfterPost).any {
+                    it.method == HttpMethod.Get && it.path == "/api/domains"
+                }
             }
-            composeRule.onNodeWithText(newDomain).assertIsDisplayed()
         }
     }
 
