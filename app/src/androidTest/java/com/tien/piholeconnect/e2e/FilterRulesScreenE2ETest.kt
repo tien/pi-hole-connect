@@ -55,7 +55,6 @@ class FilterRulesScreenE2ETest : E2ETestBase() {
             composeRule.onAllNodes(hasSetTextAction()).onFirst().performTextInput(newDomain)
             composeRule.onNodeWithText("ADD").performClick()
 
-            // Verify the POST was made with the typed domain in the body.
             composeRule.waitUntil(timeoutMillis = 30_000) {
                 mockResponses.recorded.any {
                     it.method == HttpMethod.Post &&
@@ -63,12 +62,6 @@ class FilterRulesScreenE2ETest : E2ETestBase() {
                         newDomain in it.bodyText
                 }
             }
-            // Verify a follow-up GET /api/domains landed *after* the POST — that's
-            // the doRefresh() the screen runs on success. We assert on the recorded
-            // requests rather than the rendered LazyColumn because the new row sits
-            // outside the CI emulator's viewport (off-screen, not composed) so the
-            // semantics-tree check is flaky there. The follow-up GET is what
-            // "andRefreshes" actually means at the contract level.
             val firstIndexAfterPost =
                 mockResponses.recorded.indexOfFirst {
                     it.method == HttpMethod.Post && it.path.startsWith("/api/domains/")

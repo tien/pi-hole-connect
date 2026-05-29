@@ -29,10 +29,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # pull_request_target events default actions/checkout to the BASE branch,
-      # so test changes inside a PR never reach the runner. Pin the ref to the
-      # PR head SHA (falling back to github.sha for push events) so the CI run
-      # actually exercises the code under review.
+      # pull_request_target defaults to the base branch; pin to the PR head.
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
