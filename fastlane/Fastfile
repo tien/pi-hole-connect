@@ -27,13 +27,16 @@ platform :android do # rubocop:disable Metrics/BlockLength
     copy_artifacts(artifacts: [lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]])
   end
 
-  desc 'Run JVM unit tests and instrumented tests (needs a running emulator/device).'
+  desc 'Run JVM unit tests.'
   lane :tests do
     # Force task re-execution to bypass the Gradle build cache that ships
-    # with the GitHub Actions runner image — without this the androidTest
-    # APK keeps reusing stale bytecode across CI runs and source edits to
-    # tests can fail to take effect.
+    # with the GitHub Actions runner image — without this stale bytecode
+    # from previous runs can be reused even after source edits.
     gradle(task: 'test', flags: '--rerun-tasks')
+  end
+
+  desc 'Run instrumented tests (needs a running emulator/device).'
+  lane :e2e do
     gradle(task: 'connectedAndroidTest', flags: '--rerun-tasks')
   end
 

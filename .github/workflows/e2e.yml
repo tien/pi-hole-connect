@@ -1,0 +1,51 @@
+name: E2E
+
+on:
+  push:
+    branches: [main]
+  pull_request_target:
+    branches: [main]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+
+    steps:
+      # pull_request_target events default actions/checkout to the BASE branch,
+      # so test changes inside a PR never reach the runner. Pin the ref to the
+      # PR head SHA (falling back to github.sha for push events) so the CI run
+      # actually exercises the code under review.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: gradle
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run instrumented tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          disable-animations: true
+          script: bundle exec fastlane e2e
+
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-reports
+          path: app/build/reports/androidTests/
+          if-no-files-found: ignore
