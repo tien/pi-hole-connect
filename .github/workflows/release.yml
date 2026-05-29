@@ -7,12 +7,18 @@ on:
         description: Version Name
         required: true
 
+permissions:
+  contents: write
+  models: read
+
 jobs:
   create-release:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history + tags so we can diff against the last release tag
 
       - uses: actions/setup-java@v5
         with:
@@ -27,6 +33,52 @@ jobs:
       - name: Write keystore to file
         run: echo ${{ secrets.KEYSTORE_BASE64 }} | base64 --decode > $GITHUB_WORKSPACE/keystore.jks
 
+      - name: Collect changes since last release
+        run: |
+          PREV_TAG="$(git describe --tags --abbrev=0 2>/dev/null || true)"
+          git log "${PREV_TAG:+$PREV_TAG..}HEAD" --no-merges --pretty=format:'- %s' > changes.txt
+          echo "Changes since ${PREV_TAG:-start}:"; cat changes.txt
+
+      - name: Generate Play Store notes (English)
+        id: notes_en_us
+        uses: actions/ai-inference@v1
+        with:
+          prompt-file: .github/prompts/play-store-release-notes.prompt.yml
+          input: |
+            language: English
+          file_input: |
+            changes: changes.txt
+
+      - name: Generate Play Store notes (German)
+        id: notes_de_de
+        uses: actions/ai-inference@v1
+        with:
+          prompt-file: .github/prompts/play-store-release-notes.prompt.yml
+          input: |
+            language: German
+          file_input: |
+            changes: changes.txt
+
+      - name: Generate Play Store notes (Polish)
+        id: notes_pl_pl
+        uses: actions/ai-inference@v1
+        with:
+          prompt-file: .github/prompts/play-store-release-notes.prompt.yml
+          input: |
+            language: Polish
+          file_input: |
+            changes: changes.txt
+
+      - name: Generate Play Store notes (Romanian)
+        id: notes_ro
+        uses: actions/ai-inference@v1
+        with:
+          prompt-file: .github/prompts/play-store-release-notes.prompt.yml
+          input: |
+            language: Romanian
+          file_input: |
+            changes: changes.txt
+
       - run: bundle exec fastlane release
         env:
           SUPPLY_JSON_KEY_DATA: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS }}
@@ -39,3 +91,7 @@ jobs:
           FL_SET_GITHUB_RELEASE_TAG_NAME: v${{ github.event.inputs.versionName }}
           FL_SET_GITHUB_RELEASE_COMMITISH: ${{ github.sha }}
           VERSION_NAME: ${{ github.event.inputs.versionName }}
+          PLAY_RELEASE_NOTES_EN_US: ${{ steps.notes_en_us.outputs.response }}
+          PLAY_RELEASE_NOTES_DE_DE: ${{ steps.notes_de_de.outputs.response }}
+          PLAY_RELEASE_NOTES_PL_PL: ${{ steps.notes_pl_pl.outputs.response }}
+          PLAY_RELEASE_NOTES_RO: ${{ steps.notes_ro.outputs.response }}
