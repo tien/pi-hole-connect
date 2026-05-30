@@ -33,7 +33,7 @@ jobs:
 
       - name: Generate Play Store notes (English)
         id: notes_en_us
-        uses: actions/ai-inference@v1
+        uses: actions/ai-inference@v2
         with:
           prompt-file: .github/prompts/play-store-release-notes.prompt.yml
           input: |
@@ -43,7 +43,7 @@ jobs:
 
       - name: Generate Play Store notes (German)
         id: notes_de_de
-        uses: actions/ai-inference@v1
+        uses: actions/ai-inference@v2
         with:
           prompt-file: .github/prompts/play-store-release-notes.prompt.yml
           input: |
@@ -53,7 +53,7 @@ jobs:
 
       - name: Generate Play Store notes (Polish)
         id: notes_pl_pl
-        uses: actions/ai-inference@v1
+        uses: actions/ai-inference@v2
         with:
           prompt-file: .github/prompts/play-store-release-notes.prompt.yml
           input: |
@@ -63,7 +63,7 @@ jobs:
 
       - name: Generate Play Store notes (Romanian)
         id: notes_ro
-        uses: actions/ai-inference@v1
+        uses: actions/ai-inference@v2
         with:
           prompt-file: .github/prompts/play-store-release-notes.prompt.yml
           input: |
