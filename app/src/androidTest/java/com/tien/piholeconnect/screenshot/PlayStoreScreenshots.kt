@@ -35,7 +35,12 @@ class PlayStoreScreenshots {
                 adsBlockingEnabled = true,
             )
         composeTestRule.setContent { ScreenshotHomeScreen(viewModel = viewModel) }
-        composeTestRule.mainClock.advanceTimeBy(2000)
+        composeTestRule.waitForIdle()
+        // The dashboard chart animates in from an empty state (Vico plays the data load as an
+        // animated transition) and Screengrab captures the real device surface, so advancing the
+        // virtual test clock doesn't settle what's drawn. Sleep on the real frame clock to let the
+        // animation finish before grabbing the screenshot.
+        Thread.sleep(2000)
         composeTestRule.waitForIdle()
         Screengrab.screenshot("1_home")
     }
