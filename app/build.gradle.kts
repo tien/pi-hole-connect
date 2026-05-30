@@ -92,7 +92,7 @@ protobuf {
 openApiGenerate {
     generatorName = "kotlin"
     remoteInputSpec =
-        "https://raw.githubusercontent.com/tien/FTL/refs/heads/fix/batch-delete-request-body/src/api/docs/content/specs/main.yaml"
+        "https://raw.githubusercontent.com/pi-hole/FTL/master/src/api/docs/content/specs/main.yaml"
     outputDir = openApiOutput
     ignoreFileOverride = layout.projectDirectory.file("openapi-generator-ignore")
     library = "multiplatform"

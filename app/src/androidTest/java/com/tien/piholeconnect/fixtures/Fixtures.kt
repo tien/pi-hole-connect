@@ -45,6 +45,7 @@ object Fixtures {
                     sid = "test-sid",
                     csrf = "test-csrf",
                     validity = 3600,
+                    message = null,
                 )
         )
     val validSessionJson: String by lazy { json.encodeToString(validSession) }
