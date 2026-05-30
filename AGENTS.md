@@ -25,7 +25,7 @@ CI (`.github/workflows/development.yml`) runs `spotlessCheck`, `rubocop`, and `f
 ## Architecture
 
 ### API layer is code-generated from a remote OpenAPI spec
-`app/build.gradle.kts` configures `openApiGenerate` to pull `https://raw.githubusercontent.com/tien/FTL/.../specs/main.yaml` (currently pinned to a fork's `fix/batch-delete-request-body` branch) and emit Kotlin Multiplatform Ktor clients into `app/build/generated/source/open-api/debug/kotlin`. This is wired into the Variant API via an `OpenApiKotlinSources` task — do not edit generated code under `repository/apis/` or `repository/infrastructure/`. Patterns to exclude from generation live in `app/openapi-generator-ignore`.
+`app/build.gradle.kts` configures `openApiGenerate` to pull `https://raw.githubusercontent.com/pi-hole/FTL/master/.../specs/main.yaml` (the upstream spec on `master`) and emit Kotlin Multiplatform Ktor clients into `app/build/generated/source/open-api/debug/kotlin`. This is wired into the Variant API via an `OpenApiKotlinSources` task — do not edit generated code under `repository/apis/` or `repository/infrastructure/`. Patterns to exclude from generation live in `app/openapi-generator-ignore`.
 
 ### Multi-Pi-hole repository pattern
 A user can register multiple Pi-hole connections. `PiHoleRepositoryManager` (Hilt-bound singleton) tracks the selected connection and exposes a `Flow<PiHoleRepository?>`. `PiHoleRepository` is `@AssistedInject`-constructed per-connection and aggregates all generated API clients with session/cookie auth handled in `authenticate()` / `login()`. Two Ktor `HttpClient`s are provided via the `@DefaultHttpClient` / `@TrustAllCertificatesHttpClient` qualifiers (the latter uses `NaiveTrustManager` for self-signed certs).
