@@ -77,9 +77,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           SHA: ${{ github.sha }} # for a release event this is the commit the tag points at
         run: |
-          # The release workflow generated the screenshots as artifacts on its run for this
-          # commit (the rolling draft was targeted at the same SHA). Locate that run so we can
-          # download those artifacts instead of regenerating them on an emulator here.
           run_id="$(gh run list \
             --workflow=release.yml \
             --commit "${SHA}" \
