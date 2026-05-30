@@ -7,6 +7,7 @@ on:
 permissions:
   contents: read
   models: read
+  actions: read
 
 jobs:
   promote:
@@ -69,6 +70,47 @@ jobs:
             language: Romanian
           file_input: |
             changes: changes.txt
+
+      - name: Find the release build that generated the screenshots
+        id: screenshots_run
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.sha }}
+        run: |
+          run_id="$(gh run list \
+            --workflow=release.yml \
+            --commit "${SHA}" \
+            --status success \
+            --limit 1 \
+            --json databaseId \
+            --jq '.[0].databaseId // empty')"
+          if [ -z "${run_id}" ]; then
+            echo "No successful release run found for ${SHA}; cannot fetch screenshots." >&2
+            exit 1
+          fi
+          echo "run_id=${run_id}" >> "$GITHUB_OUTPUT"
+          echo "Using release run ${run_id} for screenshots"
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: screenshots-phone
+          path: fastlane/metadata/android/en-US/images/phoneScreenshots
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.screenshots_run.outputs.run_id }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: screenshots-sevenInch
+          path: fastlane/metadata/android/en-US/images/sevenInchScreenshots
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.screenshots_run.outputs.run_id }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: screenshots-tenInch
+          path: fastlane/metadata/android/en-US/images/tenInchScreenshots
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.screenshots_run.outputs.run_id }}
 
       - run: bundle exec fastlane promote
         env:
