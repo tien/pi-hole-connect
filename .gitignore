@@ -20,8 +20,11 @@ local.properties
 # deliver temporary files
 **/fastlane/Preview.html
 
-# snapshot generated screenshots
+# fastlane metadata is generated (screengrab screenshots + per-release
+# changelogs), so it stays ignored. The .gitkeep keeps the directory present at
+# checkout so `supply` auto-detects metadata_path before any action runs.
 **/fastlane/metadata/android/**
+!**/fastlane/metadata/android/.gitkeep
 
 # scan temporary files
 **/fastlane/test_output
