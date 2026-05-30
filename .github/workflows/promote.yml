@@ -7,7 +7,7 @@ on:
 permissions:
   contents: read
   models: read
-  actions: read # download screenshot artifacts from the release build's workflow run
+  actions: read
 
 jobs:
   promote:
@@ -75,7 +75,7 @@ jobs:
         id: screenshots_run
         env:
           GH_TOKEN: ${{ github.token }}
-          SHA: ${{ github.sha }} # for a release event this is the commit the tag points at
+          SHA: ${{ github.sha }}
         run: |
           run_id="$(gh run list \
             --workflow=release.yml \
