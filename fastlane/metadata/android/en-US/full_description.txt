@@ -1,0 +1,12 @@
+Pi-hole Connect is the best way to connect to and manage your Pi-hole®
+
+Features:
+- Toggling Pi-hole® on/off with timer
+- Quick statistics
+- Detailed logs
+- Control & modify black/white list
+- Fully open-source for your peace of mind
+
+*This is a third-party application. The Pi-hole team and the development of the Pi-hole software is not related in any way with this application.
+
+*Only support Pi-hole version 6.0 or higher.

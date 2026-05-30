@@ -12,7 +12,59 @@ permissions:
   models: read
 
 jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - device_type: phone
+            profile: pixel_6
+          - device_type: sevenInch
+            profile: Nexus 7
+          - device_type: tenInch
+            profile: Nexus 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: gradle
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Build debug & test APKs for screenshots
+        run: ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest
+
+      - name: Enable KVM for the Android emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Generate ${{ matrix.device_type }} screenshots
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: ${{ matrix.profile }}
+          script: bundle exec fastlane screenshots device_type:${{ matrix.device_type }} skip_build:true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-${{ matrix.device_type }}
+          path: fastlane/metadata/android/en-US/images/${{ matrix.device_type }}Screenshots
+          if-no-files-found: error
+
   create-release:
+    needs: screenshots
     runs-on: ubuntu-latest
 
     steps:
@@ -29,6 +81,21 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: screenshots-phone
+          path: fastlane/metadata/android/en-US/images/phoneScreenshots
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: screenshots-sevenInch
+          path: fastlane/metadata/android/en-US/images/sevenInchScreenshots
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: screenshots-tenInch
+          path: fastlane/metadata/android/en-US/images/tenInchScreenshots
 
       - name: Write keystore to file
         run: echo ${{ secrets.KEYSTORE_BASE64 }} | base64 --decode > $GITHUB_WORKSPACE/keystore.jks
