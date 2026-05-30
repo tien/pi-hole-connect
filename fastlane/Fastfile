@@ -12,6 +12,7 @@ platform :android do # rubocop:disable Metrics/BlockLength
     'android.injected.signing.key.password' => ENV.fetch('KEY_PASSWORD', nil)
   }
 
+  desc 'Build a test artifact and distribute it via Firebase App Distribution. Used for pull requests.'
   lane :development do
     android_set_version_code(
       version_code: ENV.fetch('VERSION_CODE', nil),
@@ -27,6 +28,76 @@ platform :android do # rubocop:disable Metrics/BlockLength
 
     gradle(task: 'clean assembleRelease', properties: properties)
     copy_artifacts(artifacts: [lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]])
+  end
+
+  desc 'Build a release-candidate AAB and upload only the binary to the Play Store internal ' \
+       'track. Runs on every commit to main and emits the APK for the rolling GitHub draft. ' \
+       'Deliberately uploads no listing/metadata/screenshots/changelogs — the store listing is ' \
+       'app-global and submitting it for review here would push it live before any promotion. ' \
+       'All listing changes happen in the promote lane.'
+  lane :internal do
+    version_code = google_play_track_version_codes(track: 'internal').max + 1
+
+    android_set_version_code(
+      version_code: version_code,
+      gradle_file: 'app/build.gradle.kts'
+    )
+    # Version name comes from the rolling GitHub draft's tag (set manually by the maintainer);
+    # the release workflow passes it in. It is a placeholder until a draft tag is chosen.
+    android_set_version_name(
+      version_name: ENV.fetch('VERSION_NAME', nil),
+      gradle_file: 'app/build.gradle.kts'
+    )
+
+    gradle(task: 'clean bundleRelease', properties: properties)
+    upload_to_play_store(
+      track: 'internal',
+      release_status: 'completed',
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      skip_upload_changelogs: true
+    )
+
+    # APK asset for the rolling GitHub draft.
+    gradle(task: 'clean assembleRelease', properties: properties)
+    copy_artifacts(artifacts: [lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]])
+  end
+
+  desc 'Promote the latest internal build to production at 100% and publish the full store ' \
+       'listing (metadata, freshly generated screenshots, and "What\'s new" notes). ' \
+       'Runs when the rolling GitHub draft is published. This is the only step that submits ' \
+       'listing changes for review, so nothing reaches the public listing before a release.'
+  lane :promote do
+    version_code = ENV.fetch('PROMOTE_VERSION_CODE', '').strip
+    version_code = google_play_track_version_codes(track: 'internal').max if version_code.empty?
+    version_code = version_code.to_i
+
+    # "What's new" notes set per locale by the promote workflow; Google Play caps each at 500 characters.
+    {
+      'en-US' => 'PLAY_RELEASE_NOTES_EN_US',
+      'de-DE' => 'PLAY_RELEASE_NOTES_DE_DE',
+      'pl-PL' => 'PLAY_RELEASE_NOTES_PL_PL',
+      'ro' => 'PLAY_RELEASE_NOTES_RO'
+    }.each do |locale, env_var|
+      notes = ENV.fetch(env_var, '').strip
+      next if notes.empty?
+
+      dir = "fastlane/metadata/android/#{locale}/changelogs"
+      FileUtils.mkdir_p(dir)
+      File.write("#{dir}/#{version_code}.txt", notes[0, 500])
+    end
+
+    # Promotes the existing internal build to production at 100% rollout, and uploads the full
+    # store listing in the same edit: version-controlled metadata/graphics, the screenshots the
+    # promote workflow just generated, and the changelogs written above. No new AAB is built.
+    upload_to_play_store(
+      track: 'internal',
+      track_promote_to: 'production',
+      version_code: version_code,
+      rollout: '1',
+      skip_upload_aab: true
+    )
   end
 
   desc 'Run JVM unit tests.'
@@ -60,45 +131,5 @@ platform :android do # rubocop:disable Metrics/BlockLength
         )
       end
     end
-  end
-
-  lane :release do # rubocop:disable Metrics/BlockLength
-    version_code = google_play_track_version_codes(track: 'internal').max + 1
-
-    android_set_version_code(
-      version_code: version_code,
-      gradle_file: 'app/build.gradle.kts'
-    )
-    android_set_version_name(
-      version_name: ENV.fetch('VERSION_NAME', nil),
-      gradle_file: 'app/build.gradle.kts'
-    )
-
-    # "What's new" notes set per locale by the release workflow; Google Play caps each at 500 characters.
-    {
-      'en-US' => 'PLAY_RELEASE_NOTES_EN_US',
-      'de-DE' => 'PLAY_RELEASE_NOTES_DE_DE',
-      'pl-PL' => 'PLAY_RELEASE_NOTES_PL_PL',
-      'ro' => 'PLAY_RELEASE_NOTES_RO'
-    }.each do |locale, env_var|
-      notes = ENV.fetch(env_var, '').strip
-      next if notes.empty?
-
-      dir = "fastlane/metadata/android/#{locale}/changelogs"
-      FileUtils.mkdir_p(dir)
-      File.write("#{dir}/#{version_code}.txt", notes[0, 500])
-    end
-
-    gradle(task: 'clean bundleRelease', properties: properties)
-    # Uploads the AAB plus the full listing: version-controlled metadata/graphics, the
-    # changelogs written above, and the screenshots generated by the release workflow's emulators.
-    upload_to_play_store(track: 'internal')
-
-    gradle(task: 'clean assembleRelease', properties: properties)
-    set_github_release(
-      is_draft: true,
-      is_generate_release_notes: true,
-      upload_assets: [lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]]
-    )
   end
 end

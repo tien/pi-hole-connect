@@ -49,7 +49,10 @@ jobs:
           path: app/build/reports/tests/
           if-no-files-found: ignore
 
+  # Pull requests get a throwaway build via Firebase App Distribution. Commits to main are
+  # released to the Play Store internal track by release.yml instead.
   create-test-build:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
 
     steps:
@@ -85,7 +88,7 @@ jobs:
           FIREBASEAPPDISTRO_APP: ${{ secrets.FIREBASE_APP }}
           FIREBASEAPPDISTRO_TESTERS: ${{ secrets.FIREBASE_TESTERS }}
           FIREBASEAPPDISTRO_RELEASE_NOTES: |
-            ${{ github.event.commits[0].message }}
+            ${{ github.event.pull_request.title }}
 
             ${{ github.sha }}
 

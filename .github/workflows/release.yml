@@ -1,15 +1,17 @@
 name: Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      versionName:
-        description: Version Name
-        required: true
+  push:
+    branches: [main]
 
 permissions:
   contents: write
-  models: read
+
+# A push that lands while a previous run is mid-flight should supersede it: only the
+# newest commit's build belongs on the internal track and in the rolling draft.
+concurrency:
+  group: release
+  cancel-in-progress: true
 
 jobs:
   screenshots:
@@ -63,14 +65,12 @@ jobs:
           path: fastlane/metadata/android/en-US/images/${{ matrix.device_type }}Screenshots
           if-no-files-found: error
 
-  create-release:
+  internal:
     needs: screenshots
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # full history + tags so we can diff against the last release tag
 
       - uses: actions/setup-java@v5
         with:
@@ -100,65 +100,51 @@ jobs:
       - name: Write keystore to file
         run: echo ${{ secrets.KEYSTORE_BASE64 }} | base64 --decode > $GITHUB_WORKSPACE/keystore.jks
 
-      - name: Collect changes since last release
+      - name: Resolve version name from the rolling draft
+        id: version
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          PREV_TAG="$(git describe --tags --abbrev=0 2>/dev/null || true)"
-          git log "${PREV_TAG:+$PREV_TAG..}HEAD" --no-merges --pretty=format:'- %s' > changes.txt
-          echo "Changes since ${PREV_TAG:-start}:"; cat changes.txt
+          # The maintainer sets the next version by naming the draft's tag (e.g. v17.0).
+          # Until a draft exists, builds carry a placeholder version name.
+          tag="$(gh release list --limit 100 --json tagName,isDraft \
+            --jq 'first(.[] | select(.isDraft) | .tagName) // empty')"
+          version="${tag#v}"
+          [ -z "$version" ] && version="0.0.0-snapshot"
+          {
+            echo "tag=${tag:-v0.0.0-snapshot}"
+            echo "version=$version"
+          } >> "$GITHUB_OUTPUT"
+          echo "Building version $version (draft tag ${tag:-<none>})"
 
-      - name: Generate Play Store notes (English)
-        id: notes_en_us
-        uses: actions/ai-inference@v1
-        with:
-          prompt-file: .github/prompts/play-store-release-notes.prompt.yml
-          input: |
-            language: English
-          file_input: |
-            changes: changes.txt
-
-      - name: Generate Play Store notes (German)
-        id: notes_de_de
-        uses: actions/ai-inference@v1
-        with:
-          prompt-file: .github/prompts/play-store-release-notes.prompt.yml
-          input: |
-            language: German
-          file_input: |
-            changes: changes.txt
-
-      - name: Generate Play Store notes (Polish)
-        id: notes_pl_pl
-        uses: actions/ai-inference@v1
-        with:
-          prompt-file: .github/prompts/play-store-release-notes.prompt.yml
-          input: |
-            language: Polish
-          file_input: |
-            changes: changes.txt
-
-      - name: Generate Play Store notes (Romanian)
-        id: notes_ro
-        uses: actions/ai-inference@v1
-        with:
-          prompt-file: .github/prompts/play-store-release-notes.prompt.yml
-          input: |
-            language: Romanian
-          file_input: |
-            changes: changes.txt
-
-      - run: bundle exec fastlane release
+      - name: Build & upload to internal track
+        run: bundle exec fastlane internal
         env:
           SUPPLY_JSON_KEY_DATA: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS }}
           KEYSTORE_FILE: ${{ github.workspace }}/keystore.jks
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          FL_SET_GITHUB_RELEASE_REPOSITORY_NAME: ${{ github.repository }}
-          FL_GITHUB_RELEASE_API_BEARER: ${{ github.token }}
-          FL_SET_GITHUB_RELEASE_TAG_NAME: v${{ github.event.inputs.versionName }}
-          FL_SET_GITHUB_RELEASE_COMMITISH: ${{ github.sha }}
-          VERSION_NAME: ${{ github.event.inputs.versionName }}
-          PLAY_RELEASE_NOTES_EN_US: ${{ steps.notes_en_us.outputs.response }}
-          PLAY_RELEASE_NOTES_DE_DE: ${{ steps.notes_de_de.outputs.response }}
-          PLAY_RELEASE_NOTES_PL_PL: ${{ steps.notes_pl_pl.outputs.response }}
-          PLAY_RELEASE_NOTES_RO: ${{ steps.notes_ro.outputs.response }}
+          VERSION_NAME: ${{ steps.version.outputs.version }}
+
+      - name: Refresh the rolling GitHub draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          # Keep exactly one draft, preserving the maintainer's manually chosen tag. Delete any
+          # existing draft(s), then recreate one pointing at this commit with the fresh APK and
+          # auto-generated notes. The tag becomes a real git tag only when the draft is published.
+          gh release list --limit 100 --json tagName,isDraft \
+            --jq '.[] | select(.isDraft) | .tagName' \
+            | while read -r existing; do
+                [ -n "$existing" ] && gh release delete "$existing" --yes --cleanup-tag || true
+              done
+
+          apk="$(find artifacts -name '*.apk' | head -n1)"
+          gh release create "$TAG" \
+            --draft \
+            --target "$GITHUB_SHA" \
+            --title "$TAG" \
+            --generate-notes \
+            "$apk"
