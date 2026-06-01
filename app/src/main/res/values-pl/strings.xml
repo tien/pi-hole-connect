@@ -71,6 +71,7 @@
     <string name="options_menu_bug_report">Zgłoś problem</string>
     <string name="options_menu_web_dashboard">Panel internetowy</string>
     <string name="pi_hole_connection_desc_scanner">Zeskanuj kod QR</string>
+    <string name="pi_hole_connection_error_host_required">Host jest wymagany</string>
     <string name="pi_hole_connection_hint_scanner"><![CDATA[Można to znaleźć w \"Ustawienia > API / Interfejs sieciowy > Pokaż token API"]]></string>
     <string name="pi_hole_connection_label_api_path">Ścieżka interfejsu API</string>
     <string name="pi_hole_connection_label_basic_auth_password">Podstawowe hasło uwierzytelniające</string>
@@ -89,9 +90,13 @@
     <string name="pi_hole_connection_save">Zapisz</string>
     <string name="pi_hole_connection_title_scanner">Zeskanuj token API</string>
     <string name="preferences_add_pi_hole">Dodaj Pi-hole</string>
+    <string name="preferences_appearance">Wygląd</string>
     <string name="preferences_dynamic_color">Stosuj dynamiczne kolory</string>
     <string name="preferences_my_pi_hole">Mój Pi-holes</string>
     <string name="preferences_theme">Motyw</string>
+    <string name="preferences_theme_dark">Ciemny</string>
+    <string name="preferences_theme_light">Jasny</string>
+    <string name="preferences_theme_system">Systemowy</string>
     <string name="query_detail_add_to_blacklist">Dodaj do czarnej listy</string>
     <string name="query_detail_add_to_whitelist">Dodaj do białej listy</string>
     <string name="query_detail_client">Klient</string>

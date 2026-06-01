@@ -4,6 +4,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.filterToOne
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
@@ -52,7 +53,7 @@ class SetupFlowE2ETest : E2ETestBase() {
                 .filterToOne(hasText("Password", substring = true))
                 .performTextInput("test-password")
 
-            composeRule.onNodeWithText("Save").performClick()
+            composeRule.onNodeWithContentDescription("Save").performClick()
 
             // We should be back on Home, which now renders the seeded summary.
             composeRule.waitUntil(timeoutMillis = 10_000) {

@@ -43,6 +43,8 @@ Serializers are in `data/`. Sessions persist between launches; `PiHoleRepository
 ### UI
 Jetpack Compose + Material 3 + Hilt navigation Compose. Screens live under `ui/screen/<feature>/` as `<Feature>Screen.kt` + `<Feature>ViewModel.kt`. Charts use Vico (`ui/component/Chart.kt`); the line interpolator API changed in Vico 3.1 — use `LineCartesianLayer.Interpolator`, not the deprecated `PointConnector`.
 
+**Strictly follow [Material 3](https://m3.material.io/) for every UI/UX decision.** Treat the official M3 guidelines as the source of truth for components, layout, spacing, typography, color/tonal schemes, elevation, shape, state layers, motion, and accessibility (touch targets, contrast). Prefer the `androidx.compose.material3` component that matches the M3 spec over a hand-rolled equivalent, and pull values from the `MaterialTheme` (`colorScheme`, `typography`, `shapes`) rather than hardcoding. When the spec is ambiguous or a pattern isn't covered, consult https://m3.material.io/ before improvising and keep the choice consistent with the rest of the M3 system.
+
 ## Build conventions
 
 - **AGP 9 + built-in Kotlin**: the `kotlin-android` plugin is intentionally not applied — AGP provides Kotlin support directly. The `kotlin {}` DSL is on `Project`, so configure compiler options at the top level (`kotlin { compilerOptions { … } }`), not inside `android {}` (the latter only works via outer-lambda capture and triggers an IDE warning).
