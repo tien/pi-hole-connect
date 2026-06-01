@@ -84,21 +84,6 @@ jobs:
         with:
           bundler-cache: true
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: screenshots-phone
-          path: fastlane/metadata/android/en-US/images/phoneScreenshots
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: screenshots-sevenInch
-          path: fastlane/metadata/android/en-US/images/sevenInchScreenshots
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: screenshots-tenInch
-          path: fastlane/metadata/android/en-US/images/tenInchScreenshots
-
       - name: Write keystore to file
         run: echo ${{ secrets.KEYSTORE_BASE64 }} | base64 --decode > $GITHUB_WORKSPACE/keystore.jks
 
