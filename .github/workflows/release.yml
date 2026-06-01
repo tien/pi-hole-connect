@@ -124,20 +124,18 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.version.outputs.tag }}
-          SHA: ${{ github.sha }}
         run: |
-          # No git tag is created yet — publishing this draft creates the tag and triggers promote.yml.
+          # No --target: the tag is created from the default branch HEAD when the draft
+          # is published, which also triggers promote.yml.
           apk="$(find artifacts -name '*.apk' | head -n1)"
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release edit "$TAG" --target "$SHA"
             gh release upload "$TAG" "$apk" --clobber
-            echo "Re-staged $TAG at ${SHA:0:8} with a fresh APK."
+            echo "Re-staged $TAG with a fresh APK."
           else
             gh release create "$TAG" \
               --draft \
-              --target "$SHA" \
               --title "$TAG" \
               --generate-notes \
               "$apk"
-            echo "Created draft $TAG at ${SHA:0:8}."
+            echo "Created draft $TAG."
           fi
