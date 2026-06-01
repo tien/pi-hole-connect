@@ -67,6 +67,7 @@
     <string name="options_menu_bug_report">Fehler melden</string>
     <string name="options_menu_web_dashboard">WEB-Dashboard</string>
     <string name="pi_hole_connection_desc_scanner">QR-Code scannen</string>
+    <string name="pi_hole_connection_error_host_required">Host ist erforderlich</string>
     <string name="pi_hole_connection_hint_scanner"><![CDATA[Dies ist in \"Settings > API / Web Interface > Show API token\" zu finden]]></string>
     <string name="pi_hole_connection_label_api_path">API-Pfad</string>
     <string name="pi_hole_connection_label_basic_auth_password">Basisauthentifizierung Passwort</string>
@@ -85,9 +86,13 @@
     <string name="pi_hole_connection_save">Speichern</string>
     <string name="pi_hole_connection_title_scanner">API-Token scannen</string>
     <string name="preferences_add_pi_hole">Pi-hole hinzufügen</string>
+    <string name="preferences_appearance">Darstellung</string>
     <string name="preferences_dynamic_color">Dynamische Farben verwenden</string>
     <string name="preferences_my_pi_hole">Meine Pi-holes</string>
     <string name="preferences_theme">Farbschema</string>
+    <string name="preferences_theme_dark">Dunkel</string>
+    <string name="preferences_theme_light">Hell</string>
+    <string name="preferences_theme_system">System</string>
     <string name="query_detail_add_to_blacklist">Zur Blacklist hinzufügen</string>
     <string name="query_detail_add_to_whitelist">Zur Whitelist hinzufügen</string>
     <string name="query_detail_client">Client</string>

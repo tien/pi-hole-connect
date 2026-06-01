@@ -3,6 +3,7 @@ package com.tien.piholeconnect.ui
 import android.content.Intent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,8 +30,12 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -65,6 +70,15 @@ import com.tien.piholeconnect.ui.screen.tools.ToolsScreen
 import com.tien.piholeconnect.ui.theme.PiHoleConnectTheme
 import com.tien.piholeconnect.util.toKtorURLProtocol
 import io.ktor.http.URLBuilder
+
+/**
+ * Lets a nested screen publish an action into the shared top app bar. The screen sets [value] from
+ * a DisposableEffect and clears it on dispose; [App] renders it in the TopBar's actions slot.
+ */
+val LocalTopBarActions =
+    staticCompositionLocalOf<MutableState<(@Composable RowScope.() -> Unit)?>> {
+        error("LocalTopBarActions not provided")
+    }
 
 @Composable
 fun App(viewModel: AppViewModel = hiltViewModel()) {
@@ -203,71 +217,76 @@ fun App(viewModel: AppViewModel = hiltViewModel()) {
         }
     }
 
+    val topBarActions = remember { mutableStateOf<(@Composable RowScope.() -> Unit)?>(null) }
+
     PiHoleConnectTheme(
         useDarkTheme = isDarkTheme,
         useDynamicColor = userPreferences?.useDynamicColor == true,
     ) {
-        Scaffold(
-            snackbarHost = { SnackbarHost(snackbarHostState) },
-            topBar = {
-                if (currentScreen?.options?.showTopAppBar != false) {
-                    TopBar(
-                        title = title,
-                        backButtonEnabled = currentScreen?.options?.showBackButton == true,
-                        onBackButtonClick = { navController.navigateUp() },
-                        actions = {
-                            if (currentScreen?.options?.showMenus != false) {
-                                defaultOptionsMenu()
-                            }
-                        },
-                    )
-                }
-            },
-            bottomBar = {
-                if (currentScreen?.options?.showTab != false) {
-                    BottomTab(
-                        items = tabItems,
-                        currentRoute = currentRoute ?: Screen.Home.route,
-                        onBottomTabItemClick = {
-                            navController.navigate(it.screen.route) {
-                                popUpTo(navController.graph.startDestinationId) {
-                                    saveState = false
+        CompositionLocalProvider(LocalTopBarActions provides topBarActions) {
+            Scaffold(
+                snackbarHost = { SnackbarHost(snackbarHostState) },
+                topBar = {
+                    if (currentScreen?.options?.showTopAppBar != false) {
+                        TopBar(
+                            title = title,
+                            backButtonEnabled = currentScreen?.options?.showBackButton == true,
+                            onBackButtonClick = { navController.navigateUp() },
+                            actions = {
+                                LocalTopBarActions.current.value?.invoke(this)
+                                if (currentScreen?.options?.showMenus != false) {
+                                    defaultOptionsMenu()
                                 }
-                                launchSingleTop = true
-                                restoreState = false
-                            }
-                        },
-                    )
-                }
-            },
-        ) { padding ->
-            NavHost(
-                navController = navController,
-                startDestination = Screen.Home.route,
-                modifier = Modifier.padding(padding).consumeWindowInsets(padding),
-            ) {
-                composable(Screen.Home.route) { ConnectionGuard { HomeScreen() } }
-                composable(Screen.Statistics.route) {
-                    ConnectionGuard { StatisticsScreen(snackbarHostState = snackbarHostState) }
-                }
-                composable(Screen.Log.route) {
-                    ConnectionGuard { LogScreen(actions = { defaultOptionsMenu() }) }
-                }
-                composable(Screen.FilterRules.route) { ConnectionGuard { FilterRulesScreen() } }
-                composable(Screen.Tools.route) { ConnectionGuard { ToolsScreen() } }
-                composable(Screen.Preferences.route) {
-                    PreferencesScreen(navController = navController)
-                }
-                composable(
-                    "${Screen.PiHoleConnection.route}?id={id}",
-                    arguments = listOf(navArgument("id") { nullable = true }),
+                            },
+                        )
+                    }
+                },
+                bottomBar = {
+                    if (currentScreen?.options?.showTab != false) {
+                        BottomTab(
+                            items = tabItems,
+                            currentRoute = currentRoute ?: Screen.Home.route,
+                            onBottomTabItemClick = {
+                                navController.navigate(it.screen.route) {
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = false
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = false
+                                }
+                            },
+                        )
+                    }
+                },
+            ) { padding ->
+                NavHost(
+                    navController = navController,
+                    startDestination = Screen.Home.route,
+                    modifier = Modifier.padding(padding).consumeWindowInsets(padding),
                 ) {
-                    PiHoleConnectionScreen(
-                        connectionId = it.arguments?.getString("id"),
-                        navController = navController,
-                    )
+                    composable(Screen.Home.route) { ConnectionGuard { HomeScreen() } }
+                    composable(Screen.Statistics.route) {
+                        ConnectionGuard { StatisticsScreen(snackbarHostState = snackbarHostState) }
+                    }
+                    composable(Screen.Log.route) {
+                        ConnectionGuard { LogScreen(actions = { defaultOptionsMenu() }) }
+                    }
+                    composable(Screen.FilterRules.route) { ConnectionGuard { FilterRulesScreen() } }
+                    composable(Screen.Tools.route) { ConnectionGuard { ToolsScreen() } }
+                    composable(Screen.Preferences.route) {
+                        PreferencesScreen(navController = navController)
+                    }
+                    composable(
+                        "${Screen.PiHoleConnection.route}?id={id}",
+                        arguments = listOf(navArgument("id") { nullable = true }),
+                    ) {
+                        PiHoleConnectionScreen(
+                            connectionId = it.arguments?.getString("id"),
+                            navController = navController,
+                        )
+                    }
+                    composable(Screen.TipJar.route) { TipJarScreen() }
                 }
-                composable(Screen.TipJar.route) { TipJarScreen() }
             }
         }
     }

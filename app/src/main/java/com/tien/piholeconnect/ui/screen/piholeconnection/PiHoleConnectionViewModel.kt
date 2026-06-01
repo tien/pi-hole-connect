@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.tien.piholeconnect.model.PiHoleConfiguration
 import com.tien.piholeconnect.model.PiHoleConnection
 import com.tien.piholeconnect.model.PiHoleConnections
@@ -15,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
 import javax.inject.Inject
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class PiHoleConnectionViewModel
@@ -60,7 +62,32 @@ constructor(private val piHoleConnectionsDataStore: DataStore<PiHoleConnections>
         shouldShowDeleteButton = true
     }
 
-    suspend fun save() {
+    val isValid: Boolean
+        get() = host.isNotBlank()
+
+    var isSaving: Boolean by mutableStateOf(false)
+        private set
+
+    /**
+     * Validates, persists the connection, then invokes [onSaved] (e.g. to navigate up). Guards
+     * against re-entrant taps via [isSaving]; failures are swallowed and [isSaving] is reset so the
+     * user can retry. TODO: surface persistence errors (this VM has no BaseViewModel error
+     * channel).
+     */
+    fun save(onSaved: () -> Unit) {
+        if (isSaving || !isValid) return
+        isSaving = true
+        viewModelScope.launch {
+            try {
+                persist()
+                onSaved()
+            } catch (_: Exception) {} finally {
+                isSaving = false
+            }
+        }
+    }
+
+    private suspend fun persist() {
         piHoleConnectionsDataStore.updateData {
             it.toBuilder()
                 .putConnections(
