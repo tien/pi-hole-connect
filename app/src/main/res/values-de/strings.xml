@@ -66,9 +66,12 @@
     <string name="log_screen_status">Status</string>
     <string name="options_menu_bug_report">Fehler melden</string>
     <string name="options_menu_web_dashboard">WEB-Dashboard</string>
+    <string name="pi_hole_connection_app_password_info">Über App-Passwörter</string>
+    <string name="pi_hole_connection_app_password_tooltip_text"><![CDATA[Wenn du 2FA für dein Pi-hole aktiviert hast, gib hier ein App-Passwort anstelle deines normalen Passworts ein. Erstelle eines in der Pi-hole-Weboberfläche unter Settings > Web interface / API.]]></string>
+    <string name="pi_hole_connection_app_password_tooltip_title">Zwei-Faktor-Authentifizierung aktiv?</string>
     <string name="pi_hole_connection_desc_scanner">QR-Code scannen</string>
     <string name="pi_hole_connection_error_host_required">Host ist erforderlich</string>
-    <string name="pi_hole_connection_hint_scanner"><![CDATA[Dies ist in \"Settings > API / Web Interface > Show API token\" zu finden]]></string>
+    <string name="pi_hole_connection_hint_password">Das Passwort deiner Pi-hole-Weboberfläche</string>
     <string name="pi_hole_connection_label_api_path">API-Pfad</string>
     <string name="pi_hole_connection_label_basic_auth_password">Basisauthentifizierung Passwort</string>
     <string name="pi_hole_connection_label_basic_auth_realm">Basisauthentifizierung Realm</string>

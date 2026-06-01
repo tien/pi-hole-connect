@@ -68,9 +68,12 @@
     <string name="log_screen_status">Status</string>
     <string name="options_menu_bug_report">Report issue</string>
     <string name="options_menu_web_dashboard">Web dashboard</string>
+    <string name="pi_hole_connection_app_password_info">About app passwords</string>
+    <string name="pi_hole_connection_app_password_tooltip_text"><![CDATA[If you\'ve enabled 2FA on your Pi-hole, enter an app password here instead of your regular password. Generate one in the Pi-hole web interface under Settings > Web interface / API.]]></string>
+    <string name="pi_hole_connection_app_password_tooltip_title">Using two-factor authentication?</string>
     <string name="pi_hole_connection_desc_scanner">Scan QR code</string>
     <string name="pi_hole_connection_error_host_required">Host is required</string>
-    <string name="pi_hole_connection_hint_scanner"><![CDATA[This can be found at \"Settings > API / Web Interface > Show API token\"]]></string>
+    <string name="pi_hole_connection_hint_password">Your Pi-hole web interface password</string>
     <string name="pi_hole_connection_label_api_path">API Path</string>
     <string name="pi_hole_connection_label_basic_auth_password">Basic Auth password</string>
     <string name="pi_hole_connection_label_basic_auth_realm">Basic Auth realm</string>

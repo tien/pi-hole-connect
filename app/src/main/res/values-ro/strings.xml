@@ -68,9 +68,12 @@
     <string name="log_screen_status">Stare</string>
     <string name="options_menu_bug_report">Reportează problemă</string>
     <string name="options_menu_web_dashboard">Tablou de bord</string>
+    <string name="pi_hole_connection_app_password_info">Despre parolele de aplicație</string>
+    <string name="pi_hole_connection_app_password_tooltip_text"><![CDATA[Dacă ai activat 2FA pe Pi-hole, introdu aici o parolă de aplicație în locul parolei obișnuite. Generează una în interfața web Pi-hole la Settings > Web interface / API.]]></string>
+    <string name="pi_hole_connection_app_password_tooltip_title">Folosești autentificarea în doi pași?</string>
     <string name="pi_hole_connection_desc_scanner">Scanează cod QR</string>
     <string name="pi_hole_connection_error_host_required">Gazda este obligatorie</string>
-    <string name="pi_hole_connection_hint_scanner"><![CDATA[Poate fi găsit la \"Setări > API / Interfață Web > Arată cheia API\"]]></string>
+    <string name="pi_hole_connection_hint_password">Parola interfeței web Pi-hole</string>
     <string name="pi_hole_connection_label_api_path">Cale API</string>
     <string name="pi_hole_connection_label_basic_auth_password">Parola de autentificare de bază</string>
     <string name="pi_hole_connection_label_basic_auth_realm">Domeniu pentru autentificare de bază</string>

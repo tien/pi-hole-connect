@@ -70,9 +70,12 @@
     <string name="log_screen_status">Status</string>
     <string name="options_menu_bug_report">Zgłoś problem</string>
     <string name="options_menu_web_dashboard">Panel internetowy</string>
+    <string name="pi_hole_connection_app_password_info">Informacje o hasłach aplikacji</string>
+    <string name="pi_hole_connection_app_password_tooltip_text"><![CDATA[Jeśli włączyłeś 2FA w swoim Pi-hole, wprowadź tutaj hasło aplikacji zamiast zwykłego hasła. Wygeneruj je w interfejsie sieciowym Pi-hole w sekcji Settings > Web interface / API.]]></string>
+    <string name="pi_hole_connection_app_password_tooltip_title">Używasz uwierzytelniania dwuskładnikowego?</string>
     <string name="pi_hole_connection_desc_scanner">Zeskanuj kod QR</string>
     <string name="pi_hole_connection_error_host_required">Host jest wymagany</string>
-    <string name="pi_hole_connection_hint_scanner"><![CDATA[Można to znaleźć w \"Ustawienia > API / Interfejs sieciowy > Pokaż token API"]]></string>
+    <string name="pi_hole_connection_hint_password">Hasło do interfejsu sieciowego Pi-hole</string>
     <string name="pi_hole_connection_label_api_path">Ścieżka interfejsu API</string>
     <string name="pi_hole_connection_label_basic_auth_password">Podstawowe hasło uwierzytelniające</string>
     <string name="pi_hole_connection_label_basic_auth_realm">Podstawowa przestrzeń uwierzytelniania</string>
