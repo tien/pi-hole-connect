@@ -61,7 +61,6 @@ import io.ktor.http.URLProtocol.Companion.HTTP
 import io.ktor.http.URLProtocol.Companion.HTTPS
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PiHoleConnectionScreen(
     navController: NavController,
@@ -73,8 +72,6 @@ fun PiHoleConnectionScreen(
     val scrollState = rememberScrollState()
     var isDeleteAlertDialogExpanded by rememberSaveable { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
-    val appPasswordTooltipState = rememberTooltipState(isPersistent = true)
-    val scope = rememberCoroutineScope()
     val nextActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
     val doneActions = KeyboardActions(onDone = { focusManager.clearFocus() })
 
@@ -203,35 +200,12 @@ fun PiHoleConnectionScreen(
             visualTransformation = PasswordVisualTransformation(),
             supportingText = { Text(stringResource(R.string.pi_hole_connection_hint_password)) },
             trailingIcon = {
-                TooltipBox(
-                    positionProvider = TooltipDefaults.rememberRichTooltipPositionProvider(),
-                    tooltip = {
-                        RichTooltip(
-                            title = {
-                                Text(
-                                    stringResource(
-                                        R.string.pi_hole_connection_app_password_tooltip_title
-                                    )
-                                )
-                            }
-                        ) {
-                            Text(
-                                stringResource(
-                                    R.string.pi_hole_connection_app_password_tooltip_text
-                                )
-                            )
-                        }
-                    },
-                    state = appPasswordTooltipState,
-                ) {
-                    IconButton(onClick = { scope.launch { appPasswordTooltipState.show() } }) {
-                        Icon(
-                            Icons.Outlined.Info,
-                            contentDescription =
-                                stringResource(R.string.pi_hole_connection_app_password_info),
-                        )
-                    }
-                }
+                InfoTooltipIcon(
+                    title = stringResource(R.string.pi_hole_connection_app_password_tooltip_title),
+                    text = stringResource(R.string.pi_hole_connection_app_password_tooltip_text),
+                    contentDescription =
+                        stringResource(R.string.pi_hole_connection_app_password_info),
+                )
             },
             singleLine = true,
             keyboardOptions =
@@ -324,6 +298,22 @@ fun PiHoleConnectionScreen(
             ) {
                 Text(stringResource(R.string.pi_hole_connection_remove))
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun InfoTooltipIcon(title: String, text: String, contentDescription: String) {
+    val tooltipState = rememberTooltipState(isPersistent = true)
+    val scope = rememberCoroutineScope()
+    TooltipBox(
+        positionProvider = TooltipDefaults.rememberRichTooltipPositionProvider(),
+        tooltip = { RichTooltip(title = { Text(title) }) { Text(text) } },
+        state = tooltipState,
+    ) {
+        IconButton(onClick = { scope.launch { tooltipState.show() } }) {
+            Icon(Icons.Outlined.Info, contentDescription = contentDescription)
         }
     }
 }
