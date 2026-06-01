@@ -1,16 +1,18 @@
 name: Release
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to stage — e.g. v17 (or 17). Becomes the versionName, and the release tag once you publish the draft.'
+        required: true
+        type: string
 
 permissions:
   contents: write
 
-# A push that lands while a previous run is mid-flight should supersede it: only the
-# newest commit's build belongs on the internal track and in the rolling draft.
 concurrency:
-  group: release
+  group: release-${{ inputs.version }}
   cancel-in-progress: true
 
 jobs:
@@ -100,22 +102,28 @@ jobs:
       - name: Write keystore to file
         run: echo ${{ secrets.KEYSTORE_BASE64 }} | base64 --decode > $GITHUB_WORKSPACE/keystore.jks
 
-      - name: Resolve version name from the rolling draft
+      - name: Resolve version from the dispatch input
         id: version
         env:
           GH_TOKEN: ${{ github.token }}
+          RAW_VERSION: ${{ inputs.version }}
         run: |
-          # The maintainer sets the next version by naming the draft's tag (e.g. v17.0).
-          # Until a draft exists, builds carry a placeholder version name.
-          tag="$(gh release list --limit 100 --json tagName,isDraft \
-            --jq 'first(.[] | select(.isDraft) | .tagName) // empty')"
-          version="${tag#v}"
-          [ -z "$version" ] && version="0.0.0-snapshot"
+          # The tag is created only when the draft is published, so you can re-dispatch onto a newer commit first.
+          version="${RAW_VERSION#[vV]}"
+          if [[ ! "$version" =~ ^[0-9]+(\.[0-9]+)*$ ]]; then
+            echo "::error::version must look like v17 or 17.0 (got: '$RAW_VERSION')"
+            exit 1
+          fi
+          tag="v$version"
+          if [ "$(gh release view "$tag" --json isDraft --jq '.isDraft' 2>/dev/null)" = "false" ]; then
+            echo "::error::$tag is already published. Pick a new version to stage."
+            exit 1
+          fi
           {
-            echo "tag=${tag:-v0.0.0-snapshot}"
             echo "version=$version"
+            echo "tag=$tag"
           } >> "$GITHUB_OUTPUT"
-          echo "Building version $version (draft tag ${tag:-<none>})"
+          echo "Staging $tag (versionName $version) from ${GITHUB_SHA:0:8}"
 
       - name: Build & upload to internal track
         run: bundle exec fastlane internal
@@ -127,24 +135,24 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           VERSION_NAME: ${{ steps.version.outputs.version }}
 
-      - name: Refresh the rolling GitHub draft release
+      - name: Stage the GitHub draft release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.version.outputs.tag }}
+          SHA: ${{ github.sha }}
         run: |
-          # Keep exactly one draft, preserving the maintainer's manually chosen tag. Delete any
-          # existing draft(s), then recreate one pointing at this commit with the fresh APK and
-          # auto-generated notes. The tag becomes a real git tag only when the draft is published.
-          gh release list --limit 100 --json tagName,isDraft \
-            --jq '.[] | select(.isDraft) | .tagName' \
-            | while read -r existing; do
-                [ -n "$existing" ] && gh release delete "$existing" --yes --cleanup-tag || true
-              done
-
+          # No git tag is created yet — publishing this draft creates the tag and triggers promote.yml.
           apk="$(find artifacts -name '*.apk' | head -n1)"
-          gh release create "$TAG" \
-            --draft \
-            --target "$GITHUB_SHA" \
-            --title "$TAG" \
-            --generate-notes \
-            "$apk"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release edit "$TAG" --target "$SHA"
+            gh release upload "$TAG" "$apk" --clobber
+            echo "Re-staged $TAG at ${SHA:0:8} with a fresh APK."
+          else
+            gh release create "$TAG" \
+              --draft \
+              --target "$SHA" \
+              --title "$TAG" \
+              --generate-notes \
+              "$apk"
+            echo "Created draft $TAG at ${SHA:0:8}."
+          fi
