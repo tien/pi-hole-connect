@@ -13,22 +13,29 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RichTooltip
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -54,6 +61,7 @@ import io.ktor.http.URLProtocol.Companion.HTTP
 import io.ktor.http.URLProtocol.Companion.HTTPS
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PiHoleConnectionScreen(
     navController: NavController,
@@ -65,6 +73,8 @@ fun PiHoleConnectionScreen(
     val scrollState = rememberScrollState()
     var isDeleteAlertDialogExpanded by rememberSaveable { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
+    val appPasswordTooltipState = rememberTooltipState(isPersistent = true)
+    val scope = rememberCoroutineScope()
     val nextActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
     val doneActions = KeyboardActions(onDone = { focusManager.clearFocus() })
 
@@ -191,7 +201,38 @@ fun PiHoleConnectionScreen(
             value = viewModel.password,
             onValueChange = { viewModel.password = it },
             visualTransformation = PasswordVisualTransformation(),
-            supportingText = { Text(stringResource(R.string.pi_hole_connection_hint_scanner)) },
+            supportingText = { Text(stringResource(R.string.pi_hole_connection_hint_password)) },
+            trailingIcon = {
+                TooltipBox(
+                    positionProvider = TooltipDefaults.rememberRichTooltipPositionProvider(),
+                    tooltip = {
+                        RichTooltip(
+                            title = {
+                                Text(
+                                    stringResource(
+                                        R.string.pi_hole_connection_app_password_tooltip_title
+                                    )
+                                )
+                            }
+                        ) {
+                            Text(
+                                stringResource(
+                                    R.string.pi_hole_connection_app_password_tooltip_text
+                                )
+                            )
+                        }
+                    },
+                    state = appPasswordTooltipState,
+                ) {
+                    IconButton(onClick = { scope.launch { appPasswordTooltipState.show() } }) {
+                        Icon(
+                            Icons.Outlined.Info,
+                            contentDescription =
+                                stringResource(R.string.pi_hole_connection_app_password_info),
+                        )
+                    }
+                }
+            },
             singleLine = true,
             keyboardOptions =
                 KeyboardOptions(
