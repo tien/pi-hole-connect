@@ -32,9 +32,9 @@ class StatisticsScreenE2ETest : E2ETestBase() {
                     .fetchSemanticsNodes()
                     .isNotEmpty()
             }
-            composeRule.onNodeWithText("debug.opendns.com").assertIsDisplayed()
-            // The "Top Blocked" and "Top Clients" cards sit below the fold on a phone-sized
-            // screen; scroll them into view before asserting they're displayed.
+            // The top-domain/client cards sit below the overview and breakdown cards on a
+            // phone-sized screen; scroll each into view before asserting it's displayed.
+            composeRule.onNodeWithText("debug.opendns.com").performScrollTo().assertIsDisplayed()
             composeRule.onNodeWithText("ads.google.com").performScrollTo().assertIsDisplayed()
             composeRule.onNodeWithText("desktop-pc.lan").performScrollTo().assertIsDisplayed()
         }
