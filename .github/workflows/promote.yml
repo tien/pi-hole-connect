@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.release.tag_name }}
-          fetch-depth: 0 # full history + tags so we can diff against the previous release tag
+          fetch-depth: 0
 
       - uses: ruby/setup-ruby@v1
         with:
@@ -31,43 +31,13 @@ jobs:
           git log "${PREV_TAG:+$PREV_TAG..}${CURRENT_TAG}" --no-merges --pretty=format:'- %s' > changes.txt
           echo "Changes since ${PREV_TAG:-start}:"; cat changes.txt
 
-      - name: Generate Play Store notes (English)
-        id: notes_en_us
+      - name: Generate Play Store notes
+        id: notes
         uses: actions/ai-inference@v2
         with:
           prompt-file: .github/prompts/play-store-release-notes.prompt.yml
           input: |
             language: English
-          file_input: |
-            changes: changes.txt
-
-      - name: Generate Play Store notes (German)
-        id: notes_de_de
-        uses: actions/ai-inference@v2
-        with:
-          prompt-file: .github/prompts/play-store-release-notes.prompt.yml
-          input: |
-            language: German
-          file_input: |
-            changes: changes.txt
-
-      - name: Generate Play Store notes (Polish)
-        id: notes_pl_pl
-        uses: actions/ai-inference@v2
-        with:
-          prompt-file: .github/prompts/play-store-release-notes.prompt.yml
-          input: |
-            language: Polish
-          file_input: |
-            changes: changes.txt
-
-      - name: Generate Play Store notes (Romanian)
-        id: notes_ro
-        uses: actions/ai-inference@v2
-        with:
-          prompt-file: .github/prompts/play-store-release-notes.prompt.yml
-          input: |
-            language: Romanian
           file_input: |
             changes: changes.txt
 
@@ -115,7 +85,4 @@ jobs:
       - run: bundle exec fastlane promote
         env:
           SUPPLY_JSON_KEY_DATA: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS }}
-          PLAY_RELEASE_NOTES_EN_US: ${{ steps.notes_en_us.outputs.response }}
-          PLAY_RELEASE_NOTES_DE_DE: ${{ steps.notes_de_de.outputs.response }}
-          PLAY_RELEASE_NOTES_PL_PL: ${{ steps.notes_pl_pl.outputs.response }}
-          PLAY_RELEASE_NOTES_RO: ${{ steps.notes_ro.outputs.response }}
+          PLAY_RELEASE_NOTES: ${{ steps.notes.outputs.response }}

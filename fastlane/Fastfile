@@ -75,25 +75,13 @@ platform :android do # rubocop:disable Metrics/BlockLength
     version_code = google_play_track_version_codes(track: 'internal').max if version_code.empty?
     version_code = version_code.to_i
 
-    # "What's new" notes set per locale by the promote workflow; Google Play caps each at 500 characters.
-    {
-      'en-US' => 'PLAY_RELEASE_NOTES_EN_US',
-      'de-DE' => 'PLAY_RELEASE_NOTES_DE_DE',
-      'pl-PL' => 'PLAY_RELEASE_NOTES_PL_PL',
-      'ro' => 'PLAY_RELEASE_NOTES_RO'
-    }.each do |locale, env_var|
-      notes = ENV.fetch(env_var, '').strip
-      next if notes.empty?
-
-      dir = "metadata/android/#{locale}/changelogs"
+    notes = ENV.fetch('PLAY_RELEASE_NOTES', '').strip
+    unless notes.empty?
+      dir = 'metadata/android/en-US/changelogs'
       FileUtils.mkdir_p(dir)
       File.write("#{dir}/#{version_code}.txt", notes[0, 500])
     end
 
-    # Promotes the existing internal build to production at 100% rollout, and uploads the full
-    # store listing in the same edit: version-controlled metadata/graphics, the screenshots the
-    # promote workflow downloaded from the release build, and the changelogs written above. No
-    # new AAB is built.
     upload_to_play_store(
       track: 'internal',
       track_promote_to: 'production',
