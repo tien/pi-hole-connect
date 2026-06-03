@@ -61,21 +61,21 @@ jobs:
           echo "run_id=${run_id}" >> "$GITHUB_OUTPUT"
           echo "Using release run ${run_id} for screenshots"
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: screenshots-phone
           path: fastlane/metadata/android/en-US/images/phoneScreenshots
           github-token: ${{ github.token }}
           run-id: ${{ steps.screenshots_run.outputs.run_id }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: screenshots-sevenInch
           path: fastlane/metadata/android/en-US/images/sevenInchScreenshots
           github-token: ${{ github.token }}
           run-id: ${{ steps.screenshots_run.outputs.run_id }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: screenshots-tenInch
           path: fastlane/metadata/android/en-US/images/tenInchScreenshots
