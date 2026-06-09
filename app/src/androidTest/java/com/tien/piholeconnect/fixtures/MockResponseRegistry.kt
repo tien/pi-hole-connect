@@ -158,6 +158,8 @@ fun MockResponseRegistry.installDefaults() {
         )
     }
     onGet("/api/stats/top_clients") { respondJson(Fixtures.topClientsJson) }
+    onGet("/api/stats/query_types") { respondJson(Fixtures.queryTypesJson) }
+    onGet("/api/stats/upstreams") { respondJson(Fixtures.upstreamsJson) }
     onGet("/api/queries") { respondJson(Fixtures.queriesJson) }
 
     onGet("/api/dns/blocking") { respondJson(Fixtures.blockingEnabledJson) }

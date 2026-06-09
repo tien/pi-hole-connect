@@ -13,6 +13,7 @@ import com.tien.piholeconnect.ui.screen.filterrules.FilterRulesViewModel
 import com.tien.piholeconnect.ui.screen.home.HomeViewModel
 import com.tien.piholeconnect.ui.screen.log.LogViewModel
 import com.tien.piholeconnect.ui.screen.statistics.StatisticsViewModel
+import com.tien.piholeconnect.ui.screen.statistics.UpstreamStat
 import com.tien.piholeconnect.ui.screen.tools.ToolsViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -61,10 +62,19 @@ class FakeHomeViewModel(
 }
 
 class FakeStatisticsViewModel(
+    summaryData: GetMetricsSummary200Response,
+    queryTypesData: Map<String, Int>,
+    upstreamsData: List<UpstreamStat>,
     topDomainsData: Map<String, Int>,
     topBlockedDomainsData: Map<String, Int>,
     topClientsData: Map<String, Int>,
 ) : StatisticsViewModel(fakePiHoleRepositoryManager) {
+    override val summary: StateFlow<LoadState<GetMetricsSummary200Response>> =
+        MutableStateFlow(LoadState.Success(summaryData))
+    override val queryTypes: StateFlow<LoadState<Map<String, Int>>> =
+        MutableStateFlow(LoadState.Success(queryTypesData))
+    override val upstreams: StateFlow<LoadState<List<UpstreamStat>>> =
+        MutableStateFlow(LoadState.Success(upstreamsData))
     override val topDomains: StateFlow<LoadState<Map<String, Int>?>> =
         MutableStateFlow(LoadState.Success(topDomainsData))
     override val topBlockedDomains: StateFlow<LoadState<Map<String, Int>?>> =

@@ -82,6 +82,9 @@ class PlayStoreScreenshots {
     fun statisticsScreen() {
         val viewModel =
             FakeStatisticsViewModel(
+                summaryData = Fixtures.metricSummary,
+                queryTypesData = Fixtures.queryTypes,
+                upstreamsData = Fixtures.upstreamStats,
                 topDomainsData = Fixtures.topPermitted,
                 topBlockedDomainsData = Fixtures.topBlocked,
                 topClientsData = Fixtures.topClients,

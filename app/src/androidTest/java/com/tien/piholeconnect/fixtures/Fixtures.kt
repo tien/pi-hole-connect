@@ -10,9 +10,11 @@ import com.tien.piholeconnect.repository.models.GetAuth200Response
 import com.tien.piholeconnect.repository.models.GetBlocking200Response
 import com.tien.piholeconnect.repository.models.GetDomain200Response
 import com.tien.piholeconnect.repository.models.GetDomainsInner
+import com.tien.piholeconnect.repository.models.GetMetricsQueryTypes200Response
 import com.tien.piholeconnect.repository.models.GetMetricsSummary200Response
 import com.tien.piholeconnect.repository.models.GetMetricsTopClients200Response
 import com.tien.piholeconnect.repository.models.GetMetricsTopDomains200Response
+import com.tien.piholeconnect.repository.models.GetMetricsUpstreams200Response
 import com.tien.piholeconnect.repository.models.GetQueries200Response
 import com.tien.piholeconnect.repository.models.Queries1QueriesInner
 import com.tien.piholeconnect.repository.models.Queries1QueriesInnerClient
@@ -20,10 +22,14 @@ import com.tien.piholeconnect.repository.models.Queries1QueriesInnerReply
 import com.tien.piholeconnect.repository.models.QueriesClients
 import com.tien.piholeconnect.repository.models.QueriesGravity
 import com.tien.piholeconnect.repository.models.QueriesQueries
+import com.tien.piholeconnect.repository.models.QueryTypesTypes
 import com.tien.piholeconnect.repository.models.SessionSession
 import com.tien.piholeconnect.repository.models.TopClientsClientsInner
 import com.tien.piholeconnect.repository.models.TopDomainsDomainsInner
 import com.tien.piholeconnect.repository.models.TotalHistoryHistoryInner
+import com.tien.piholeconnect.repository.models.UpstreamsUpstreamsInner
+import com.tien.piholeconnect.repository.models.UpstreamsUpstreamsInnerStatistics
+import com.tien.piholeconnect.ui.screen.statistics.UpstreamStat
 import kotlinx.serialization.encodeToString
 
 /**
@@ -54,7 +60,16 @@ object Fixtures {
 
     val metricSummary =
         GetMetricsSummary200Response(
-            queries = QueriesQueries(total = 84254, blocked = 14732, percentBlocked = 17.49),
+            queries =
+                QueriesQueries(
+                    total = 84254,
+                    blocked = 14732,
+                    percentBlocked = 17.49,
+                    cached = 38120,
+                    forwarded = 31402,
+                    uniqueDomains = 4821,
+                    frequency = 2.7,
+                ),
             clients = QueriesClients(total = 12, active = 8),
             gravity = QueriesGravity(domainsBeingBlocked = 143891),
         )
@@ -448,6 +463,77 @@ object Fixtures {
                         )
                     },
                 totalQueries = topClients.values.sum(),
+            )
+        )
+    }
+
+    val queryTypes: Map<String, Int> =
+        mapOf(
+            "A" to 48210,
+            "AAAA" to 22140,
+            "HTTPS" to 8021,
+            "PTR" to 3140,
+            "TXT" to 1290,
+            "SRV" to 640,
+            "SOA" to 210,
+            "NS" to 90,
+        )
+    val queryTypesJson: String by lazy {
+        json.encodeToString(
+            GetMetricsQueryTypes200Response(
+                types =
+                    QueryTypesTypes(
+                        A = 48210,
+                        AAAA = 22140,
+                        HTTPS = 8021,
+                        PTR = 3140,
+                        TXT = 1290,
+                        SRV = 640,
+                        SOA = 210,
+                        NS = 90,
+                    )
+            )
+        )
+    }
+
+    val upstreamStats: List<UpstreamStat> =
+        listOf(
+            UpstreamStat("one.one.one.one", 18420, 12.4),
+            UpstreamStat("dns.google", 9210, 24.1),
+            UpstreamStat("dns.quad9.net", 3120, 31.7),
+        )
+    val upstreamsJson: String by lazy {
+        json.encodeToString(
+            GetMetricsUpstreams200Response(
+                upstreams =
+                    listOf(
+                        UpstreamsUpstreamsInner(
+                            ip = "1.1.1.1",
+                            name = "one.one.one.one",
+                            port = 53,
+                            count = 18420,
+                            statistics =
+                                UpstreamsUpstreamsInnerStatistics(response = 0.0124, variance = 0.0),
+                        ),
+                        UpstreamsUpstreamsInner(
+                            ip = "8.8.8.8",
+                            name = "dns.google",
+                            port = 53,
+                            count = 9210,
+                            statistics =
+                                UpstreamsUpstreamsInnerStatistics(response = 0.0241, variance = 0.0),
+                        ),
+                        UpstreamsUpstreamsInner(
+                            ip = "9.9.9.9",
+                            name = "dns.quad9.net",
+                            port = 53,
+                            count = 3120,
+                            statistics =
+                                UpstreamsUpstreamsInnerStatistics(response = 0.0317, variance = 0.0),
+                        ),
+                    ),
+                forwardedQueries = 30750,
+                totalQueries = 84254,
             )
         )
     }
