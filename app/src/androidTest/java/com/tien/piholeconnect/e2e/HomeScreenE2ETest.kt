@@ -7,6 +7,8 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.tien.piholeconnect.fixtures.Fixtures
+import com.tien.piholeconnect.fixtures.respondJson
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.ktor.http.HttpMethod
 import org.junit.Test
@@ -65,6 +67,42 @@ class HomeScreenE2ETest : E2ETestBase() {
             }
             assert("\"timer\":300" in postedBody) {
                 "expected timer=300 (5 minutes) in POST body; got: $postedBody"
+            }
+        }
+    }
+
+    @Test
+    fun toggleBlocking_enablePiHole_callsDnsControlApiWithBlockingTrue() {
+        // Start with blocking DISABLED so the FAB offers "Enable blocking".
+        mockResponses.onGet("/api/dns/blocking") { respondJson(Fixtures.blockingDisabledJson) }
+        launchApp().use {
+            composeRule.waitUntil(timeoutMillis = 15_000) {
+                composeRule
+                    .onAllNodesWithContentDescription("Enable blocking")
+                    .fetchSemanticsNodes()
+                    .isNotEmpty()
+            }
+            composeRule.onNodeWithContentDescription("Enable blocking").performClick()
+
+            composeRule.waitUntil(timeoutMillis = 5_000) {
+                composeRule.onAllNodes(hasText("ENABLE")).fetchSemanticsNodes().isNotEmpty()
+            }
+            composeRule.onNodeWithText("ENABLE").performClick()
+
+            composeRule.waitUntil(timeoutMillis = 5_000) {
+                mockResponses.recorded.any {
+                    it.method == HttpMethod.Post && it.path == "/api/dns/blocking"
+                }
+            }
+            val postedBody =
+                mockResponses.recorded
+                    .first { it.method == HttpMethod.Post && it.path == "/api/dns/blocking" }
+                    .bodyText
+            // Regression guard: Pi-hole's schema wrongly marks `blocking` as `default: true`
+            // (the server does not treat an omitted field as "enable"), so without encodeDefaults
+            // the body serializes to `{}` and never re-enables blocking.
+            assert("\"blocking\":true" in postedBody) {
+                "expected POST body to enable blocking; got: $postedBody"
             }
         }
     }
